@@ -3,7 +3,7 @@ import {Collection, RealtimeDatabase, SkipPrefilter, TakePrefilter,
   ActionResult, ActionHelper, ExecuteResponseType, UserData} from 'ng-realtime-database';
 import {BehaviorSubject, combineLatest, Observable, of, pipe, Subscription} from 'rxjs';
 import {User} from '../../model/user';
-import {concatMap, filter, map, switchMap, take, takeUntil, takeWhile} from 'rxjs/operators';
+import {concatMap, debounceTime, filter, map, switchMap, take, takeUntil, takeWhile} from 'rxjs/operators';
 import {AccountService} from '../../shared/services/account.service';
 import {Log} from '../../model/log';
 import {OrderByPrefilter} from '../../../../projects/ng-realtime-database/src/lib/models/prefilter/order-by-prefilter';
@@ -71,7 +71,10 @@ export class MainComponent implements OnInit {
 
     this.db.collection<Log>('logs')
       .values(new OrderByPrefilter(x => x.id, true), new TakePrefilter(1))
-      .pipe(map(v => v[0]))
+      .pipe(
+        debounceTime(200),
+        map(v => v[0])
+      )
       .subscribe(console.warn);
 
     this.db.collection<User>('users')
