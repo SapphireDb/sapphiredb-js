@@ -5,6 +5,7 @@ import { AccountRoutingModule } from './account-routing.module';
 import { LoginComponent } from './login/login.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import { ManageComponent } from './manage/manage.component';
+import { ConnectionsComponent } from './connections/connections.component';
 
 @NgModule({
   imports: [
@@ -12,6 +13,6 @@ import { ManageComponent } from './manage/manage.component';
     ReactiveFormsModule,
     AccountRoutingModule
   ],
-  declarations: [LoginComponent, ManageComponent]
+  declarations: [LoginComponent, ManageComponent, ConnectionsComponent]
 })
 export class AccountModule { }

@@ -5,3 +5,7 @@
 
   <input type="submit" value="Login" />
 </form>
+
+<div *ngFor="let user of users$ | async" (click)="select(user)">
+  {{user | json}}
+</div>

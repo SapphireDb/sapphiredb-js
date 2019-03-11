@@ -20,8 +20,8 @@ import {RealtimeAuthGuard} from '../../projects/ng-realtime-database/src/lib/rea
     RealtimeDatabaseModule.config({
       serverBaseUrl: `${location.hostname}:${location.port}`,
       loginRedirect: 'account/login',
-      unauthorizedRedirect: 'account/unauthorized'
-      // secret: 'test123'
+      unauthorizedRedirect: 'account/unauthorized',
+      secret: 'pw1234'
     }),
     AppRoutingModule,
     Angular2PromiseButtonModule.forRoot()

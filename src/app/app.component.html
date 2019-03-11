@@ -1,5 +1,7 @@
 <h1>Demo Client for Realtime Database</h1>
 
+<button type="button" (click)="logout()">Logout</button>
+
 <p *ngIf="(userInfo$ | async) as user">
   Username: {{user.userName}}<br>
   {{user | json}}

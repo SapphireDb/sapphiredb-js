@@ -9,6 +9,10 @@ import {RenewCommand} from './command/renew-command';
 import {RenewResponse} from './response/renew-response';
 import {LocalstoragePaths} from '../helper/localstorage-paths';
 import {AuthInfo} from './auth-info';
+import {QueryConnectionsResponse, WebsocketConnection} from './response/query-connections-response';
+import {QueryConnectionsCommand} from './command/query-connections-command';
+import {CloseConnectionCommand} from './command/close-connection-command';
+import {CloseConnectionResponse} from './response/close-connection-response';
 
 export class Auth {
   private authData$: BehaviorSubject<AuthData> = new BehaviorSubject(null);
@@ -84,6 +88,29 @@ export class Auth {
     localStorage.removeItem(LocalstoragePaths.authPath);
     this.authData$.next(null);
     this.websocket.setBearer(null);
+  }
+
+  /**
+   * Get current connection id
+   */
+  public getConnectionId(): Observable<string> {
+    return this.websocket.connectionId$.asObservable();
+  }
+
+  /**
+   * Get open websocket connections for current user
+   */
+  public getConnections(): Observable<WebsocketConnection[]> {
+    return this.websocket.sendCommand(new QueryConnectionsCommand()).pipe(map((response: QueryConnectionsResponse) => {
+      return response.connections;
+    }));
+  }
+
+  /**
+   * Close open websocket connection of user
+   */
+  public closeConnection(connectionId: string, deleteRenewToken?: boolean): Observable<CloseConnectionResponse> {
+    return <Observable<CloseConnectionResponse>>this.websocket.sendCommand(new CloseConnectionCommand(connectionId, deleteRenewToken));
   }
 
   private renewToken(authData: AuthData) {

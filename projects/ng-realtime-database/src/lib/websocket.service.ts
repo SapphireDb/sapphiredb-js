@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {SubscribeCommand} from './models/command/subscribe-command';
 import {ResponseBase} from './models/response/response-base';
 import {CommandReferences} from './models/command-references';
@@ -17,6 +17,7 @@ import {UnsubscribeRolesCommand} from './models/command/unsubscribe-roles-comman
 import {SubscribeUsersCommand} from './models/command/subscribe-users-command';
 import {SubscribeRolesCommand} from './models/command/subscribe-roles-command';
 import {MessageResponse} from './models/response/message-response';
+import {ConnectionResponse} from './models/response/connection-response';
 
 @Injectable()
 export class WebsocketService {
@@ -30,8 +31,12 @@ export class WebsocketService {
   private commandReferences: CommandReferences  = {};
   private serverMessageHandler: CommandReferences = {};
 
+  public connectionId$: BehaviorSubject<string>;
+
   constructor(@Inject('realtimedatabase.options') private options: RealtimeDatabaseOptions) {
     const authData = localStorage.getItem(LocalstoragePaths.authPath);
+
+    this.connectionId$ = new BehaviorSubject<string>(null);
 
     if (authData) {
       this.bearer = JSON.parse(authData).authToken;
@@ -47,15 +52,18 @@ export class WebsocketService {
       const waitCommand = () => {
         if (this.socket.readyState !== WebSocket.OPEN) {
           setTimeout(waitCommand, 25);
+          return;
         }
 
         this.unsendCommandStorage.forEach(cmd => {
           this.socket.send(JSON.stringify(cmd));
         });
 
-        this.connectSubject$.next(true);
-        this.connectSubject$.complete();
-        this.connectSubject$ = null;
+        if (this.connectSubject$) {
+          this.connectSubject$.next(true);
+          this.connectSubject$.complete();
+          this.connectSubject$ = null;
+        }
       };
 
       waitCommand();
@@ -171,6 +179,8 @@ export class WebsocketService {
   private handleResponse(response: ResponseBase) {
     if (response.responseType === 'MessageResponse') {
       this.handleMessageResponse(<MessageResponse>response);
+    } else if (response.responseType === 'ConnectionResponse') {
+      this.connectionId$.next((<ConnectionResponse>response).connectionId);
     } else {
       const commandReference = this.commandReferences[response.referenceId];
 

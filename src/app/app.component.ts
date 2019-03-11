@@ -14,4 +14,9 @@ export class AppComponent {
     this.userInfo$ = this.db.auth.getUserData();
   }
 
+  logout() {
+    this.db.auth.logout();
+    location.reload();
+  }
+
 }
