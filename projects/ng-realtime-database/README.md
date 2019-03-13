@@ -1,4 +1,4 @@
-# ng-realtime-database
+# ng-realtime-database [![Build Status](https://travis-ci.org/morrisjdev/ng-realtime-database.svg?branch=master)](https://travis-ci.org/morrisjdev/ng-realtime-database) [![Maintainability](https://api.codeclimate.com/v1/badges/6cc48bef1a9e51422f95/maintainability)](https://codeclimate.com/github/morrisjdev/ng-realtime-database/maintainability) 
 
 Realtime Database Client - Angular Configuration
 
@@ -96,17 +96,11 @@ Example: You only want the last 10 values of your collection,
 ordered by username.
 
 ```js
-const collection = this.db.collection<IUser>('user').snapshot(
-  new OrderByPrefilter('id', true),
-  new TakePrefilter(10),
-  new OrderByPrefilter('username')
-);
-
-const collection2 = this.db.collection<IUser>('user').values(
-  new OrderByPrefilter('id', true),
-  new TakePrefilter(10),
-  new OrderByPrefilter('username')
-);
+const collection = this.db.collection<IUser>('user')
+  .orderBy(v => v.id, true)
+  .take(10)
+  .orderBy(v => v.username)
+  .values();
 ```
 
 ### Available filter
@@ -433,3 +427,7 @@ You can also publish a message to a topic using:
 ```
 this.db.messaging.publish('test', this.message);
 ```
+
+## Author
+
+[Morris Janatzek](http://morrisj.net) ([morrisjdev](https://github.com/morrisjdev))

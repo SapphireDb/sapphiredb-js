@@ -6,12 +6,14 @@ import {AuthComponent} from './auth/auth.component';
 import {CollectionTestComponent} from './collection-test/collection-test.component';
 import {AuthGuard} from '../shared/auth.guard';
 import {RealtimeAuthGuard} from 'ng-realtime-database';
+import {PrefiltersComponent} from './prefilters/prefilters.component';
 
 const routes: Routes = [
   { path: '', component: MainComponent, canActivate: [RealtimeAuthGuard], data: { roles: ['admin'] } },
   { path: 'test', component: TestComponent },
   { path: 'auth', component: AuthComponent },
-  { path: 'collection', component: CollectionTestComponent }
+  { path: 'collection', component: CollectionTestComponent },
+  { path: 'prefilters', component: PrefiltersComponent }
 ];
 
 @NgModule({

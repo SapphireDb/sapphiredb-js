@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Collection, RealtimeDatabase, SkipPrefilter, TakePrefilter,
+import {Collection, RealtimeDatabase,
   ActionResult, ActionHelper, ExecuteResponseType, UserData} from 'ng-realtime-database';
 import {BehaviorSubject, combineLatest, Observable, of, pipe, Subscription} from 'rxjs';
 import {User} from '../../model/user';
@@ -65,20 +65,22 @@ export class MainComponent implements OnInit {
     // this.user$ = this.db.collection<User>('users').values(new OrderByPrefilter('username', false), new ThenOrderByPrefilter('id', true));
 
     this.user$ = this.offset$.pipe(switchMap((i: number) => {
-      return this.db.collection<User>('users')
-        .values(new SkipPrefilter(i), new TakePrefilter(10));
+      return this.db.collection<User>('users').skip(i).take(10)
+        .values();
     }));
 
     this.db.collection<Log>('logs')
-      .values(new OrderByPrefilter(x => x.id, true), new TakePrefilter(1))
+      .orderBy(x => x.id, true)
+      .take(1)
+      .values()
       .pipe(
         debounceTime(200),
         map(v => v[0])
       )
       .subscribe(console.warn);
 
-    this.db.collection<User>('users')
-      .snapshot(new SkipPrefilter(3), new TakePrefilter(5)).subscribe(console.table);
+    this.db.collection<User>('users').skip(3).skip(3).take(5)
+      .snapshot().subscribe(console.table);
 
     // this.db.collection('tests').values();
 
