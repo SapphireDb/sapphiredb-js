@@ -85,6 +85,11 @@ export class WebsocketService {
   }
 
   private createWebsocketConnectionString(): string {
+    if (this.options.serverBaseUrl == null) {
+      this.options.serverBaseUrl = window.location.host;
+      this.options.useSecuredSocket = window.location.protocol === 'https:';
+    }
+
     let wsUrl = `${this.options.useSecuredSocket === true ? 'wss' : 'ws'}://${this.options.serverBaseUrl}/realtimedatabase/socket?`;
 
     if (this.options.secret) {
