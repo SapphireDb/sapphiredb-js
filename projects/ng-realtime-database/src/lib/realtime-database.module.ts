@@ -27,6 +27,12 @@ const defaultOptions: RealtimeDatabaseOptions = {
 })
 export class RealtimeDatabaseModule {
   static config(options: RealtimeDatabaseOptions) {
+
+    if (options.serverBaseUrl == null) {
+      options.serverBaseUrl = defaultOptions.serverBaseUrl;
+      options.useSecuredSocket = defaultOptions.useSecuredSocket;
+    }
+
     return {
       ngModule: RealtimeDatabaseModule,
       providers: [
