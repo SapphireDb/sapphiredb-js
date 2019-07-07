@@ -8,7 +8,7 @@ export class OrderByPrefilter<T> implements IPrefilter<T> {
   descending: boolean;
   contextData: { [key: string]: string };
 
-  constructor(selectFunction: (x: T) => any, descending: boolean = false, contextData?: { [key: string]: any }) {
+  constructor(selectFunction: (x: T) => any, descending: boolean = false, contextData?: [string, any][]) {
     this.selectFunction = selectFunction;
     this.selectFunctionString = selectFunction.toString();
     this.descending = descending;
@@ -16,9 +16,12 @@ export class OrderByPrefilter<T> implements IPrefilter<T> {
     if (contextData) {
       this.contextData = {};
 
-      for (const key of Object.keys(contextData)) {
-        this.contextData[key] = JSON.stringify(contextData[key]);
-      }
+      contextData.forEach(([key, value]: [string, any]) => {
+        this.contextData[key] = JSON.stringify(value);
+      });
+      // for (const key of Object.keys(contextData)) {
+      //   this.contextData[key] = JSON.stringify(contextData[key]);
+      // }
     }
   }
 

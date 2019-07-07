@@ -82,7 +82,7 @@ export class CollectionBase<T> {
    * @param filter A function that returns true if the data should get queried
    * @param contextData Optional data that are used in the filter function
    */
-  public where(filter: (val: T) => boolean, contextData?: { [key: string]: any }): CollectionBase<T> {
+  public where(filter: (val: T) => boolean, contextData?: [string, any][]): CollectionBase<T> {
     const newCollection =
       new CollectionBase<T>(this.collectionName, this.websocket, this.collectionInformation, this.collectionValuesService);
     newCollection.prefilters = this.prefilters.slice(0);
@@ -123,7 +123,7 @@ export class CollectionBase<T> {
    * @param descending Order the selection in descending order
    * @param contextData Optional data that are used in the selector
    */
-  public orderBy(selector: (val: T) => any, descending: boolean = false, contextData?: { [key: string]: any }): CollectionBase<T> {
+  public orderBy(selector: (val: T) => any, descending: boolean = false, contextData?: [string, any][]): CollectionBase<T> {
     const newCollection =
       new CollectionBase<T>(this.collectionName, this.websocket, this.collectionInformation, this.collectionValuesService);
     newCollection.prefilters = this.prefilters.slice(0);
@@ -138,7 +138,7 @@ export class CollectionBase<T> {
    * @param descending Order the selection in descending order
    * @param contextData Optional data that are used in the selector
    */
-  public thenOrderBy(selector: (val: T) => any, descending: boolean = false, contextData?: { [key: string]: any }): CollectionBase<T> {
+  public thenOrderBy(selector: (val: T) => any, descending: boolean = false, contextData?: [string, any][]): CollectionBase<T> {
     const newCollection =
       new CollectionBase<T>(this.collectionName, this.websocket, this.collectionInformation, this.collectionValuesService);
     newCollection.prefilters = this.prefilters.slice(0);

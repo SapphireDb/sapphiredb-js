@@ -5,7 +5,7 @@ import {OrderByPrefilter} from './order-by-prefilter';
 export class ThenOrderByPrefilter<T> extends OrderByPrefilter<T> {
   prefilterType = 'ThenOrderByPrefilter';
 
-  constructor(selectFunction: (x: T) => any, descending: boolean = false, contextData?: { [key: string]: any }) {
+  constructor(selectFunction: (x: T) => any, descending: boolean = false, contextData?: [string, any][]) {
     super(selectFunction, descending, contextData);
   }
 

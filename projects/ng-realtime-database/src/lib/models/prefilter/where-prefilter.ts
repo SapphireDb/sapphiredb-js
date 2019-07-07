@@ -6,16 +6,16 @@ export class WherePrefilter<T> implements IPrefilter<T> {
   compareFunctionString: string;
   contextData: { [key: string]: string };
 
-  constructor(compareFunction: (x: T) => boolean, contextData?: { [key: string]: any }) {
+  constructor(compareFunction: (x: T) => boolean, contextData?: [string, any][]) {
     this.compareFunction = compareFunction;
     this.compareFunctionString = compareFunction.toString();
 
     if (contextData) {
       this.contextData = {};
 
-      for (const key of Object.keys(contextData)) {
-        this.contextData[key] = JSON.stringify(contextData[key]);
-      }
+      contextData.forEach(([key, value]: [string, any]) => {
+        this.contextData[key] = JSON.stringify(value);
+      });
     }
   }
 
