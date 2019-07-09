@@ -23,7 +23,10 @@ export class MainComponent implements OnInit {
   constructor(private db: RealtimeDatabase) {
     this.messageCollection = this.db.collection<Message>('messages');
     this.messages$ = this.db.auth.getUserData().pipe(switchMap(u => {
-      return this.messageCollection.where(x => x.userId === u.id || x.toId === u.id, [['u', u]]).values();
+      const uId = u.id;
+      const func = x => x.userId === uId || x.toId === uId;
+      console.log(func);
+      return this.messageCollection.where(func, [['uId', uId]]).values();
     }));
     // this.messages$ = this.messageCollection.values(new WherePrefilter('', '<', '', (x) => x.userId == ));
 

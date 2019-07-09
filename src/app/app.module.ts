@@ -8,6 +8,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {Angular2PromiseButtonModule} from 'angular2-promise-buttons';
 import {RealtimeAuthGuard} from '../../projects/ng-realtime-database/src/lib/realtime-auth.guard';
+import {environment} from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,7 @@ import {RealtimeAuthGuard} from '../../projects/ng-realtime-database/src/lib/rea
     ReactiveFormsModule,
     HttpClientModule,
     RealtimeDatabaseModule.config({
-      serverBaseUrl: `${location.hostname}:${location.port}`,
+      serverBaseUrl: environment.serverBaseUrl,
       loginRedirect: 'account/login',
       unauthorizedRedirect: 'account/unauthorized',
       secret: 'pw1234'

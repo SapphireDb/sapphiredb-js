@@ -2,19 +2,17 @@ import {IPrefilter} from './iprefilter';
 
 export class WherePrefilter<T> implements IPrefilter<T> {
   prefilterType = 'WherePrefilter';
-  compareFunction: (x: T) => boolean;
+  compareFunction: (x: T, contextData?: any[]) => boolean;
   compareFunctionString: string;
-  contextData: { [key: string]: string };
+  contextData: any[];
 
-  constructor(compareFunction: (x: T) => boolean, contextData?: [string, any][]) {
+  constructor(compareFunction: (x: T, contextData?: any[]) => boolean, contextData: any[]) {
     this.compareFunction = compareFunction;
     this.compareFunctionString = compareFunction.toString();
 
     if (contextData) {
-      this.contextData = {};
-
-      contextData.forEach(([key, value]: [string, any]) => {
-        this.contextData[key] = JSON.stringify(value);
+      this.contextData = contextData.map(v => {
+        return JSON.parse(JSON.stringify(v));
       });
     }
   }
