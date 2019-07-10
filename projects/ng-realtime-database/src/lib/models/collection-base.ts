@@ -52,9 +52,8 @@ export class CollectionBase<T> {
 
   /**
    * Get the values of the collection and also get updates if the collection has changed
-   * @param prefilters Additional prefilters to query only specific data
    */
-  public values(/*...prefilters: IPrefilter<T>[]*/): Observable<T[]> {
+  public values(): Observable<T[]> {
     const collectionValue = this.collectionValuesService
       .getCollectionValue(this.collectionName, this.prefilters, this.collectionInformation);
     return this.createCollectionObservable$(collectionValue, this.prefilters);
