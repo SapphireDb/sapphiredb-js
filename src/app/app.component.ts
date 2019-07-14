@@ -9,9 +9,11 @@ import {Observable} from 'rxjs';
 })
 export class AppComponent {
   userInfo$: Observable<UserData>;
+  status$: Observable<any>;
 
   constructor(private db: RealtimeDatabase) {
     this.userInfo$ = this.db.auth.getUserData();
+    this.status$ = this.db.getStatus$();
   }
 
   logout() {

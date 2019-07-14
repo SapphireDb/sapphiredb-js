@@ -32,6 +32,8 @@ export class WebsocketService {
   private serverMessageHandler: CommandReferences = {};
 
   public connectionId$: BehaviorSubject<string>;
+  public status$: BehaviorSubject<'connecting'|'disconnected'|'ready'> =
+    new BehaviorSubject<'connecting'|'disconnected'|'ready'>('disconnected');
 
   constructor(@Inject('realtimedatabase.options') private options: RealtimeDatabaseOptions) {
     const authData = localStorage.getItem(LocalstoragePaths.authPath);
@@ -59,6 +61,8 @@ export class WebsocketService {
           this.socket.send(JSON.stringify(cmd));
         });
 
+        this.status$.next('ready');
+
         if (this.connectSubject$) {
           this.connectSubject$.next(true);
           this.connectSubject$.complete();
@@ -74,6 +78,8 @@ export class WebsocketService {
     };
 
     this.socket.onclose = () => {
+      this.status$.next('disconnected');
+
       setTimeout(() => {
         this.connectToWebsocket(true);
       }, 1000);
@@ -109,6 +115,8 @@ export class WebsocketService {
     }
 
     if (!this.connectSubject$ || connectionFailed) {
+      this.status$.next('connecting');
+
       if (!connectionFailed) {
         this.connectSubject$ = new Subject<boolean>();
       }

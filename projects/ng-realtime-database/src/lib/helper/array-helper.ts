@@ -15,6 +15,10 @@ export class ArrayHelper {
   }
 
   static orderBy<T>(array: T[], valueSelector: (item: T) => any, descending: boolean): T[] {
+    if (!(<any>array)._realtime_) {
+      (<any>array)._realtime_ = {};
+    }
+
     (<any>array)._realtime_.sorting = [{descending: descending, valueSelector: valueSelector}];
 
     return array.sort((a, b) => {

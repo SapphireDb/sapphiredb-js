@@ -64,4 +64,11 @@ export class RealtimeDatabase {
       })
     );
   }
+
+  /**
+   * Returns the connection status
+   */
+  public getStatus$(): Observable<'connecting'|'disconnected'|'ready'> {
+    return this.websocket.status$.asObservable();
+  }
 }

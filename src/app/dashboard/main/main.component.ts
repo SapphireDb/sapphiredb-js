@@ -1,12 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {Collection, RealtimeDatabase,
-  ActionResult, ActionHelper, ExecuteResponseType, UserData} from 'ng-realtime-database';
-import {BehaviorSubject, combineLatest, Observable, of, pipe, Subscription} from 'rxjs';
+import {ActionHelper, ActionResult, Collection, ExecuteResponseType, RealtimeDatabase, UserData} from 'ng-realtime-database';
+import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {User} from '../../model/user';
-import {concatMap, debounceTime, filter, map, switchMap, take, takeUntil, takeWhile} from 'rxjs/operators';
+import {concatMap, debounceTime, filter, map, switchMap, take, takeWhile} from 'rxjs/operators';
 import {AccountService} from '../../shared/services/account.service';
 import {Log} from '../../model/log';
-import {OrderByPrefilter} from '../../../../projects/ng-realtime-database/src/lib/models/prefilter/order-by-prefilter';
 
 @Component({
   selector: 'app-main',

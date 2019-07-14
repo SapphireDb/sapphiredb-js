@@ -32,9 +32,8 @@ export class CollectionBase<T> {
 
   /**
    * Get a snapshot of the values of the collection
-   * @param prefilters Additional prefilters to query only specific data
    */
-  public snapshot(/*...prefilters: IPrefilter<T>[]*/): Observable<T[]> {
+  public snapshot(): Observable<T[]> {
     const queryCommand = new QueryCommand(this.collectionName, this.prefilters);
 
     return this.websocket.sendCommand(queryCommand).pipe(
