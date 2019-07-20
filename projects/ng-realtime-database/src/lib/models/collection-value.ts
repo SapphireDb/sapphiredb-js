@@ -8,7 +8,7 @@ export class CollectionValue<T> {
   socketSubscription: Subscription;
   subscriberCount: number;
 
-  constructor(referenceId: string, prefilters: IPrefilter<T>[]) {
+  constructor(referenceId: string, prefilters: IPrefilter<any, any>[]) {
     this.referenceId = referenceId;
     this.prefilterHash = this.generatePrefilterHash(prefilters);
     this.subject = new BehaviorSubject<T[]>([]);
@@ -19,12 +19,12 @@ export class CollectionValue<T> {
     this.socketSubscription = socketSubscription;
   }
 
-  public samePrefilters(prefilters: IPrefilter<any>[]): boolean {
+  public samePrefilters(prefilters: IPrefilter<any, any>[]): boolean {
     return this.generatePrefilterHash(prefilters) === this.prefilterHash;
   }
 
 
-  private generatePrefilterHash(prefilters: IPrefilter<T>[]): string {
+  private generatePrefilterHash(prefilters: IPrefilter<any, any>[]): string {
     let result = 'prefilters?';
 
     for (const prefilter of prefilters) {

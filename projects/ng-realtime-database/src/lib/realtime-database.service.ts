@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
-import {Collection} from './models/collection';
 import {CollectionManagerService} from './collection-manager.service';
 import {WebsocketService} from './websocket.service';
 import {ExecuteCommand} from './models/command/execute-command';
-import {concatMap, finalize, map, takeWhile} from 'rxjs/operators';
+import {concatMap, map, takeWhile} from 'rxjs/operators';
 import {ExecuteResponse, ExecuteResponseType} from './models/response/execute-response';
 import {Observable, of} from 'rxjs';
 import {ActionResult} from './models/action-result';
 import {Messaging} from './models/messaging';
 import {Auth} from './models/auth';
+import {DefaultCollection} from './models/default-collection';
 
 @Injectable()
 export class RealtimeDatabase {
@@ -31,8 +31,8 @@ export class RealtimeDatabase {
    * Get the named collection
    * @param collectionName The name of the collection
    */
-  public collection<T>(collectionName: string): Collection<T> {
-    return this.collectionManager.getCollection(collectionName);
+  public collection<T>(collectionName: string): DefaultCollection<T> {
+    return <any>this.collectionManager.getCollection(collectionName, []);
   }
 
   /**

@@ -1,6 +1,6 @@
 import {IPrefilter} from './iprefilter';
 
-export class TakePrefilter<T> implements IPrefilter<T> {
+export class TakePrefilter<T> implements IPrefilter<T, T[]> {
   prefilterType = 'TakePrefilter';
   number: number;
 

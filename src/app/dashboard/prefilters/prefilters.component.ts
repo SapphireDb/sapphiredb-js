@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {Collection, RealtimeDatabase, CollectionBase} from 'ng-realtime-database';
+import {DefaultCollection, RealtimeDatabase, ReducedCollection} from 'ng-realtime-database';
 import {User} from '../../model/user';
 import {Observable} from 'rxjs';
 
@@ -10,44 +10,55 @@ import {Observable} from 'rxjs';
 })
 export class PrefiltersComponent implements OnInit {
 
-  collection: Collection<User>;
+  collection: DefaultCollection<User>;
   collectionValues$: Observable<User[]>;
 
-  collectionWhere: CollectionBase<User>;
+  collectionWhere: DefaultCollection<User>;
   whereValues$: Observable<User[]>;
 
-  collectionSkip: CollectionBase<User>;
+  collectionSkip: DefaultCollection<User>;
   skipValues$: Observable<User[]>;
 
-  collectionTake: CollectionBase<User>;
+  collectionTake: DefaultCollection<User>;
   takeValues$: Observable<User[]>;
 
-  collectionOrder: CollectionBase<User>;
+  collectionOrder: DefaultCollection<User>;
   orderValues$: Observable<User[]>;
 
-  collectionOrder2: CollectionBase<User>;
+  collectionOrder2: DefaultCollection<User>;
   order2Values$: Observable<User[]>;
+
+  collectionSelect: ReducedCollection<User, string[]>;
+  selectValues$: Observable<string[]>;
+
+  collectionCount: ReducedCollection<User, number>;
+  countValues$: Observable<number>;
 
   constructor(private db: RealtimeDatabase) { }
 
   ngOnInit() {
     this.collection = this.db.collection<User>('users');
-    this.collectionValues$ = this.collection.values();
-
-    this.collectionWhere = this.collection.where(u => u.username !== 'test123');
-    this.whereValues$ = this.collectionWhere.values();
-
-    this.collectionSkip = this.collection.skip(2);
-    this.skipValues$ = this.collectionSkip.values();
-
-    this.collectionTake = this.collection.take(3);
-    this.takeValues$ = this.collectionTake.values();
-
-    this.collectionOrder = this.collection.orderBy(v => v.id, true);
-    this.orderValues$ = this.collectionOrder.values();
-
-    this.collectionOrder2 = this.collection.orderBy(v => v.username).thenOrderBy(v => v.id, true);
-    this.order2Values$ = this.collectionOrder2.values();
+    // this.collectionValues$ = this.collection.values();
+    //
+    // this.collectionWhere = this.collection.where(u => u.username !== 'test123');
+    // this.whereValues$ = this.collectionWhere.values();
+    //
+    // this.collectionSkip = this.collection.skip(2);
+    // this.skipValues$ = this.collectionSkip.values();
+    //
+    // this.collectionTake = this.collection.take(3);
+    // this.takeValues$ = this.collectionTake.values();
+    //
+    // this.collectionOrder = this.collection.orderBy(v => v.id, true);
+    // this.orderValues$ = this.collectionOrder.values();
+    //
+    // this.collectionOrder2 = this.collection.orderBy(v => v.username).thenOrderBy(v => v.id, true);
+    // this.order2Values$ = this.collectionOrder2.values();
+    //
+    // this.collectionSelect = this.collection.select(u => u.id);
+    // this.selectValues$ = this.collectionSelect.values();
+    this.collectionCount = this.collection.count();
+    this.countValues$ = this.collectionCount.values();
   }
 
 }

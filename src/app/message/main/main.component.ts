@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Collection, RealtimeDatabase, UserData, RoleData} from 'ng-realtime-database';
+import {RealtimeDatabase, UserData, RoleData, DefaultCollection} from 'ng-realtime-database';
 import {Message} from '../../model/message';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {map, publish, share, shareReplay, switchMap} from 'rxjs/operators';
@@ -11,7 +11,7 @@ import {map, publish, share, shareReplay, switchMap} from 'rxjs/operators';
 })
 export class MainComponent implements OnInit {
 
-  messageCollection: Collection<Message>;
+  messageCollection: DefaultCollection<Message>;
   messages$: Observable<Message[]>;
   users$: Observable<UserData[]>;
   // roles$: Observable<RoleData[]>;
@@ -30,7 +30,7 @@ export class MainComponent implements OnInit {
       return users.filter(u => u.id !== user.id);
     }));
 
-    this.userMessages$ = combineLatest(this.currentUser$, this.messages$).pipe(map(([user, messages]: [UserData, Message[]]) => {
+    this.userMessages$ = combineLatest([this.currentUser$, this.messages$]).pipe(map(([user, messages]: [UserData, Message[]]) => {
       if (user != null) {
         return messages.filter(msg => msg.toId === user.id || msg.userId === user.id).sort((a, b) =>
           a.createdOn > b.createdOn ? 1 : a.createdOn === b.createdOn ? 0 : -1);

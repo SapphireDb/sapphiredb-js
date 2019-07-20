@@ -1,8 +1,11 @@
+import {IPrefilter} from '../models/prefilter/iprefilter';
+
 Object.defineProperty(Array.prototype, '_realtime_', {
   value: { sorting: [] },
   enumerable: false
 });
 
+// @dynamic
 export class ArrayHelper {
   static isAnyRolePresent(neededRoles: string[], presentRoles: string[]): boolean {
     for (const neededRole of neededRoles) {
@@ -46,6 +49,10 @@ export class ArrayHelper {
     });
   }
 
+  static createPrefilterHash(prefilters: IPrefilter<any, any>[]): string {
+    return prefilters.map(p => p.hash()).join(',');
+  }
+
   private static stringCompare(value_a: string, value_b: string, invert: boolean): number {
     value_a = value_a.toLowerCase();
     value_b = value_b.toLowerCase();
@@ -58,7 +65,7 @@ export class ArrayHelper {
       return 0;
     }
   }
-  
+
   private static booleanCompare(value_a: boolean, value_b: boolean, invert: boolean): number {
     if (value_a === value_b) {
       return 0;
@@ -70,7 +77,7 @@ export class ArrayHelper {
       }
     }
   }
-  
+
   private static defaultCompare(type_a: string, type_b: string, invert: boolean): number {
     if (type_a === 'undefined' && type_a === type_b) {
       return 0;
@@ -82,7 +89,7 @@ export class ArrayHelper {
 
     return 0;
   }
-  
+
   static orderCompareFunction<T>(valueSelector: (item: T) => any, a: T, b: T, invert: boolean): number {
     const value_a: any = valueSelector(a);
     const value_b: any = valueSelector(b);

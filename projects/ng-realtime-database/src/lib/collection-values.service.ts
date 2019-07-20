@@ -18,12 +18,11 @@ export class CollectionValuesService {
 
   constructor(private websocket: WebsocketService) { }
 
-  public getCollectionValue<T>(collectionName: string, prefilters: IPrefilter<T>[],
+  public getCollectionValue<T>(collectionName: string, prefilters: IPrefilter<any, any>[],
                                collectionInformation: Observable<InfoResponse>): CollectionValue<T> {
     if (!this.collectionValues[collectionName]) {
       this.collectionValues[collectionName] = [];
     }
-
 
     const index = this.collectionValues[collectionName].findIndex(c => c.samePrefilters(prefilters));
 
@@ -44,14 +43,14 @@ export class CollectionValuesService {
   }
 
   private createWebsocketValuesSubscription<T>(collectionName: string, collectionInformation: Observable<InfoResponse>,
-                                               prefilters: IPrefilter<T>[]): CollectionValue<T> {
+                                               prefilters: IPrefilter<any, any>[]): CollectionValue<T> {
     const subscribeCommand = new SubscribeCommand(collectionName, prefilters);
     const collectionValue = new CollectionValue<T>(subscribeCommand.referenceId, prefilters);
 
     const wsSubscription = this.websocket.sendCommand(subscribeCommand, true)
       .subscribe((response: (QueryResponse | ChangeResponse | UnloadResponse | LoadResponse)) => {
         if (response.responseType === 'QueryResponse') {
-          collectionValue.subject.next((<QueryResponse>response).collection);
+          collectionValue.subject.next((<QueryResponse>response).result);
         } else if (response.responseType === 'ChangeResponse') {
           CollectionHelper.updateCollection<T>(collectionValue.subject, collectionInformation, <ChangeResponse>response);
         } else if (response.responseType === 'UnloadResponse') {

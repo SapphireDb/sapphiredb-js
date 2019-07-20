@@ -1,50 +1,55 @@
-import {AuthCollectionInfo} from './auth-collection-info';
-import {WebsocketService} from '../websocket.service';
 import {Observable, pipe} from 'rxjs';
+import {WebsocketService} from '../websocket.service';
+import {CreateCommand} from './command/create-command';
+import {CreateResponse} from './response/create-response';
+import {CommandResult} from './command-result';
+import {DeleteResponse} from './response/delete-response';
+import {UpdateCommand} from './command/update-command';
+import {UpdateResponse} from './response/update-response';
+import {DeleteCommand} from './command/delete-command';
+import {finalize, map, switchMap} from 'rxjs/operators';
 import {InfoResponse} from './response/info-response';
 import {CollectionValuesService} from '../collection-values.service';
-import {IPrefilter} from './prefilter/iprefilter';
+import {AuthCollectionInfo} from './auth-collection-info';
 import {QueryCommand} from './command/query-command';
 import {QueryResponse} from './response/query-response';
-import {finalize, map} from 'rxjs/operators';
 import {CollectionValue} from './collection-value';
+import {IPrefilter} from './prefilter/iprefilter';
 import {UnsubscribeCommand} from './command/unsubscribe-command';
-import {WherePrefilter} from './prefilter/where-prefilter';
-import {SkipPrefilter} from './prefilter/skip-prefilter';
-import {TakePrefilter} from './prefilter/take-prefilter';
-import {OrderByPrefilter} from './prefilter/order-by-prefilter';
-import {ThenOrderByPrefilter} from './prefilter/then-order-by-prefilter';
+import {CollectionManagerService} from '../collection-manager.service';
 
-export class CollectionBase<T> {
+export class CollectionBase<T, Y> {
+  public prefilters: IPrefilter<any, any>[] = [];
+
   /**
    * Information about Authentication and Authorization of the collection
    */
   public authInfo: AuthCollectionInfo;
 
-  protected prefilters: IPrefilter<any>[] = [];
-
   constructor(public collectionName: string,
               protected websocket: WebsocketService,
               protected collectionInformation: Observable<InfoResponse>,
-              private collectionValuesService: CollectionValuesService) {
+              protected collectionValuesService: CollectionValuesService,
+              protected collectionManagerService: CollectionManagerService) {
     this.authInfo = new AuthCollectionInfo(this.collectionInformation);
   }
 
   /**
    * Get a snapshot of the values of the collection
    */
-  public snapshot(): Observable<T[]> {
+  public snapshot(): Observable<Y> {
     const queryCommand = new QueryCommand(this.collectionName, this.prefilters);
 
-    return this.websocket.sendCommand(queryCommand).pipe(
+    return <Observable<any>>this.websocket.sendCommand(queryCommand).pipe(
       map((response: QueryResponse) => {
-        let array = response.collection;
-
-        for (const prefilter of this.prefilters) {
-          array = prefilter.execute(array);
-        }
-
-        return array;
+        return response.result;
+        // let array = response.collection;
+        //
+        // for (const prefilter of this.prefilters) {
+        //   array = prefilter.execute(array);
+        // }
+        //
+        // return array;
       })
     );
   }
@@ -52,14 +57,14 @@ export class CollectionBase<T> {
   /**
    * Get the values of the collection and also get updates if the collection has changed
    */
-  public values(): Observable<T[]> {
+  public values(): Observable<Y> {
     const collectionValue = this.collectionValuesService
       .getCollectionValue(this.collectionName, this.prefilters, this.collectionInformation);
     return this.createCollectionObservable$(collectionValue, this.prefilters);
   }
 
-  private createCollectionObservable$(collectionValue: CollectionValue<T>, prefilters: IPrefilter<T>[]): Observable<T[]> {
-    return collectionValue.subject.pipe(finalize(() => {
+  private createCollectionObservable$(collectionValue: CollectionValue<any>, prefilters: IPrefilter<any, any>[]): Observable<Y> {
+    return <Observable<any>>collectionValue.subject.pipe(finalize(() => {
       collectionValue.subscriberCount--;
 
       if (collectionValue.subscriberCount === 0) {
@@ -67,84 +72,62 @@ export class CollectionBase<T> {
         collectionValue.socketSubscription.unsubscribe();
         this.collectionValuesService.removeCollectionValue(this.collectionName, collectionValue);
       }
-    }), pipe(map((array: T[]) => {
+    })/*, pipe(map((array: T[]) => {
       for (const prefilter of prefilters) {
         array = prefilter.execute(array);
       }
 
       return array;
-    })));
+    }))*/);
   }
 
   /**
-   * Filter the data to query
-   * @param filter A function that returns true if the data should get queried
-   * @param contextData Optional data that are used in the filter function
+   * Add a value to the collection
+   * @param value The object to add to the collection
    */
-  public where<Y extends any[]>(filter: (value: T, contextData?: Y) => boolean, ...contextData: Y): CollectionBase<T> {
-    const newCollection =
-      new CollectionBase<T>(this.collectionName, this.websocket, this.collectionInformation, this.collectionValuesService);
-    newCollection.prefilters = this.prefilters.slice(0);
-    newCollection.prefilters.push(new WherePrefilter(filter, contextData));
-
-    return newCollection;
+  public add(value: T): Observable<CommandResult<T>> {
+    return this.createCommandResult$(<any>this.websocket.sendCommand(new CreateCommand(this.collectionName, value)));
   }
 
   /**
-   * Skip a number of entries
-   * @param number Number of entries to skip
+   * Update a value of the collection
+   * @param value The object to update in the collection
    */
-  public skip(number: number): CollectionBase<T> {
-    const newCollection =
-      new CollectionBase<T>(this.collectionName, this.websocket, this.collectionInformation, this.collectionValuesService);
-    newCollection.prefilters = this.prefilters.slice(0);
-    newCollection.prefilters.push(new SkipPrefilter(number));
-
-    return newCollection;
+  public update(value: T): Observable<CommandResult<T>> {
+    return this.createCommandResult$(<any>this.websocket.sendCommand(new UpdateCommand(this.collectionName, value)));
   }
 
   /**
-   * Take a number of entries
-   * @param number Number of entries to take
+   * Remove a value from the collection
+   * @param value The object to remove from the collection
    */
-  public take(number: number): CollectionBase<T> {
-    const newCollection =
-      new CollectionBase<T>(this.collectionName, this.websocket, this.collectionInformation, this.collectionValuesService);
-    newCollection.prefilters = this.prefilters.slice(0);
-    newCollection.prefilters.push(new TakePrefilter(number));
+  public remove(value: T): Observable<CommandResult<T>> {
+    return this.collectionInformation.pipe(
+      switchMap((info: InfoResponse) => {
+        const primaryValues = {};
+        info.primaryKeys.forEach(pk => {
+          primaryValues[pk] = value[pk];
+        });
 
-    return newCollection;
+        const deleteCommand = new DeleteCommand(this.collectionName, primaryValues);
+        return this.websocket.sendCommand(deleteCommand).pipe(map((response: DeleteResponse) => {
+          return new CommandResult<T>(response.error, response.validationResults);
+        }));
+    }));
+  }
+
+  private createCommandResult$(observable$: Observable<CreateResponse|UpdateResponse>): Observable<CommandResult<T>> {
+    return observable$.pipe(map((response: CreateResponse|UpdateResponse) => {
+      return new CommandResult<T>(response.error, response.validationResults,
+        response.responseType === 'CreateResponse' ?
+          (<CreateResponse>response).newObject : (<UpdateResponse>response).updatedObject);
+    }));
   }
 
   /**
-   * Apply ordering to the collection
-   * @param selector A selector to select value to order by
-   * @param descending Order the selection in descending order
-   * @param contextData Optional data that are used in the selector
+   * Dispose this collection and remove it from collection storage
    */
-  public orderBy<Y extends any[]>(selector: (value: T, contextData?: Y) => any,
-                                  descending: boolean = false, ...contextData: Y): CollectionBase<T> {
-    const newCollection =
-      new CollectionBase<T>(this.collectionName, this.websocket, this.collectionInformation, this.collectionValuesService);
-    newCollection.prefilters = this.prefilters.slice(0);
-    newCollection.prefilters.push(new OrderByPrefilter(selector, descending, contextData));
-
-    return newCollection;
-  }
-
-  /**
-   * Apply additional ordering to the collection without effecting previous order
-   * @param selector A selector to select value to order by
-   * @param descending Order the selection in descending order
-   * @param contextData Optional data that are used in the selector
-   */
-  public thenOrderBy<Y extends any[]>(selector: (value: T, contextData?: Y) => any,
-                                      descending: boolean = false, ...contextData: Y): CollectionBase<T> {
-    const newCollection =
-      new CollectionBase<T>(this.collectionName, this.websocket, this.collectionInformation, this.collectionValuesService);
-    newCollection.prefilters = this.prefilters.slice(0);
-    newCollection.prefilters.push(new ThenOrderByPrefilter(selector, descending, contextData));
-
-    return newCollection;
+  public dispose() {
+    this.collectionManagerService.removeCollection(<any>this);
   }
 }

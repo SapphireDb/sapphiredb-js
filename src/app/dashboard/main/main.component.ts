@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActionHelper, ActionResult, Collection, ExecuteResponseType, RealtimeDatabase, UserData} from 'ng-realtime-database';
+import {ActionHelper, ActionResult, DefaultCollection, ExecuteResponseType, RealtimeDatabase, UserData} from 'ng-realtime-database';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {User} from '../../model/user';
 import {concatMap, debounceTime, filter, map, switchMap, take, takeWhile} from 'rxjs/operators';
@@ -28,7 +28,7 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     this.account.userData().subscribe((userData: UserData) => {
       const roles = userData.roles;
-      const collection: Collection<any> = this.db.collection('users');
+      const collection: DefaultCollection<any> = this.db.collection('users');
 
       combineLatest(
         collection.authInfo.queryAuth(),

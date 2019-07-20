@@ -1,6 +1,6 @@
 import {IPrefilter} from './iprefilter';
 
-export class WherePrefilter<T> implements IPrefilter<T> {
+export class WherePrefilter<T> implements IPrefilter<T, T[]> {
   prefilterType = 'WherePrefilter';
   compareFunction: (x: T, contextData?: any[]) => boolean;
   compareFunctionString: string;
@@ -18,7 +18,7 @@ export class WherePrefilter<T> implements IPrefilter<T> {
   }
 
   public execute(values: T[]) {
-    return values;
+    return values.filter(x => this.compareFunction(x, this.contextData));
   }
 
   public hash() {

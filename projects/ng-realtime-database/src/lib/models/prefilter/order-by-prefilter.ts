@@ -1,7 +1,7 @@
 import {IPrefilter} from './iprefilter';
 import {ArrayHelper} from '../../helper/array-helper';
 
-export class OrderByPrefilter<T> implements IPrefilter<T> {
+export class OrderByPrefilter<T> implements IPrefilter<T, T[]> {
   prefilterType = 'OrderByPrefilter';
   selectFunction: (x: T, contextData?: any[]) => any;
   selectFunctionString: string;
@@ -21,7 +21,7 @@ export class OrderByPrefilter<T> implements IPrefilter<T> {
   }
 
   public execute(values: T[]) {
-    return ArrayHelper.orderBy(values, this.selectFunction, this.descending);
+    return ArrayHelper.orderBy(values, x => this.selectFunction(x, this.contextData), this.descending);
   }
 
   public hash() {
