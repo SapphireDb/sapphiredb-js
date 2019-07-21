@@ -38,25 +38,26 @@ export class PrefiltersComponent implements OnInit {
 
   ngOnInit() {
     this.collection = this.db.collection<User>('users');
-    // this.collectionValues$ = this.collection.values();
-    //
-    // this.collectionWhere = this.collection.where(u => u.username !== 'test123');
-    // this.whereValues$ = this.collectionWhere.values();
-    //
-    // this.collectionSkip = this.collection.skip(2);
-    // this.skipValues$ = this.collectionSkip.values();
-    //
-    // this.collectionTake = this.collection.take(3);
-    // this.takeValues$ = this.collectionTake.values();
-    //
-    // this.collectionOrder = this.collection.orderBy(v => v.id, true);
-    // this.orderValues$ = this.collectionOrder.values();
-    //
-    // this.collectionOrder2 = this.collection.orderBy(v => v.username).thenOrderBy(v => v.id, true);
-    // this.order2Values$ = this.collectionOrder2.values();
-    //
-    // this.collectionSelect = this.collection.select(u => u.id);
-    // this.selectValues$ = this.collectionSelect.values();
+    this.collectionValues$ = this.collection.values();
+
+    this.collectionWhere = this.collection.where(u => u.username !== 'test123');
+    this.whereValues$ = this.collectionWhere.values();
+
+    this.collectionSkip = this.collection.skip(2);
+    this.skipValues$ = this.collectionSkip.values();
+
+    this.collectionTake = this.collection.take(3);
+    this.takeValues$ = this.collectionTake.values();
+
+    this.collectionOrder = this.collection.orderBy(v => v.id, true);
+    this.orderValues$ = this.collectionOrder.values();
+
+    this.collectionOrder2 = this.collection.orderBy(v => v.username).thenOrderBy(v => v.id, true);
+    this.order2Values$ = this.collectionOrder2.values();
+
+    this.collectionSelect = this.collection.select(u => u.username);
+    this.selectValues$ = this.collectionSelect.values();
+
     this.collectionCount = this.collection.count();
     this.countValues$ = this.collectionCount.values();
   }

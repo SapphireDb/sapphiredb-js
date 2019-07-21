@@ -17,6 +17,7 @@ import {CollectionValue} from './collection-value';
 import {IPrefilter} from './prefilter/iprefilter';
 import {UnsubscribeCommand} from './command/unsubscribe-command';
 import {CollectionManagerService} from '../collection-manager.service';
+import {CollectionHelper} from '../helper/collection-helper';
 
 export class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
@@ -42,14 +43,13 @@ export class CollectionBase<T, Y> {
 
     return <Observable<any>>this.websocket.sendCommand(queryCommand).pipe(
       map((response: QueryResponse) => {
-        return response.result;
-        // let array = response.collection;
-        //
-        // for (const prefilter of this.prefilters) {
-        //   array = prefilter.execute(array);
-        // }
-        //
-        // return array;
+        let array = response.result;
+
+        for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(this.prefilters)) {
+          array = prefilter.execute(array);
+        }
+
+        return array;
       })
     );
   }
@@ -72,13 +72,13 @@ export class CollectionBase<T, Y> {
         collectionValue.socketSubscription.unsubscribe();
         this.collectionValuesService.removeCollectionValue(this.collectionName, collectionValue);
       }
-    })/*, pipe(map((array: T[]) => {
-      for (const prefilter of prefilters) {
+    }), pipe(map((array: T[]) => {
+      for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(prefilters)) {
         array = prefilter.execute(array);
       }
 
       return array;
-    }))*/);
+    })));
   }
 
   /**

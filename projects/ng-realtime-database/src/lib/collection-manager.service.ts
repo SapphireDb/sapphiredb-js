@@ -9,6 +9,7 @@ import {ArrayHelper} from './helper/array-helper';
 import {SelectPrefilter} from './models/prefilter/select-prefilter';
 import {ReducedCollection} from './models/reduced-collection';
 import {CountPrefilter} from './models/prefilter/count-prefilter';
+import {CollectionHelper} from './helper/collection-helper';
 
 @Injectable()
 export class CollectionManagerService {
@@ -35,7 +36,7 @@ export class CollectionManagerService {
       return foundCollections[0];
     } else {
       let newCollection;
-      if ([SelectPrefilter, CountPrefilter].findIndex(v => newPrefilter instanceof v) !== -1) {
+      if (CollectionHelper.afterQueryPrefilters.findIndex(v => newPrefilter instanceof v) !== -1) {
         newCollection = new ReducedCollection<any, any>(
           collectionName,
           this.websocket,

@@ -4,8 +4,14 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {LoadResponse} from '../models/response/load-response';
 import {ChangeResponse, ChangeState} from '../models/response/change-response';
 import {FilterFunctions} from './filter-functions';
+import {SelectPrefilter} from '../models/prefilter/select-prefilter';
+import {CountPrefilter} from '../models/prefilter/count-prefilter';
+import {IPrefilter} from '../models/prefilter/iprefilter';
 
+// @dynamic
 export class CollectionHelper {
+  static afterQueryPrefilters = [SelectPrefilter, CountPrefilter];
+
   static unloadItem<T>(collectionData: BehaviorSubject<T[]>, info$: Observable<InfoResponse>, unloadResponse: UnloadResponse) {
     info$.subscribe((info: InfoResponse) => {
       const primaryKeys = info.primaryKeys;
@@ -56,5 +62,10 @@ export class CollectionHelper {
         }
       }
     });
+  }
+
+  static getPrefiltersWithoutAfterQueryPrefilters(prefilters: IPrefilter<any, any>[]) {
+    return prefilters.filter(
+      p => CollectionHelper.afterQueryPrefilters.findIndex(f => p instanceof f) === -1);
   }
 }

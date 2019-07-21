@@ -11,6 +11,7 @@ export * from './lib/helper/action-helper';
 
 export * from './lib/models/collection-base';
 export * from './lib/models/default-collection';
+export * from './lib/models/reduced-collection';
 export * from './lib/models/auth-collection-info';
 export * from './lib/models/auth';
 export * from './lib/models/auth-info';
