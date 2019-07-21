@@ -28,6 +28,7 @@ export class CollectionValuesService {
 
     let collectionValue: CollectionValue<T>;
     if (index !== -1) {
+      console.log('test123');
       collectionValue = this.collectionValues[collectionName][index];
       collectionValue.subscriberCount++;
     } else {

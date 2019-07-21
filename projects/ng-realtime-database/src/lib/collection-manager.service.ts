@@ -10,6 +10,9 @@ import {SelectPrefilter} from './models/prefilter/select-prefilter';
 import {ReducedCollection} from './models/reduced-collection';
 import {CountPrefilter} from './models/prefilter/count-prefilter';
 import {CollectionHelper} from './helper/collection-helper';
+import {OrderByPrefilter} from './models/prefilter/order-by-prefilter';
+import {OrderedCollection} from './models/ordered-collection';
+import {ThenOrderByPrefilter} from './models/prefilter/then-order-by-prefilter';
 
 @Injectable()
 export class CollectionManagerService {
@@ -17,9 +20,7 @@ export class CollectionManagerService {
   private collections: CollectionBase<any, any>[] = [];
 
   constructor(private websocket: WebsocketService, private collectionInformation: CollectionInformationService,
-              private collectionValuesService: CollectionValuesService) {
-    (<any>window).manager = this;
-  }
+              private collectionValuesService: CollectionValuesService) {}
 
   public getCollection<T>(collectionName: string, prefilters: IPrefilter<any, any>[],
                           newPrefilter?: IPrefilter<any, any>): CollectionBase<T, any> {
@@ -38,6 +39,13 @@ export class CollectionManagerService {
       let newCollection;
       if (CollectionHelper.afterQueryPrefilters.findIndex(v => newPrefilter instanceof v) !== -1) {
         newCollection = new ReducedCollection<any, any>(
+          collectionName,
+          this.websocket,
+          this.collectionInformation.getCollectionInformation(collectionName),
+          this.collectionValuesService,
+          this);
+      } else if (newPrefilter instanceof OrderByPrefilter || newPrefilter instanceof ThenOrderByPrefilter) {
+        newCollection = new OrderedCollection<any>(
           collectionName,
           this.websocket,
           this.collectionInformation.getCollectionInformation(collectionName),

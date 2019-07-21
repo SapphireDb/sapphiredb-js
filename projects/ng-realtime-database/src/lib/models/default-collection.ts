@@ -12,6 +12,7 @@ import {CollectionManagerService} from '../collection-manager.service';
 import {ReducedCollection} from './reduced-collection';
 import {SelectPrefilter} from './prefilter/select-prefilter';
 import {CountPrefilter} from './prefilter/count-prefilter';
+import {OrderedCollection} from './ordered-collection';
 
 export class DefaultCollection<T> extends CollectionBase<T, T[]> {
   constructor(collectionName: string,
@@ -54,21 +55,9 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param contextData Optional data that are used in the selector
    */
   public orderBy<Y extends any[]>(selector: (value: T, contextData?: Y) => any,
-                                  descending: boolean = false, ...contextData: Y): DefaultCollection<T> {
+                                  descending: boolean = false, ...contextData: Y): OrderedCollection<T> {
     return <any>this.collectionManagerService.getCollection(this.collectionName, this.prefilters,
       new OrderByPrefilter(selector, descending, contextData));
-  }
-
-  /**
-   * Apply additional ordering to the collection without effecting previous order
-   * @param selector A selector to select value to order by
-   * @param descending Order the selection in descending order
-   * @param contextData Optional data that are used in the selector
-   */
-  public thenOrderBy<Y extends any[]>(selector: (value: T, contextData?: Y) => any,
-                                      descending: boolean = false, ...contextData: Y): DefaultCollection<T> {
-    return <any>this.collectionManagerService.getCollection(this.collectionName, this.prefilters,
-      new ThenOrderByPrefilter(selector, descending, contextData));
   }
 
   /**
