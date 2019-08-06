@@ -28,6 +28,7 @@ export class CollectionBase<T, Y> {
   public authInfo: AuthCollectionInfo;
 
   constructor(public collectionName: string,
+              public contextName: string,
               protected websocket: WebsocketService,
               protected collectionInformation: Observable<InfoResponse>,
               protected collectionValuesService: CollectionValuesService,
@@ -39,7 +40,7 @@ export class CollectionBase<T, Y> {
    * Get a snapshot of the values of the collection
    */
   public snapshot(): Observable<Y> {
-    const queryCommand = new QueryCommand(this.collectionName, this.prefilters);
+    const queryCommand = new QueryCommand(this.collectionName, this.contextName, this.prefilters);
 
     return <Observable<any>>this.websocket.sendCommand(queryCommand).pipe(
       map((response: QueryResponse) => {
@@ -59,7 +60,7 @@ export class CollectionBase<T, Y> {
    */
   public values(): Observable<Y> {
     const collectionValue = this.collectionValuesService
-      .getCollectionValue(this.collectionName, this.prefilters, this.collectionInformation);
+      .getCollectionValue(this.collectionName, this.contextName, this.prefilters, this.collectionInformation);
     return this.createCollectionObservable$(collectionValue, this.prefilters);
   }
 
@@ -68,7 +69,8 @@ export class CollectionBase<T, Y> {
       collectionValue.subscriberCount--;
 
       if (collectionValue.subscriberCount === 0) {
-        this.websocket.sendCommand(new UnsubscribeCommand(this.collectionName, collectionValue.referenceId), false, true);
+        this.websocket.sendCommand(
+          new UnsubscribeCommand(this.collectionName, this.contextName, collectionValue.referenceId), false, true);
         collectionValue.socketSubscription.unsubscribe();
         this.collectionValuesService.removeCollectionValue(this.collectionName, collectionValue);
       }
@@ -86,7 +88,7 @@ export class CollectionBase<T, Y> {
    * @param value The object to add to the collection
    */
   public add(value: T): Observable<CommandResult<T>> {
-    return this.createCommandResult$(<any>this.websocket.sendCommand(new CreateCommand(this.collectionName, value)));
+    return this.createCommandResult$(<any>this.websocket.sendCommand(new CreateCommand(this.collectionName, this.contextName, value)));
   }
 
   /**
@@ -94,7 +96,7 @@ export class CollectionBase<T, Y> {
    * @param value The object to update in the collection
    */
   public update(value: T): Observable<CommandResult<T>> {
-    return this.createCommandResult$(<any>this.websocket.sendCommand(new UpdateCommand(this.collectionName, value)));
+    return this.createCommandResult$(<any>this.websocket.sendCommand(new UpdateCommand(this.collectionName, this.contextName, value)));
   }
 
   /**
@@ -109,7 +111,7 @@ export class CollectionBase<T, Y> {
           primaryValues[pk] = value[pk];
         });
 
-        const deleteCommand = new DeleteCommand(this.collectionName, primaryValues);
+        const deleteCommand = new DeleteCommand(this.collectionName, this.contextName, primaryValues);
         return this.websocket.sendCommand(deleteCommand).pipe(map((response: DeleteResponse) => {
           return new CommandResult<T>(response.error, response.validationResults);
         }));

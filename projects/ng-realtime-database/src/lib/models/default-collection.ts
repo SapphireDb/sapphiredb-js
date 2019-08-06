@@ -16,11 +16,12 @@ import {OrderedCollection} from './ordered-collection';
 
 export class DefaultCollection<T> extends CollectionBase<T, T[]> {
   constructor(collectionName: string,
+              contextName: string,
               websocket: WebsocketService,
               collectionInformation: Observable<InfoResponse>,
               collectionValuesService: CollectionValuesService,
               collectionManagerService: CollectionManagerService) {
-    super(collectionName, websocket, collectionInformation, collectionValuesService, collectionManagerService);
+    super(collectionName, contextName, websocket, collectionInformation, collectionValuesService, collectionManagerService);
   }
 
   /**
@@ -28,7 +29,8 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param number Number of entries to skip
    */
   public skip(number: number): DefaultCollection<T> {
-    return <any>this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new SkipPrefilter(number));
+    return <any>this.collectionManagerService.getCollection(
+      this.collectionName, this.contextName, this.prefilters, new SkipPrefilter(number));
   }
 
   /**
@@ -36,7 +38,8 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param number Number of entries to take
    */
   public take(number: number): DefaultCollection<T> {
-    return <any>this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new TakePrefilter(number));
+    return <any>this.collectionManagerService.getCollection(
+      this.collectionName, this.contextName, this.prefilters, new TakePrefilter(number));
   }
 
   /**
@@ -45,7 +48,8 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param contextData Optional data that are used in the filter function
    */
   public where<Y extends any[]>(filter: (value: T, contextData?: Y) => boolean, ...contextData: Y): DefaultCollection<T> {
-    return <any>this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new WherePrefilter(filter, contextData));
+    return <any>this.collectionManagerService.getCollection(
+      this.collectionName, this.contextName, this.prefilters, new WherePrefilter(filter, contextData));
   }
 
   /**
@@ -56,7 +60,7 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    */
   public orderBy<Y extends any[]>(selector: (value: T, contextData?: Y) => any,
                                   descending: boolean = false, ...contextData: Y): OrderedCollection<T> {
-    return <any>this.collectionManagerService.getCollection(this.collectionName, this.prefilters,
+    return <any>this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters,
       new OrderByPrefilter(selector, descending, contextData));
   }
 
@@ -66,13 +70,14 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param contextData Optional data that are used in the selector
    */
   public select<Y extends any[], Z>(selector: (value: T, contextData?: Y) => Z, ...contextData: Y): ReducedCollection<T, Z[]> {
-    return this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new SelectPrefilter(selector, contextData));
+    return this.collectionManagerService.getCollection(
+      this.collectionName, this.contextName, this.prefilters, new SelectPrefilter(selector, contextData));
   }
 
   /**
    * Get the number of elements in the collection
    */
   public count(): ReducedCollection<T, number> {
-    return this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new CountPrefilter());
+    return this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters, new CountPrefilter());
   }
 }

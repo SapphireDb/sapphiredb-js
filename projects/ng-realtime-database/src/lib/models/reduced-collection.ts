@@ -7,10 +7,11 @@ import {CollectionManagerService} from '../collection-manager.service';
 
 export class ReducedCollection<T, Y> extends CollectionBase<T, Y> {
   constructor(collectionName: string,
+              contextName: string,
               websocket: WebsocketService,
               collectionInformation: Observable<InfoResponse>,
               collectionValuesService: CollectionValuesService,
               collectionManagerService: CollectionManagerService) {
-    super(collectionName, websocket, collectionInformation, collectionValuesService, collectionManagerService);
+    super(collectionName, contextName, websocket, collectionInformation, collectionValuesService, collectionManagerService);
   }
 }

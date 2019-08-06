@@ -11,13 +11,13 @@ export class CollectionInformationService {
 
   constructor(private websocket: WebsocketService) { }
 
-  public getCollectionInformation(collectionName: string) {
+  public getCollectionInformation(collectionName: string, contextName: string) {
     if (this.collectionInformation[collectionName]) {
       return this.collectionInformation[collectionName];
     } else {
       const subject$ = new BehaviorSubject<InfoResponse>(null);
       this.collectionInformation[collectionName] = subject$;
-      this.websocket.sendCommand(new InfoCommand(collectionName)).subscribe((info: InfoResponse) => {
+      this.websocket.sendCommand(new InfoCommand(collectionName, contextName)).subscribe((info: InfoResponse) => {
         subject$.next(info);
       });
 

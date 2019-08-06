@@ -5,6 +5,7 @@ import {User} from '../../model/user';
 import {concatMap, debounceTime, filter, map, switchMap, take, takeWhile} from 'rxjs/operators';
 import {AccountService} from '../../shared/services/account.service';
 import {Log} from '../../model/log';
+import {Test} from 'tslint';
 
 @Component({
   selector: 'app-main',
@@ -90,6 +91,8 @@ export class MainComponent implements OnInit {
     this.db.messaging.topic('test').pipe(take(3)).subscribe(alert);
 
     this.db.messaging.messages().subscribe(console.warn);
+
+    this.db.collection('tests', 'second').values().subscribe(v => console.table(v));
   }
 
   createUser() {
@@ -153,5 +156,9 @@ export class MainComponent implements OnInit {
 
   executeTest() {
     this.db.execute('user', 'Test');
+  }
+
+  createTestSecond() {
+    this.db.collection('tests', 'second').add({content: 'das ist ein Test Eintrag'});
   }
 }

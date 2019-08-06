@@ -22,7 +22,7 @@ export class CollectionManagerService {
   constructor(private websocket: WebsocketService, private collectionInformation: CollectionInformationService,
               private collectionValuesService: CollectionValuesService) {}
 
-  public getCollection<T>(collectionName: string, prefilters: IPrefilter<any, any>[],
+  public getCollection<T>(collectionName: string, contextName: string, prefilters: IPrefilter<any, any>[],
                           newPrefilter?: IPrefilter<any, any>): CollectionBase<T, any> {
     const newPrefilters = prefilters.slice(0);
 
@@ -40,22 +40,25 @@ export class CollectionManagerService {
       if (CollectionHelper.afterQueryPrefilters.findIndex(v => newPrefilter instanceof v) !== -1) {
         newCollection = new ReducedCollection<any, any>(
           collectionName,
+          contextName,
           this.websocket,
-          this.collectionInformation.getCollectionInformation(collectionName),
+          this.collectionInformation.getCollectionInformation(collectionName, contextName),
           this.collectionValuesService,
           this);
       } else if (newPrefilter instanceof OrderByPrefilter || newPrefilter instanceof ThenOrderByPrefilter) {
         newCollection = new OrderedCollection<any>(
           collectionName,
+          contextName,
           this.websocket,
-          this.collectionInformation.getCollectionInformation(collectionName),
+          this.collectionInformation.getCollectionInformation(collectionName, contextName),
           this.collectionValuesService,
           this);
       } else {
         newCollection = new DefaultCollection<any>(
           collectionName,
+          contextName,
           this.websocket,
-          this.collectionInformation.getCollectionInformation(collectionName),
+          this.collectionInformation.getCollectionInformation(collectionName, contextName),
           this.collectionValuesService,
           this);
       }

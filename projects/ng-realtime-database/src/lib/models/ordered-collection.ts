@@ -8,11 +8,12 @@ import {DefaultCollection} from './default-collection';
 
 export class OrderedCollection<T> extends DefaultCollection<T> {
   constructor(collectionName: string,
+              contextName: string,
               websocket: WebsocketService,
               collectionInformation: Observable<InfoResponse>,
               collectionValuesService: CollectionValuesService,
               collectionManagerService: CollectionManagerService) {
-    super(collectionName, websocket, collectionInformation, collectionValuesService, collectionManagerService);
+    super(collectionName, contextName, websocket, collectionInformation, collectionValuesService, collectionManagerService);
   }
 
   /**
@@ -23,7 +24,7 @@ export class OrderedCollection<T> extends DefaultCollection<T> {
    */
   public thenOrderBy<Y extends any[]>(selector: (value: T, contextData?: Y) => any,
                                       descending: boolean = false, ...contextData: Y): OrderedCollection<T> {
-    return <any>this.collectionManagerService.getCollection(this.collectionName, this.prefilters,
+    return <any>this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters,
       new ThenOrderByPrefilter(selector, descending, contextData));
   }
 }
