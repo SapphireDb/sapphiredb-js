@@ -8,16 +8,19 @@ import {RealtimeDatabase} from 'ng-realtime-database';
 })
 export class AuthComponent implements OnInit {
 
-  username: string;
-  password: string;
+  dbName: string;
 
   constructor(private db: RealtimeDatabase) { }
 
   ngOnInit() {
   }
 
-  login() {
-    this.db.auth.login(this.username, this.password).subscribe(c => console.log(c));
+  testConnection() {
+    this.db.execute('db', 'testConnection', this.dbName).subscribe(console.log);
+  }
+
+  saveConnection() {
+    this.db.execute('db', 'updateSettings', this.dbName).subscribe(console.log);
   }
 }
 

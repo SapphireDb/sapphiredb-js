@@ -32,7 +32,7 @@ export class RealtimeDatabase {
    * @param collectionName The name of the collection
    * @param contextName If using multiple DbContexts you can pass this to get the right context
    */
-  public collection<T>(collectionName: string, contextName: string = 'Default'): DefaultCollection<T> {
+  public collection<T>(collectionName: string, contextName: string = 'default'): DefaultCollection<T> {
     return <any>this.collectionManager.getCollection(collectionName, contextName, []);
   }
 
