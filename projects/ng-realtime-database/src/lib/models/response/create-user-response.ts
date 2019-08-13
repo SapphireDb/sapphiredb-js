@@ -6,5 +6,5 @@ export interface CreateUserResponse extends ResponseBase {
   identityErrors: {
     code: string;
     description: string;
-  };
+  }[];
 }

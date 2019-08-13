@@ -6,5 +6,5 @@ export interface UpdateUserResponse extends ResponseBase {
   identityErrors: {
     code: string;
     description: string;
-  };
+  }[];
 }

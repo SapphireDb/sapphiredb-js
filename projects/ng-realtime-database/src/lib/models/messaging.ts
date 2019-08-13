@@ -7,6 +7,7 @@ import {WebsocketService} from '../websocket.service';
 import {PublishCommand} from './command/publish-command';
 import {MessageResponse} from './response/message-response';
 import {MessageCommand} from './command/message-command';
+import {ResponseBase} from './response/response-base';
 
 export class Messaging {
   constructor(private websocket: WebsocketService) {
@@ -42,8 +43,8 @@ export class Messaging {
    * Send data to other clients
    * @param data The data to send
    */
-  public send(data: any) {
-    this.websocket.sendCommand(new MessageCommand(data), false, true);
+  public send(data: any): Observable<ResponseBase> {
+    return this.websocket.sendCommand(new MessageCommand(data), false, false);
   }
 
   /**
@@ -51,7 +52,7 @@ export class Messaging {
    * @param topic The topic for publishing
    * @param data The data to publish
    */
-  public publish(topic: string, data: any) {
-    this.websocket.sendCommand(new PublishCommand(topic, data), false, true);
+  public publish(topic: string, data: any): Observable<ResponseBase> {
+    return this.websocket.sendCommand(new PublishCommand(topic, data), false, false);
   }
 }
