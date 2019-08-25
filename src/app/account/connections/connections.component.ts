@@ -21,7 +21,7 @@ export class ConnectionsComponent implements OnInit {
   }
 
   queryConnections$() {
-    this.connections$ = combineLatest(this.connectionId$, this.db.auth.getConnections())
+    this.connections$ = combineLatest([this.connectionId$, this.db.auth.getConnections()])
       .pipe(map(([connectionId, connections]: [string, WebsocketConnection[]]) => {
         return connections.filter(c => c.id !== connectionId);
     }));

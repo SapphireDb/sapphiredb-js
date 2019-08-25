@@ -1,11 +1,12 @@
 import {ResponseBase} from './response-base';
 
 export interface QueryConnectionsResponse extends ResponseBase {
-  connections: WebsocketConnection[];
+  connections: RealtimeConnection[];
 }
 
-export interface WebsocketConnection {
+export interface RealtimeConnection {
   id: string;
   userId: string;
   userAgent?: string;
+  type: 'Websocket';
 }

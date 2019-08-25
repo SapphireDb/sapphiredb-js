@@ -9,7 +9,7 @@ import {RenewCommand} from './command/renew-command';
 import {RenewResponse} from './response/renew-response';
 import {LocalstoragePaths} from '../helper/localstorage-paths';
 import {AuthInfo} from './auth-info';
-import {QueryConnectionsResponse, WebsocketConnection} from './response/query-connections-response';
+import {QueryConnectionsResponse, RealtimeConnection} from './response/query-connections-response';
 import {QueryConnectionsCommand} from './command/query-connections-command';
 import {CloseConnectionCommand} from './command/close-connection-command';
 import {CloseConnectionResponse} from './response/close-connection-response';
@@ -100,7 +100,7 @@ export class Auth {
   /**
    * Get open websocket connections for current user
    */
-  public getConnections(): Observable<WebsocketConnection[]> {
+  public getConnections(): Observable<RealtimeConnection[]> {
     return this.websocket.sendCommand(new QueryConnectionsCommand()).pipe(map((response: QueryConnectionsResponse) => {
       return response.connections;
     }));
