@@ -93,6 +93,9 @@ export class MainComponent implements OnInit {
     this.db.messaging.messages().subscribe(console.warn);
 
     this.db.collection('tests', 'second').values().subscribe(v => console.table(v));
+
+    const eventSource = new EventSource('http://localhost:5000/realtimedatabase/sse?secret=pw1234');
+    eventSource.onmessage = (event) => console.log(event.data);
   }
 
   createUser() {
