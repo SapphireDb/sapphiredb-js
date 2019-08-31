@@ -6,10 +6,11 @@ import {CollectionInformationService} from './collection-information.service';
 import {CollectionManagerService} from './collection-manager.service';
 import {RealtimeAuthGuard} from './realtime-auth.guard';
 import {CollectionValuesService} from './collection-values.service';
+import {ConnectionManagerService} from './connection/connection-manager.service';
 
 const defaultOptions: RealtimeDatabaseOptions = {
   serverBaseUrl: `${location.hostname}:${location.port}`,
-  useSecuredSocket: location.protocol === 'https'
+  useSsl: location.protocol === 'https'
 };
 
 @NgModule({
@@ -17,6 +18,7 @@ const defaultOptions: RealtimeDatabaseOptions = {
   declarations: [],
   providers: [
     RealtimeDatabase,
+    ConnectionManagerService,
     WebsocketService,
     CollectionInformationService,
     CollectionManagerService,

@@ -1,6 +1,7 @@
 export interface RealtimeDatabaseOptions {
-  serverBaseUrl: string;
-  useSecuredSocket?: boolean;
+  connectionType?: 'websocket'|'sse'|'rest';
+  serverBaseUrl?: string;
+  useSsl?: boolean;
   secret?: string;
 
   loginRedirect?: string;

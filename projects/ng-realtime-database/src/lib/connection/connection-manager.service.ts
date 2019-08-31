@@ -1,30 +1,29 @@
 import {Inject, Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {SubscribeCommand} from './models/command/subscribe-command';
-import {ResponseBase} from './models/response/response-base';
-import {CommandReferences} from './models/command-references';
-import {CommandBase} from './models/command/command-base';
+import {RealtimeDatabaseOptions} from '../models/realtime-database-options';
+import {LocalstoragePaths} from '../helper/localstorage-paths';
+import {ConnectionBase} from './connection-base';
+import {CommandBase} from '../models/command/command-base';
+import {CommandReferences} from '../models/command-references';
+import {UnsubscribeCommand} from '../models/command/unsubscribe-command';
+import {UnsubscribeMessageCommand} from '../models/command/unsubscribe-message-command';
+import {UnsubscribeUsersCommand} from '../models/command/unsubscribe-users-command';
+import {UnsubscribeRolesCommand} from '../models/command/unsubscribe-roles-command';
+import {SubscribeCommand} from '../models/command/subscribe-command';
+import {SubscribeMessageCommand} from '../models/command/subscribe-message-command';
+import {SubscribeUsersCommand} from '../models/command/subscribe-users-command';
+import {SubscribeRolesCommand} from '../models/command/subscribe-roles-command';
+import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {ResponseBase} from '../models/response/response-base';
 import {finalize, shareReplay, switchMap, take} from 'rxjs/operators';
-import {UnsubscribeCommand} from './models/command/unsubscribe-command';
-import {RealtimeDatabaseOptions} from './models/realtime-database-options';
-import {SubscribeMessageCommand} from './models/command/subscribe-message-command';
-import {UnsubscribeMessageCommand} from './models/command/unsubscribe-message-command';
-import {GuidHelper} from './helper/guid-helper';
-import {LocalstoragePaths} from './helper/localstorage-paths';
-import {AuthData} from './models/auth-data';
-import {UnsubscribeUsersCommand} from './models/command/unsubscribe-users-command';
-import {UnsubscribeRolesCommand} from './models/command/unsubscribe-roles-command';
-import {SubscribeUsersCommand} from './models/command/subscribe-users-command';
-import {SubscribeRolesCommand} from './models/command/subscribe-roles-command';
-import {MessageResponse} from './models/response/message-response';
-import {ConnectionResponse} from './models/response/connection-response';
+import {GuidHelper} from '../helper/guid-helper';
+import {MessageResponse} from '../models/response/message-response';
+import {ConnectionResponse} from '../models/response/connection-response';
 
 @Injectable()
-export class WebsocketService {
+export class ConnectionManagerService {
   private bearer: string;
 
-  private socket: WebSocket;
-  private connectSubject$;
+  private connection: ConnectionBase;
 
   private unsendCommandStorage: CommandBase[] = [];
 
@@ -36,8 +35,6 @@ export class WebsocketService {
     new BehaviorSubject<'connecting'|'disconnected'|'ready'>('disconnected');
 
   constructor(@Inject('realtimedatabase.options') private options: RealtimeDatabaseOptions) {
-    this.connectionId$ = new BehaviorSubject<string>(null);
-
     const authData = localStorage.getItem(LocalstoragePaths.authPath);
 
     if (authData) {
@@ -45,86 +42,6 @@ export class WebsocketService {
     } else {
       this.bearer = localStorage.getItem(LocalstoragePaths.bearerPath);
     }
-  }
-
-  private createWebsocket() {
-    this.socket = new WebSocket(this.createWebsocketConnectionString());
-
-    this.socket.onopen = () => {
-      const waitCommand = () => {
-        if (this.socket.readyState !== WebSocket.OPEN) {
-          setTimeout(waitCommand, 25);
-          return;
-        }
-
-        this.unsendCommandStorage.forEach(cmd => {
-          this.socket.send(JSON.stringify(cmd));
-        });
-
-        this.status$.next('ready');
-
-        if (this.connectSubject$) {
-          this.connectSubject$.next(true);
-          this.connectSubject$.complete();
-          this.connectSubject$ = null;
-        }
-      };
-
-      waitCommand();
-    };
-
-    this.socket.onmessage = (msg: MessageEvent) => {
-      this.handleResponse(JSON.parse(msg.data));
-    };
-
-    this.socket.onclose = () => {
-      this.status$.next('disconnected');
-
-      setTimeout(() => {
-        this.connectToWebsocket(true);
-      }, 1000);
-    };
-
-    this.socket.onerror = () => {
-      this.socket.close();
-    };
-  }
-
-  private createWebsocketConnectionString(): string {
-    if (this.options.serverBaseUrl == null) {
-      this.options.serverBaseUrl = window.location.host;
-      this.options.useSsl = window.location.protocol === 'https:';
-    }
-
-    let wsUrl = `${this.options.useSsl === true ? 'wss' : 'ws'}://${this.options.serverBaseUrl}/realtimedatabase/socket?`;
-
-    if (this.options.secret) {
-      wsUrl += `secret=${this.options.secret}&`;
-    }
-
-    if (!!this.bearer) {
-      wsUrl += `bearer=${this.bearer}`;
-    }
-
-    return wsUrl;
-  }
-
-  private connectToWebsocket(connectionFailed: boolean = false): Observable<boolean> {
-    if (!this.connectSubject$ && this.socket && this.socket.readyState === WebSocket.OPEN) {
-      return of(true);
-    }
-
-    if (!this.connectSubject$ || connectionFailed) {
-      this.status$.next('connecting');
-
-      if (!connectionFailed) {
-        this.connectSubject$ = new Subject<boolean>();
-      }
-
-      this.createWebsocket();
-    }
-
-    return this.connectSubject$;
   }
 
   private storeSubscribeCommands(command: CommandBase) {
@@ -232,5 +149,42 @@ export class WebsocketService {
     setTimeout(() => {
       this.connectToWebsocket();
     }, 10);
+  }
+
+  private createConnectionString(): string {
+    if (this.options.serverBaseUrl == null) {
+      this.options.serverBaseUrl = window.location.host;
+      this.options.useSsl = window.location.protocol === 'https:';
+    }
+
+    let url = '';
+
+    if (this.options.connectionType === 'websocket') {
+      url += this.options.useSsl ? 'wss' : 'ws';
+    } else {
+      url += this.options.useSsl ? 'https' : 'http';
+    }
+
+    url += `://${this.options.serverBaseUrl}/realtimedatabase/`;
+
+    if (this.options.connectionType === 'websocket') {
+      url += 'socket';
+    } else if (this.options.connectionType === 'sse') {
+      url += 'sse';
+    } else {
+      url += 'api';
+    }
+
+    url += '?';
+
+    if (this.options.secret) {
+      url += `secret=${this.options.secret}&`;
+    }
+
+    if (this.bearer) {
+      url += `bearer=${this.bearer}`;
+    }
+
+    return url;
   }
 }
