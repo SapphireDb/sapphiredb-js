@@ -21,7 +21,8 @@ import {environment} from '../environments/environment';
       serverBaseUrl: environment.serverBaseUrl,
       loginRedirect: 'account/login',
       unauthorizedRedirect: 'account/unauthorized',
-      secret: 'pw1234'
+      secret: 'pw1234',
+      connectionType: 'sse'
     }),
     AppRoutingModule,
     Angular2PromiseButtonModule.forRoot()

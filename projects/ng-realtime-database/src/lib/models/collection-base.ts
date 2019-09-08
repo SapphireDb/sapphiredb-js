@@ -1,5 +1,4 @@
 import {Observable, pipe} from 'rxjs';
-import {WebsocketService} from '../websocket.service';
 import {CreateCommand} from './command/create-command';
 import {CreateResponse} from './response/create-response';
 import {CommandResult} from './command-result';
@@ -18,6 +17,7 @@ import {IPrefilter} from './prefilter/iprefilter';
 import {UnsubscribeCommand} from './command/unsubscribe-command';
 import {CollectionManagerService} from '../collection-manager.service';
 import {CollectionHelper} from '../helper/collection-helper';
+import {ConnectionManagerService} from '../connection/connection-manager.service';
 
 export class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
@@ -29,7 +29,7 @@ export class CollectionBase<T, Y> {
 
   constructor(public collectionName: string,
               public contextName: string,
-              protected websocket: WebsocketService,
+              protected connectionManagerService: ConnectionManagerService,
               protected collectionInformation: Observable<InfoResponse>,
               protected collectionValuesService: CollectionValuesService,
               protected collectionManagerService: CollectionManagerService) {
@@ -42,7 +42,7 @@ export class CollectionBase<T, Y> {
   public snapshot(): Observable<Y> {
     const queryCommand = new QueryCommand(this.collectionName, this.contextName, this.prefilters);
 
-    return <Observable<any>>this.websocket.sendCommand(queryCommand).pipe(
+    return <Observable<Y>>this.connectionManagerService.sendCommand(queryCommand).pipe(
       map((response: QueryResponse) => {
         let array = response.result;
 
@@ -68,8 +68,8 @@ export class CollectionBase<T, Y> {
     return <Observable<any>>collectionValue.subject.pipe(finalize(() => {
       collectionValue.subscriberCount--;
 
-      if (collectionValue.subscriberCount === 0) {
-        this.websocket.sendCommand(
+      if (collectionValue.subscriberCount === 0)  {
+        this.connectionManagerService.sendCommand(
           new UnsubscribeCommand(this.collectionName, this.contextName, collectionValue.referenceId), false, true);
         collectionValue.socketSubscription.unsubscribe();
         this.collectionValuesService.removeCollectionValue(this.collectionName, collectionValue);
@@ -88,7 +88,8 @@ export class CollectionBase<T, Y> {
    * @param value The object to add to the collection
    */
   public add(value: T): Observable<CommandResult<T>> {
-    return this.createCommandResult$(<any>this.websocket.sendCommand(new CreateCommand(this.collectionName, this.contextName, value)));
+    return this.createCommandResult$(
+      <any>this.connectionManagerService.sendCommand(new CreateCommand(this.collectionName, this.contextName, value)));
   }
 
   /**
@@ -96,7 +97,8 @@ export class CollectionBase<T, Y> {
    * @param value The object to update in the collection
    */
   public update(value: T): Observable<CommandResult<T>> {
-    return this.createCommandResult$(<any>this.websocket.sendCommand(new UpdateCommand(this.collectionName, this.contextName, value)));
+    return this.createCommandResult$(
+      <any>this.connectionManagerService.sendCommand(new UpdateCommand(this.collectionName, this.contextName, value)));
   }
 
   /**
@@ -112,7 +114,7 @@ export class CollectionBase<T, Y> {
         });
 
         const deleteCommand = new DeleteCommand(this.collectionName, this.contextName, primaryValues);
-        return this.websocket.sendCommand(deleteCommand).pipe(map((response: DeleteResponse) => {
+        return this.connectionManagerService.sendCommand(deleteCommand).pipe(map((response: DeleteResponse) => {
           return new CommandResult<T>(response.error, response.validationResults);
         }));
     }));

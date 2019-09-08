@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {RealtimeDatabase, UserData} from 'ng-realtime-database';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {User} from './model/user';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,8 @@ export class AppComponent {
   constructor(private db: RealtimeDatabase) {
     this.userInfo$ = this.db.auth.getUserData();
     this.status$ = this.db.getStatus$();
+
+    // this.db.execute('tes', 'test').subscribe(console.log, console.warn);
   }
 
   logout() {

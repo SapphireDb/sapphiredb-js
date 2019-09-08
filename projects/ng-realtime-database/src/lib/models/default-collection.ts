@@ -1,4 +1,3 @@
-import {WebsocketService} from '../websocket.service';
 import {Observable} from 'rxjs';
 import {InfoResponse} from './response/info-response';
 import {CollectionValuesService} from '../collection-values.service';
@@ -6,22 +5,22 @@ import {WherePrefilter} from './prefilter/where-prefilter';
 import {SkipPrefilter} from './prefilter/skip-prefilter';
 import {TakePrefilter} from './prefilter/take-prefilter';
 import {OrderByPrefilter} from './prefilter/order-by-prefilter';
-import {ThenOrderByPrefilter} from './prefilter/then-order-by-prefilter';
 import {CollectionBase} from './collection-base';
 import {CollectionManagerService} from '../collection-manager.service';
 import {ReducedCollection} from './reduced-collection';
 import {SelectPrefilter} from './prefilter/select-prefilter';
 import {CountPrefilter} from './prefilter/count-prefilter';
 import {OrderedCollection} from './ordered-collection';
+import {ConnectionManagerService} from '../connection/connection-manager.service';
 
 export class DefaultCollection<T> extends CollectionBase<T, T[]> {
   constructor(collectionName: string,
               contextName: string,
-              websocket: WebsocketService,
+              connectionManagerService: ConnectionManagerService,
               collectionInformation: Observable<InfoResponse>,
               collectionValuesService: CollectionValuesService,
               collectionManagerService: CollectionManagerService) {
-    super(collectionName, contextName, websocket, collectionInformation, collectionValuesService, collectionManagerService);
+    super(collectionName, contextName, connectionManagerService, collectionInformation, collectionValuesService, collectionManagerService);
   }
 
   /**

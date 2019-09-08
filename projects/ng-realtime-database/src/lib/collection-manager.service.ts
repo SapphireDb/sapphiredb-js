@@ -1,25 +1,23 @@
 import {Injectable} from '@angular/core';
-import {WebsocketService} from './websocket.service';
 import {CollectionInformationService} from './collection-information.service';
 import {CollectionValuesService} from './collection-values.service';
 import {CollectionBase} from './models/collection-base';
 import {DefaultCollection} from './models/default-collection';
 import {IPrefilter} from './models/prefilter/iprefilter';
 import {ArrayHelper} from './helper/array-helper';
-import {SelectPrefilter} from './models/prefilter/select-prefilter';
 import {ReducedCollection} from './models/reduced-collection';
-import {CountPrefilter} from './models/prefilter/count-prefilter';
 import {CollectionHelper} from './helper/collection-helper';
 import {OrderByPrefilter} from './models/prefilter/order-by-prefilter';
 import {OrderedCollection} from './models/ordered-collection';
 import {ThenOrderByPrefilter} from './models/prefilter/then-order-by-prefilter';
+import {ConnectionManagerService} from './connection/connection-manager.service';
 
 @Injectable()
 export class CollectionManagerService {
 
   private collections: CollectionBase<any, any>[] = [];
 
-  constructor(private websocket: WebsocketService, private collectionInformation: CollectionInformationService,
+  constructor(private connectionManagerService: ConnectionManagerService, private collectionInformation: CollectionInformationService,
               private collectionValuesService: CollectionValuesService) {}
 
   public getCollection<T>(collectionName: string, contextName: string, prefilters: IPrefilter<any, any>[],
@@ -41,7 +39,7 @@ export class CollectionManagerService {
         newCollection = new ReducedCollection<any, any>(
           collectionName,
           contextName,
-          this.websocket,
+          this.connectionManagerService,
           this.collectionInformation.getCollectionInformation(collectionName, contextName),
           this.collectionValuesService,
           this);
@@ -49,7 +47,7 @@ export class CollectionManagerService {
         newCollection = new OrderedCollection<any>(
           collectionName,
           contextName,
-          this.websocket,
+          this.connectionManagerService,
           this.collectionInformation.getCollectionInformation(collectionName, contextName),
           this.collectionValuesService,
           this);
@@ -57,7 +55,7 @@ export class CollectionManagerService {
         newCollection = new DefaultCollection<any>(
           collectionName,
           contextName,
-          this.websocket,
+          this.connectionManagerService,
           this.collectionInformation.getCollectionInformation(collectionName, contextName),
           this.collectionValuesService,
           this);

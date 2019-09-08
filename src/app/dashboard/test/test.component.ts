@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {RealtimeDatabase} from 'ng-realtime-database';
 import * as faker from 'faker';
 import {User} from '../../model/user';
+import {Observable, ReplaySubject} from 'rxjs';
 
 @Component({
   selector: 'app-test',
@@ -10,16 +11,22 @@ import {User} from '../../model/user';
 })
 export class TestComponent implements OnInit {
 
-  constructor(private db: RealtimeDatabase) { }
+  constructor(private db: RealtimeDatabase) {
+    // this.values$.subscribe(console.log);
+  }
+
+  values$: Observable<User[]>;
 
   ngOnInit() {
     const collection = this.db.collection<User>('users');
 
-    collection.values().subscribe(v => {
-      v.forEach(u => {
-        collection.remove(u).subscribe(console.log);
-      });
-    });
+    this.values$ = collection.values();
+
+    // collection.values().subscribe(v => {
+    //   v.forEach(u => {
+    //     collection.remove(u).subscribe(console.log);
+    //   });
+    // });
 
     // for (let i = 0; i < 50; i++) {
     //   collection.add({

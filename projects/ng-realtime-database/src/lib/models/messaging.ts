@@ -1,16 +1,16 @@
-import {Observable, of} from 'rxjs';
+import {Observable} from 'rxjs';
 import {SubscribeMessageCommand} from './command/subscribe-message-command';
 import {finalize, map} from 'rxjs/operators';
 import {TopicResponse} from './response/topic-response';
 import {UnsubscribeMessageCommand} from './command/unsubscribe-message-command';
-import {WebsocketService} from '../websocket.service';
 import {PublishCommand} from './command/publish-command';
 import {MessageResponse} from './response/message-response';
 import {MessageCommand} from './command/message-command';
 import {ResponseBase} from './response/response-base';
+import {ConnectionManagerService} from '../connection/connection-manager.service';
 
 export class Messaging {
-  constructor(private websocket: WebsocketService) {
+  constructor(private connectionManagerService: ConnectionManagerService) {
 
   }
 
@@ -18,7 +18,7 @@ export class Messaging {
    * Get all messages for the client
    */
   public messages(): Observable<any> {
-    return this.websocket.registerServerMessageHandler().pipe(map((response: MessageResponse) => {
+    return this.connectionManagerService.registerServerMessageHandler().pipe(map((response: MessageResponse) => {
       return response.data;
     }));
   }
@@ -29,12 +29,12 @@ export class Messaging {
    */
   public topic(topic: string): Observable<any> {
     const subscribeCommand = new SubscribeMessageCommand(topic);
-    return this.websocket.sendCommand(subscribeCommand, true).pipe(
+    return this.connectionManagerService.sendCommand(subscribeCommand, true).pipe(
       map((response: TopicResponse) => {
         return response.message;
       }),
       finalize(() => {
-        this.websocket.sendCommand(new UnsubscribeMessageCommand(topic, subscribeCommand.referenceId), false, true);
+        this.connectionManagerService.sendCommand(new UnsubscribeMessageCommand(topic, subscribeCommand.referenceId), false, true);
       })
     );
   }
@@ -44,7 +44,7 @@ export class Messaging {
    * @param data The data to send
    */
   public send(data: any): Observable<ResponseBase> {
-    return this.websocket.sendCommand(new MessageCommand(data), false, false);
+    return this.connectionManagerService.sendCommand(new MessageCommand(data), false, false);
   }
 
   /**
@@ -53,6 +53,6 @@ export class Messaging {
    * @param data The data to publish
    */
   public publish(topic: string, data: any): Observable<ResponseBase> {
-    return this.websocket.sendCommand(new PublishCommand(topic, data), false, false);
+    return this.connectionManagerService.sendCommand(new PublishCommand(topic, data), false, false);
   }
 }

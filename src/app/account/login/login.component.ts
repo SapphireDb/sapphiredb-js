@@ -4,8 +4,8 @@ import {AccountService} from '../../shared/services/account.service';
 import {RealtimeDatabase, UserData} from 'ng-realtime-database';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ActionResult} from '../../../../projects/ng-realtime-database/src/lib/models/action-result';
 import {AppUser} from '../../model/app-user';
+import {ActionResult} from '../../../../projects/ng-realtime-database/src/lib/models/action-result';
 
 @Component({
   selector: 'app-login',
@@ -23,9 +23,17 @@ export class LoginComponent implements OnInit {
       password: new FormControl()
     });
 
+    // this.db.execute('tes', 'test').subscribe(console.log);
+
     this.users$ = this.db.execute('user', 'GetUsers').pipe(map((result: ActionResult<AppUser[], null>) => {
       return result.result;
     }));
+
+
+    setTimeout(() => {
+      this.users$.subscribe(console.log);
+
+    }, 1000);
   }
 
   ngOnInit() {

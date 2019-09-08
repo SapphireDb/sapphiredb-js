@@ -1,11 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {ActionHelper, ActionResult, DefaultCollection, ExecuteResponseType, RealtimeDatabase, UserData} from 'ng-realtime-database';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {User} from '../../model/user';
-import {concatMap, debounceTime, filter, map, switchMap, take, takeWhile} from 'rxjs/operators';
+import {concatMap, debounceTime, filter, map, shareReplay, switchMap, take, takeWhile} from 'rxjs/operators';
 import {AccountService} from '../../shared/services/account.service';
 import {Log} from '../../model/log';
-import {Test} from 'tslint';
 
 @Component({
   selector: 'app-main',
@@ -24,7 +23,7 @@ export class MainComponent implements OnInit {
 
   testSub: Subscription;
 
-  constructor(private db: RealtimeDatabase, private account: AccountService) { }
+  constructor(private db: RealtimeDatabase, private account: AccountService) {}
 
   ngOnInit() {
     this.account.userData().subscribe((userData: UserData) => {
@@ -68,6 +67,10 @@ export class MainComponent implements OnInit {
         .values();
     }));
 
+    // setTimeout(() => {
+    //   this.user$.subscribe(console.log);
+    // }, 1000);
+
     this.db.collection<Log>('logs')
       .orderBy(x => x.id, true)
       .take(1)
@@ -93,9 +96,6 @@ export class MainComponent implements OnInit {
     this.db.messaging.messages().subscribe(console.warn);
 
     this.db.collection('tests', 'second').values().subscribe(v => console.table(v));
-
-    const eventSource = new EventSource('http://localhost:5000/realtimedatabase/sse?secret=pw1234');
-    eventSource.onmessage = (event) => console.log(event.data);
   }
 
   createUser() {
@@ -145,7 +145,8 @@ export class MainComponent implements OnInit {
 
         return of(v);
       }),
-      takeWhile(v => v !== null)
+      takeWhile(v => v !== null),
+      shareReplay()
     );
 
     this.testSub = this.rangeValue.subscribe(console.log);

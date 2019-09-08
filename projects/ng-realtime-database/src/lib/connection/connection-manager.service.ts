@@ -1,4 +1,4 @@
-import {Inject, Injectable} from '@angular/core';
+import {Inject, Injectable, NgZone} from '@angular/core';
 import {RealtimeDatabaseOptions} from '../models/realtime-database-options';
 import {LocalstoragePaths} from '../helper/localstorage-paths';
 import {ConnectionBase} from './connection-base';
@@ -12,12 +12,16 @@ import {SubscribeCommand} from '../models/command/subscribe-command';
 import {SubscribeMessageCommand} from '../models/command/subscribe-message-command';
 import {SubscribeUsersCommand} from '../models/command/subscribe-users-command';
 import {SubscribeRolesCommand} from '../models/command/subscribe-roles-command';
-import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
 import {ResponseBase} from '../models/response/response-base';
-import {finalize, shareReplay, switchMap, take} from 'rxjs/operators';
+import {filter, finalize, switchMap, take} from 'rxjs/operators';
 import {GuidHelper} from '../helper/guid-helper';
 import {MessageResponse} from '../models/response/message-response';
 import {ConnectionResponse} from '../models/response/connection-response';
+import {WebsocketConnection} from './websocket-connection';
+import {SseConnection} from './sse-connection';
+import {HttpClient} from '@angular/common/http';
+import {RestConnection} from './rest-connection';
 
 @Injectable()
 export class ConnectionManagerService {
@@ -31,16 +35,58 @@ export class ConnectionManagerService {
   private serverMessageHandler: CommandReferences = {};
 
   public connectionId$: BehaviorSubject<string>;
-  public status$: BehaviorSubject<'connecting'|'disconnected'|'ready'> =
-    new BehaviorSubject<'connecting'|'disconnected'|'ready'>('disconnected');
+  public status$: BehaviorSubject<string> = new BehaviorSubject<string>('disconnected');
 
-  constructor(@Inject('realtimedatabase.options') private options: RealtimeDatabaseOptions) {
+  constructor(@Inject('realtimedatabase.options') private options: RealtimeDatabaseOptions,
+              private httpClient: HttpClient,
+              private ngZone: NgZone) {
+    this.connectionId$ = new BehaviorSubject<string>(null);
+
     const authData = localStorage.getItem(LocalstoragePaths.authPath);
 
     if (authData) {
       this.bearer = JSON.parse(authData).authToken;
     } else {
       this.bearer = localStorage.getItem(LocalstoragePaths.bearerPath);
+    }
+
+    if (this.options.serverBaseUrl == null) {
+      this.options.serverBaseUrl = window.location.host;
+      this.options.useSsl = window.location.protocol === 'https:';
+    }
+
+    if (!this.options.connectionType) {
+      this.options.connectionType = 'websocket';
+    }
+
+    switch (this.options.connectionType) {
+      case 'websocket':
+        this.connection = new WebsocketConnection();
+        break;
+      case 'sse':
+        this.connection = new SseConnection(this.httpClient, this.ngZone);
+        break;
+      case 'rest':
+        this.connection = new RestConnection(this.httpClient, this.ngZone);
+        break;
+    }
+
+    if (this.connection) {
+      this.connection.setData(this.options, this.bearer);
+
+      this.connection.registerOnOpen(() => {
+        this.unsendCommandStorage.forEach(cmd => {
+          this.connection.send(cmd);
+        });
+      });
+
+      this.connection.registerOnMessage((message) => {
+        this.handleResponse(message);
+      });
+
+      this.connection.registerStatusListener((status) => {
+        this.status$.next(status);
+      });
     }
   }
 
@@ -57,7 +103,7 @@ export class ConnectionManagerService {
   }
 
   private createHotCommandObservable(referenceObservable$: Observable<ResponseBase>, command: CommandBase): Observable<ResponseBase> {
-    const makeHotSubject$ = new Subject<ResponseBase>();
+    const makeHotSubject$ = new ReplaySubject<ResponseBase>(0);
     referenceObservable$.subscribe(c => makeHotSubject$.next(c), ex => makeHotSubject$.error(ex));
     return makeHotSubject$.asObservable().pipe(finalize(() => {
       delete this.commandReferences[command.referenceId];
@@ -65,10 +111,10 @@ export class ConnectionManagerService {
   }
 
   public sendCommand(command: CommandBase, keep?: boolean, onlySend?: boolean): Observable<ResponseBase> {
-    const referenceObservable$ = this.connectToWebsocket().pipe(take(1), switchMap((v) => {
-      const referenceSubject = new Subject<ResponseBase>();
+    const referenceObservable$ = this.connection.connect$().pipe(filter(v => !!v), take(1), switchMap(() => {
+      const referenceSubject = new ReplaySubject<ResponseBase>(0);
       this.commandReferences[command.referenceId] = { subject$: referenceSubject, keep: keep};
-      this.socket.send(JSON.stringify(command));
+      this.connection.send(command, this.connectionId$);
       this.storeSubscribeCommands(command);
 
       if (onlySend === true) {
@@ -80,7 +126,7 @@ export class ConnectionManagerService {
       } else {
         return referenceSubject;
       }
-    })).pipe(shareReplay());
+    }));
 
     return this.createHotCommandObservable(referenceObservable$, command);
   }
@@ -88,7 +134,7 @@ export class ConnectionManagerService {
   public registerServerMessageHandler(): Observable<ResponseBase> {
     const guid = GuidHelper.generateGuid();
 
-    const referenceSubject = new Subject<ResponseBase>();
+    const referenceSubject = new ReplaySubject<ResponseBase>(0);
     this.serverMessageHandler[guid] = { subject$: referenceSubject, keep: true };
 
     return referenceSubject.pipe(finalize(() => {
@@ -131,6 +177,8 @@ export class ConnectionManagerService {
   }
 
   public setBearer(bearer?: string) {
+    this.connectionId$.next(null);
+
     if (bearer) {
       this.bearer = bearer;
 
@@ -141,50 +189,7 @@ export class ConnectionManagerService {
       localStorage.removeItem(LocalstoragePaths.bearerPath);
     }
 
-    if (this.socket) {
-      this.socket.onclose = () => {};
-      this.socket.close();
-    }
-
-    setTimeout(() => {
-      this.connectToWebsocket();
-    }, 10);
-  }
-
-  private createConnectionString(): string {
-    if (this.options.serverBaseUrl == null) {
-      this.options.serverBaseUrl = window.location.host;
-      this.options.useSsl = window.location.protocol === 'https:';
-    }
-
-    let url = '';
-
-    if (this.options.connectionType === 'websocket') {
-      url += this.options.useSsl ? 'wss' : 'ws';
-    } else {
-      url += this.options.useSsl ? 'https' : 'http';
-    }
-
-    url += `://${this.options.serverBaseUrl}/realtimedatabase/`;
-
-    if (this.options.connectionType === 'websocket') {
-      url += 'socket';
-    } else if (this.options.connectionType === 'sse') {
-      url += 'sse';
-    } else {
-      url += 'api';
-    }
-
-    url += '?';
-
-    if (this.options.secret) {
-      url += `secret=${this.options.secret}&`;
-    }
-
-    if (this.bearer) {
-      url += `bearer=${this.bearer}`;
-    }
-
-    return url;
+    this.connection.setData(this.options, this.bearer);
+    this.connection.reConnect();
   }
 }

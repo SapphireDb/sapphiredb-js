@@ -1,4 +1,3 @@
-import {WebsocketService} from '../websocket.service';
 import {AuthSubscriptionReference} from './auth-subscription-reference';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {UserData} from './user-data';
@@ -22,11 +21,12 @@ import {UpdateRoleCommand} from './command/update-role-command';
 import {DeleteRoleResponse} from './response/delete-role-response';
 import {DeleteRoleCommand} from './command/delete-role-command';
 import {UnsubscribeUsersCommand} from './command/unsubscribe-users-command';
+import {ConnectionManagerService} from '../connection/connection-manager.service';
 
 export class AuthInfo {
   private authSubscriptionReferences: { [key: string]: AuthSubscriptionReference } = {};
 
-  constructor(private websocket: WebsocketService) {
+  constructor(private connectionManagerService: ConnectionManagerService) {
 
   }
 
@@ -42,7 +42,7 @@ export class AuthInfo {
    */
   public createUser(userName: string, email: string, password: string, roles: string[], addtionalData: { [key: string]: any })
     : Observable<CreateUserResponse> {
-    return <Observable<CreateUserResponse>>this.websocket.sendCommand(
+    return <Observable<CreateUserResponse>>this.connectionManagerService.sendCommand(
       new CreateUserCommand(userName, email, password, roles, addtionalData));
   }
 
@@ -52,7 +52,7 @@ export class AuthInfo {
   public updateUser(id: string, userName?: string, email?: string,
                     password?: string, roles?: string[], addtionalData?: { [key: string]: any })
     : Observable<UpdateUserResponse> {
-    return <Observable<UpdateUserResponse>>this.websocket.sendCommand(
+    return <Observable<UpdateUserResponse>>this.connectionManagerService.sendCommand(
       new UpdateUserCommand(id, userName, email, password, roles, addtionalData));
   }
 
@@ -61,7 +61,7 @@ export class AuthInfo {
    */
   public deleteUser(id: string)
     : Observable<DeleteUserResponse> {
-    return <Observable<DeleteUserResponse>>this.websocket.sendCommand(
+    return <Observable<DeleteUserResponse>>this.connectionManagerService.sendCommand(
       new DeleteUserCommand(id));
   }
 
@@ -77,7 +77,7 @@ export class AuthInfo {
    */
   public createRole(name: string)
     : Observable<CreateRoleResponse> {
-    return <Observable<CreateRoleResponse>>this.websocket.sendCommand(
+    return <Observable<CreateRoleResponse>>this.connectionManagerService.sendCommand(
       new CreateRoleCommand(name));
   }
 
@@ -86,7 +86,7 @@ export class AuthInfo {
    */
   public updateRole(id: string, name: string)
     : Observable<UpdateRoleResponse> {
-    return <Observable<UpdateRoleResponse>>this.websocket.sendCommand(
+    return <Observable<UpdateRoleResponse>>this.connectionManagerService.sendCommand(
       new UpdateRoleCommand(id, name));
   }
 
@@ -95,7 +95,7 @@ export class AuthInfo {
    */
   public deleteRole(id: string)
     : Observable<DeleteRoleResponse> {
-    return <Observable<DeleteRoleResponse>>this.websocket.sendCommand(
+    return <Observable<DeleteRoleResponse>>this.connectionManagerService.sendCommand(
       new DeleteRoleCommand(id));
   }
 
@@ -122,7 +122,7 @@ export class AuthInfo {
 
   private websocketSubscribeData(subscribeCommand: SubscribeUsersCommand|SubscribeRolesCommand,
                                  authSubscriptionReference: AuthSubscriptionReference) {
-    return this.websocket.sendCommand(subscribeCommand, true)
+    return this.connectionManagerService.sendCommand(subscribeCommand, true)
       .pipe(map((response: (SubscribeRolesResponse|SubscribeUsersResponse)) => {
         if (response.responseType === 'SubscribeRolesResponse') {
           return (<SubscribeRolesResponse>response).roles;
@@ -140,7 +140,7 @@ export class AuthInfo {
       authSubscriptionReference.count--;
 
       if (authSubscriptionReference.count === 0) {
-        this.websocket.sendCommand((type === 'users' ? new UnsubscribeUsersCommand() : new UnsubscribeRolesCommand()), false, true);
+        this.connectionManagerService.sendCommand((type === 'users' ? new UnsubscribeUsersCommand() : new UnsubscribeRolesCommand()), false, true);
         authSubscriptionReference.subject$.complete();
         authSubscriptionReference.subscription.unsubscribe();
         delete this.authSubscriptionReferences[type];

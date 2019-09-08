@@ -40,6 +40,10 @@ export class PrefiltersComponent implements OnInit {
     this.collection = this.db.collection<User>('users');
     this.collectionValues$ = this.collection.values();
 
+    // setTimeout(() => {
+    //   this.collectionValues$.subscribe(console.log);
+    // }, 1000);
+
     this.collectionWhere = this.collection.where(u => u.username !== 'test123');
     this.whereValues$ = this.collectionWhere.values();
 

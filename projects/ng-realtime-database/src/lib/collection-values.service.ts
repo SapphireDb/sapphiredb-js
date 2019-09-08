@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {CollectionValue} from './models/collection-value';
 import {IPrefilter} from './models/prefilter/iprefilter';
 import {SubscribeCommand} from './models/command/subscribe-command';
@@ -7,16 +7,16 @@ import {ChangeResponse} from './models/response/change-response';
 import {UnloadResponse} from './models/response/unload-response';
 import {LoadResponse} from './models/response/load-response';
 import {CollectionHelper} from './helper/collection-helper';
-import {WebsocketService} from './websocket.service';
 import {Observable} from 'rxjs';
 import {InfoResponse} from './models/response/info-response';
+import {ConnectionManagerService} from './connection/connection-manager.service';
 
 @Injectable()
 export class CollectionValuesService {
 
   private collectionValues: { [collectionName: string]: CollectionValue<any>[] } = {};
 
-  constructor(private websocket: WebsocketService) { }
+  constructor(private connectionManagerService: ConnectionManagerService) { }
 
   public getCollectionValue<T>(collectionName: string, contextName: string, prefilters: IPrefilter<any, any>[],
                                collectionInformation: Observable<InfoResponse>): CollectionValue<T> {
@@ -47,7 +47,7 @@ export class CollectionValuesService {
     const subscribeCommand = new SubscribeCommand(collectionName, contextName, prefilters);
     const collectionValue = new CollectionValue<T>(subscribeCommand.referenceId, prefilters);
 
-    const wsSubscription = this.websocket.sendCommand(subscribeCommand, true)
+    const wsSubscription = this.connectionManagerService.sendCommand(subscribeCommand, true)
       .subscribe((response: (QueryResponse | ChangeResponse | UnloadResponse | LoadResponse)) => {
         if (response.responseType === 'QueryResponse') {
           collectionValue.subject.next((<QueryResponse>response).result);

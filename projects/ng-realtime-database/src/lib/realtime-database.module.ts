@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RealtimeDatabase} from './realtime-database.service';
 import {RealtimeDatabaseOptions} from './models/realtime-database-options';
-import {WebsocketService} from './websocket.service';
 import {CollectionInformationService} from './collection-information.service';
 import {CollectionManagerService} from './collection-manager.service';
 import {RealtimeAuthGuard} from './realtime-auth.guard';
@@ -19,7 +18,6 @@ const defaultOptions: RealtimeDatabaseOptions = {
   providers: [
     RealtimeDatabase,
     ConnectionManagerService,
-    WebsocketService,
     CollectionInformationService,
     CollectionManagerService,
     CollectionValuesService,
