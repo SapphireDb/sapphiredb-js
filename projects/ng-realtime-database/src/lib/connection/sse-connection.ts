@@ -40,6 +40,7 @@ export class SseConnection extends ConnectionBase {
 
     if (!connectionFailed && !this.connectSubject$) {
       this.connectSubject$ = new BehaviorSubject<boolean>(false);
+      this.statusListener('connecting');
     }
 
     this.eventSource.onmessage = (messageEvent) => {
@@ -70,18 +71,17 @@ export class SseConnection extends ConnectionBase {
       waitCommand();
     };
 
-    // this.eventSource.onerror = () => {
-    //   this.statusListener('disconnected');
-    //
-    //   setTimeout(() => {
-    //     this.statusListener('connecting');
-    //     this.connect$(connectionString, true);
-    //   }, 1000);
-    // };
+    this.eventSource.onerror = () => {
+      this.ngZone.run(() => {
+        this.bearer = null;
+        this.statusListener('disconnected');
 
-    // this.eventSource.onerror = () => {
-    //   this.eventSource.close();
-    // };
+        setTimeout(() => {
+          this.statusListener('connecting');
+          this.connect$(true);
+        }, 1000);
+      });
+    };
 
     return this.connectSubject$.asObservable();
   }

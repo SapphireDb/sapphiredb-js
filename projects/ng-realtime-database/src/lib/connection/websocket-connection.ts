@@ -33,6 +33,7 @@ export class WebsocketConnection extends ConnectionBase {
 
     if (!connectionFailed && !this.connectSubject$) {
       this.connectSubject$ = new BehaviorSubject<boolean>(false);
+      this.statusListener('connecting');
     }
 
     this.socket.onopen = () => {
