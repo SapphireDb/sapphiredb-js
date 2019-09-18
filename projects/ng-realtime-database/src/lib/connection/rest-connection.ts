@@ -7,8 +7,6 @@ import {ResponseBase} from '../models/response/response-base';
 import {NgZone} from '@angular/core';
 
 export class RestConnection extends ConnectionBase {
-  private messageHandler: (message: ResponseBase) => void;
-
   private options: RealtimeDatabaseOptions;
   private bearer: string;
 
@@ -16,15 +14,7 @@ export class RestConnection extends ConnectionBase {
     super();
   }
 
-  connect$(connectionFailed?: boolean): Observable<boolean> {
-    return of(true);
-  }
-
-  registerOnMessage(messageHandler: (message: ResponseBase) => void): void {
-    this.messageHandler = messageHandler;
-  }
-
-  send(command: CommandBase, connectionId$: Observable<string>) {
+  send(command: CommandBase) {
     const url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/realtimedatabase/api/${command.commandType}`;
 
     const sendObservable$ = this.httpClient.post(url, command, {
@@ -47,17 +37,9 @@ export class RestConnection extends ConnectionBase {
         });
       }
     });
-  }
 
-  registerStatusListener(statusListener: (status) => void): void {
-    statusListener('ready');
+    return true;
   }
-
-  registerOnOpen(openHandler: () => void): void {
-    openHandler();
-  }
-
-  reConnect() {}
 
   setData(options: RealtimeDatabaseOptions, bearer: string) {
     this.options = options;

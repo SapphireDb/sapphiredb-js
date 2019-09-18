@@ -13,137 +13,142 @@ export class SseConnection extends ConnectionBase {
   private eventSource: EventSource;
   private connectSubject$: BehaviorSubject<boolean>;
 
-  private openHandler: () => void;
-  private messageHandler: (message: ResponseBase) => void;
-  private statusListener: (status) => void;
-
   private options: RealtimeDatabaseOptions;
   private bearer: string;
+
+  private sendQueue: CommandBase[] = [];
+
+  private ready = false;
+  private connectionId: string;
+  private connecting = false;
 
   constructor(private httpClient: HttpClient, private ngZone: NgZone) {
     super();
   }
 
-  connect$(connectionFailed?: boolean): Observable<boolean> {
-    const connectionString = this.createConnectionString();
+  // connect$(connectionFailed?: boolean): Observable<boolean> {
+  //   const connectionString = this.createConnectionString();
+  //
+  //   if (this.connectionString === connectionString && !connectionFailed) {
+  //     if (this.connectSubject$ && !this.connectSubject$.closed) {
+  //       return this.connectSubject$.asObservable();
+  //     } else if (this.eventSource && this.eventSource.readyState === EventSource.OPEN) {
+  //       return of(true);
+  //     }
+  //   }
+  //
+  //   this.connectionString = connectionString;
+  //   this.eventSource = new EventSource(this.connectionString);
+  //
+  //   if (!connectionFailed && !this.connectSubject$) {
+  //     this.connectSubject$ = new BehaviorSubject<boolean>(false);
+  //     this.statusListener('connecting');
+  //   }
+  //
+  //   this.eventSource.onmessage = (messageEvent) => {
+  //     this.ngZone.run(() => {
+  //       this.messageHandler(JSON.parse(messageEvent.data));
+  //     });
+  //   };
+  //
+  //   this.eventSource.onopen = () => {
+  //     const waitCommand = () => {
+  //       if (this.eventSource.readyState !== EventSource.OPEN) {
+  //         setTimeout(waitCommand, 10);
+  //         return;
+  //       }
+  //
+  //       this.ngZone.run(() => {
+  //         this.openHandler();
+  //         this.statusListener('ready');
+  //
+  //         if (this.connectSubject$) {
+  //           this.connectSubject$.next(true);
+  //           this.connectSubject$.complete();
+  //           this.connectSubject$ = null;
+  //         }
+  //       });
+  //     };
+  //
+  //     waitCommand();
+  //   };
+  //
+  //   this.eventSource.onerror = () => {
+  //     this.ngZone.run(() => {
+  //       this.bearer = null;
+  //       this.statusListener('disconnected');
+  //
+  //       setTimeout(() => {
+  //         this.statusListener('connecting');
+  //         this.connect$(true);
+  //       }, 1000);
+  //     });
+  //   };
+  //
+  //   return this.connectSubject$.asObservable();
+  // }
 
-    if (this.connectionString === connectionString && !connectionFailed) {
-      if (this.connectSubject$ && !this.connectSubject$.closed) {
-        return this.connectSubject$.asObservable();
-      } else if (this.eventSource && this.eventSource.readyState === EventSource.OPEN) {
-        return of(true);
-      }
-    }
-
-    this.connectionString = connectionString;
-    this.eventSource = new EventSource(this.connectionString);
-
-    if (!connectionFailed && !this.connectSubject$) {
-      this.connectSubject$ = new BehaviorSubject<boolean>(false);
-      this.statusListener('connecting');
-    }
-
-    this.eventSource.onmessage = (messageEvent) => {
-      this.ngZone.run(() => {
-        this.messageHandler(JSON.parse(messageEvent.data));
-      });
-    };
-
-    this.eventSource.onopen = () => {
-      const waitCommand = () => {
-        if (this.eventSource.readyState !== EventSource.OPEN) {
-          setTimeout(waitCommand, 10);
-          return;
-        }
-
-        this.ngZone.run(() => {
-          this.openHandler();
-          this.statusListener('ready');
-
-          if (this.connectSubject$) {
-            this.connectSubject$.next(true);
-            this.connectSubject$.complete();
-            this.connectSubject$ = null;
-          }
-        });
-      };
-
-      waitCommand();
-    };
-
-    this.eventSource.onerror = () => {
-      this.ngZone.run(() => {
-        this.bearer = null;
-        this.statusListener('disconnected');
-
-        setTimeout(() => {
-          this.statusListener('connecting');
-          this.connect$(true);
-        }, 1000);
-      });
-    };
-
-    return this.connectSubject$.asObservable();
-  }
-
-  registerOnMessage(messageHandler: (message: ResponseBase) => void): void {
-    this.messageHandler = messageHandler;
-  }
-
-  send(command: CommandBase, connectionId$: Observable<string>) {
-    const sendCommand =
-      () => connectionId$.pipe(filter(v => !!v), take(1), switchMap((connectionId: string) => {
-        const url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/realtimedatabase/api/${command.commandType}`;
-
-        return this.httpClient.post(url, command, {
-          headers: {
-            secret: this.options.secret,
-            connectionId: connectionId,
-            Authorization: `Bearer ${this.bearer}`
-          }
-        });
-      }));
-
-    let sendObservable$: Observable<any>;
-
-    if (this.connectSubject$) {
-      sendObservable$ = this.connectSubject$.pipe(filter(v => !!v), take(1)).pipe(switchMap(() => {
-        return sendCommand();
-      }));
+  send(object: CommandBase): boolean {
+    if (this.ready) {
+      this.makePost(object);
+      // this.socket.send(objectString);
     } else {
-      sendObservable$ = sendCommand();
+      this.sendQueue.push(object);
     }
 
-    sendObservable$.subscribe((response: ResponseBase) => {
-      if (!!response) {
-        this.ngZone.run(() => {
-          this.messageHandler(response);
-        });
-      }
-    }, (error: HttpErrorResponse) => {
-      if (!!error) {
-        this.ngZone.run(() => {
-          this.messageHandler(error.error);
-        });
-      }
-    });
+    return true;
   }
 
-  registerStatusListener(statusListener: (status) => void): void {
-    this.statusListener = statusListener;
+  private makePost(command: CommandBase) {
+
   }
 
-  registerOnOpen(openHandler: () => void): void {
-    this.openHandler = openHandler;
-  }
+  // send(command: CommandBase, connectionId$: Observable<string>) {
+  //   const sendCommand =
+  //     () => connectionId$.pipe(filter(v => !!v), take(1), switchMap((connectionId: string) => {
+  //       const url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/realtimedatabase/api/${command.commandType}`;
+  //
+  //       return this.httpClient.post(url, command, {
+  //         headers: {
+  //           secret: this.options.secret,
+  //           connectionId: connectionId,
+  //           Authorization: `Bearer ${this.bearer}`
+  //         }
+  //       });
+  //     }));
+  //
+  //   let sendObservable$: Observable<any>;
+  //
+  //   if (this.connectSubject$) {
+  //     sendObservable$ = this.connectSubject$.pipe(filter(v => !!v), take(1)).pipe(switchMap(() => {
+  //       return sendCommand();
+  //     }));
+  //   } else {
+  //     sendObservable$ = sendCommand();
+  //   }
+  //
+  //   sendObservable$.subscribe((response: ResponseBase) => {
+  //     if (!!response) {
+  //       this.ngZone.run(() => {
+  //         this.messageHandler(response);
+  //       });
+  //     }
+  //   }, (error: HttpErrorResponse) => {
+  //     if (!!error) {
+  //       this.ngZone.run(() => {
+  //         this.messageHandler(error.error);
+  //       });
+  //     }
+  //   });
+  // }
 
-  reConnect() {
-    if (this.eventSource) {
-      this.eventSource.close();
-    }
-
-    this.connect$();
-  }
+  // reConnect$() {
+  //   if (this.eventSource) {
+  //     this.eventSource.close();
+  //   }
+  //
+  //   return this.connect$();
+  // }
 
   setData(options: RealtimeDatabaseOptions, bearer: string) {
     this.options = options;

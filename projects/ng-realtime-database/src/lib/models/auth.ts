@@ -1,5 +1,5 @@
 import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
-import {catchError, filter, map, switchMap, take} from 'rxjs/operators';
+import {catchError, filter, map, shareReplay, skip, switchMap, take} from 'rxjs/operators';
 import {LoginCommand} from './command/login-command';
 import {UserData} from './user-data';
 import {LoginResponse} from './response/login-response';
@@ -13,12 +13,17 @@ import {QueryConnectionsCommand} from './command/query-connections-command';
 import {CloseConnectionCommand} from './command/close-connection-command';
 import {CloseConnectionResponse} from './response/close-connection-response';
 import {ConnectionManagerService} from '../connection/connection-manager.service';
+import {CheckAuthCommand} from './command/check-auth-command';
+import {CheckAuthResponse} from './response/check-auth-response';
 
 export class Auth {
   private authData$: BehaviorSubject<AuthData> = new BehaviorSubject(null);
 
   private renewPending = false;
-  private renewSubject$ = new Subject<RenewResponse>();
+  private renewSubject$ = new Subject<boolean>();
+
+  private lastServerCheck: Date;
+  private lastCheckResult$: Observable<boolean>;
 
   /**
    * Access to auth information commands. Query and manipulate users and roles.
@@ -29,7 +34,6 @@ export class Auth {
     const authDataString = localStorage.getItem(LocalstoragePaths.authPath);
     if (authDataString) {
       this.authData$.next(JSON.parse(authDataString));
-      this.connectionManagerService.setBearer(this.authData$.value.authToken);
     }
 
     this.info = new AuthInfo(this.connectionManagerService);
@@ -65,26 +69,23 @@ export class Auth {
    * Log the client in
    */
   public login(username: string, password: string): Observable<UserData> {
+    this.lastCheckResult$ = null;
+
     return this.connectionManagerService.sendCommand(new LoginCommand(username, password))
-      .pipe(switchMap((response: LoginResponse) => {
+      .pipe(map((response: LoginResponse) => {
         const newAuthData: AuthData = response;
-        this.authData$.next(newAuthData);
-
         localStorage.setItem(LocalstoragePaths.authPath, JSON.stringify(newAuthData));
-        const userData$ = this.getUserData();
+        this.authData$.next(newAuthData);
+        this.connectionManagerService.setBearer(newAuthData.authToken);
 
-        userData$.pipe(filter(v => !!v), take(1)).subscribe(() => {
-          this.connectionManagerService.setBearer(newAuthData.authToken);
-        });
-
-        return userData$;
+        return newAuthData.userData;
       }));
   }
 
   /**
    * Logout the client
    */
-  public logout() {
+  public logout(): void {
     localStorage.removeItem(LocalstoragePaths.authPath);
     this.authData$.next(null);
     this.connectionManagerService.setBearer(null);
@@ -110,31 +111,38 @@ export class Auth {
    * Close open connectionManagerService connection of user
    */
   public closeConnection(connectionId: string, deleteRenewToken?: boolean): Observable<CloseConnectionResponse> {
-    return <Observable<CloseConnectionResponse>>this.connectionManagerService.sendCommand(new CloseConnectionCommand(connectionId, deleteRenewToken));
+    return <Observable<CloseConnectionResponse>>this.connectionManagerService.sendCommand(
+      new CloseConnectionCommand(connectionId, deleteRenewToken));
   }
 
   private renewToken(authData: AuthData) {
     this.renewPending = true;
 
+    this.lastCheckResult$ = null;
+
     this.connectionManagerService.sendCommand(new RenewCommand(authData.userData.id, authData.refreshToken))
-      .pipe(catchError((err: any) => {
-        return of(null);
-      }))
-      .subscribe((response: RenewResponse) => {
-        if (response) {
-          const newAuthData: AuthData = response;
-          this.authData$.next(newAuthData);
+      .pipe(
+        catchError((err: any) => {
+          return of(null);
+        }),
+        map((response: RenewResponse) => {
+          if (response && !response.error) {
+            const newAuthData: AuthData = response;
+            this.authData$.next(newAuthData);
 
-          localStorage.setItem(LocalstoragePaths.authPath, JSON.stringify(newAuthData));
-          this.connectionManagerService.setBearer(newAuthData.authToken);
-        } else {
-          localStorage.removeItem(LocalstoragePaths.authPath);
-          this.connectionManagerService.setBearer();
-          this.authData$.next(null);
-        }
+            localStorage.setItem(LocalstoragePaths.authPath, JSON.stringify(newAuthData));
+            this.connectionManagerService.setBearer(newAuthData.authToken);
+          } else {
+            localStorage.removeItem(LocalstoragePaths.authPath);
+            this.connectionManagerService.setBearer();
+            this.authData$.next(null);
+          }
 
+          return response && !response.error;
+        })
+      ).subscribe((result: boolean) => {
         this.renewPending = false;
-        this.renewSubject$.next(response);
+        this.renewSubject$.next(result);
       });
   }
 
@@ -144,17 +152,16 @@ export class Auth {
         const expiresAt = new Date(authData.expiresAt);
         const difference = (expiresAt.getTime() - new Date().getTime()) / 1000;
 
-        if (difference <= (authData.validFor / 2)) {
+        const renewFn = () => {
           if (!this.renewPending) {
             this.renewToken(authData);
           }
 
-          return this.renewSubject$.pipe(
-            take(1),
-            map((response: RenewResponse) => {
-              return !!response && response.error === null;
-            })
-          );
+          return this.renewSubject$.pipe(take(1));
+        };
+
+        if (difference <= (authData.validFor / 2) || !this.connectionManagerService.bearerValid) {
+          return renewFn();
         } else {
           return of(true);
         }

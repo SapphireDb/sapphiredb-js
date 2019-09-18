@@ -14,7 +14,7 @@ import {SubscribeUsersCommand} from '../models/command/subscribe-users-command';
 import {SubscribeRolesCommand} from '../models/command/subscribe-roles-command';
 import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
 import {ResponseBase} from '../models/response/response-base';
-import {filter, finalize, switchMap, take} from 'rxjs/operators';
+import {filter, finalize, map, skip, switchMap, take} from 'rxjs/operators';
 import {GuidHelper} from '../helper/guid-helper';
 import {MessageResponse} from '../models/response/message-response';
 import {ConnectionResponse} from '../models/response/connection-response';
@@ -29,12 +29,14 @@ export class ConnectionManagerService {
 
   private connection: ConnectionBase;
 
-  private unsendCommandStorage: CommandBase[] = [];
+  private storedCommandStorage: CommandBase[] = [];
+  private unsentCommandStorage: CommandBase[] = [];
 
   private commandReferences: CommandReferences  = {};
   private serverMessageHandler: CommandReferences = {};
 
   public connectionId$: BehaviorSubject<string>;
+  public bearerValid: boolean;
   public status$: BehaviorSubject<string> = new BehaviorSubject<string>('disconnected');
 
   constructor(@Inject('realtimedatabase.options') private options: RealtimeDatabaseOptions,
@@ -63,43 +65,69 @@ export class ConnectionManagerService {
       case 'websocket':
         this.connection = new WebsocketConnection();
         break;
-      case 'sse':
-        this.connection = new SseConnection(this.httpClient, this.ngZone);
-        break;
-      case 'rest':
-        this.connection = new RestConnection(this.httpClient, this.ngZone);
-        break;
+      // case 'sse':
+      //   this.connection = new SseConnection(this.httpClient, this.ngZone);
+      //   break;
+      // case 'rest':
+      //   this.connection = new RestConnection(this.httpClient, this.ngZone);
+      //   break;
     }
 
     if (this.connection) {
-      this.connection.setData(this.options, this.bearer);
-
-      this.connection.registerOnOpen(() => {
-        this.unsendCommandStorage.forEach(cmd => {
+      this.connection.openHandler = () => {
+        this.storedCommandStorage.forEach(cmd => {
           this.connection.send(cmd);
         });
-      });
 
-      this.connection.registerOnMessage((message) => {
+        const newUnsent = [];
+        this.unsentCommandStorage.forEach(cmd => {
+          if (!this.connection.send(cmd)) {
+            newUnsent.push(cmd);
+          }
+        });
+        this.unsentCommandStorage = newUnsent;
+      };
+
+      this.connection.messageHandler = (message) => {
         this.handleResponse(message);
-      });
+      };
 
-      this.connection.registerStatusListener((status) => {
+      this.connection.connectionResponseHandler = (response: ConnectionResponse) => {
+        this.connectionId$.next(response.connectionId);
+        this.bearerValid = response.bearerValid;
+      };
+
+      this.connection.statusListener = (status) => {
         this.status$.next(status);
-      });
+      };
+
+      this.connection.setData(this.options, this.bearer);
     }
   }
 
-  private storeSubscribeCommands(command: CommandBase) {
+  public onConnect$(): Observable<void> {
+    return this.status$.pipe(
+      filter(status => status === 'ready'),
+      skip(1),
+      take(1),
+      map(() => null)
+    );
+  }
+
+  private storeSubscribeCommands(command: CommandBase): boolean {
     if (command instanceof UnsubscribeCommand || command instanceof UnsubscribeMessageCommand
       || command instanceof UnsubscribeUsersCommand || command instanceof UnsubscribeRolesCommand) {
-      this.unsendCommandStorage = this.unsendCommandStorage.filter(cs => cs.referenceId !== command.referenceId);
+      this.storedCommandStorage = this.storedCommandStorage.filter(cs => cs.referenceId !== command.referenceId);
+      return true;
     } else if (command instanceof SubscribeCommand || command instanceof SubscribeMessageCommand
       || command instanceof SubscribeUsersCommand || command instanceof SubscribeRolesCommand) {
-      if (this.unsendCommandStorage.findIndex(c => c.referenceId === command.referenceId) === -1) {
-        this.unsendCommandStorage.push(command);
+      if (this.storedCommandStorage.findIndex(c => c.referenceId === command.referenceId) === -1) {
+        this.storedCommandStorage.push(command);
+        return true;
       }
     }
+
+    return false;
   }
 
   private createHotCommandObservable(referenceObservable$: Observable<ResponseBase>, command: CommandBase): Observable<ResponseBase> {
@@ -111,24 +139,26 @@ export class ConnectionManagerService {
   }
 
   public sendCommand(command: CommandBase, keep?: boolean, onlySend?: boolean): Observable<ResponseBase> {
-    const referenceObservable$ = this.connection.connect$().pipe(filter(v => !!v), take(1), switchMap(() => {
-      const referenceSubject = new ReplaySubject<ResponseBase>(0);
+    const referenceSubject = new ReplaySubject<ResponseBase>(0);
+
+    if (!onlySend) {
       this.commandReferences[command.referenceId] = { subject$: referenceSubject, keep: keep};
-      this.connection.send(command, this.connectionId$);
-      this.storeSubscribeCommands(command);
+    }
 
-      if (onlySend === true) {
-        referenceSubject.complete();
-        referenceSubject.unsubscribe();
-        delete this.commandReferences[command.referenceId];
+    const sent = this.connection.send(command);
+    const stored = this.storeSubscribeCommands(command);
 
-        return of(null);
-      } else {
-        return referenceSubject;
-      }
-    }));
+    if (!sent && !stored) {
+      this.unsentCommandStorage.push(command);
+    }
 
-    return this.createHotCommandObservable(referenceObservable$, command);
+    if (onlySend === true) {
+      referenceSubject.complete();
+      referenceSubject.unsubscribe();
+      return of(null);
+    } else {
+      return this.createHotCommandObservable(referenceSubject, command);
+    }
   }
 
   public registerServerMessageHandler(): Observable<ResponseBase> {
@@ -155,8 +185,6 @@ export class ConnectionManagerService {
   private handleResponse(response: ResponseBase) {
     if (response.responseType === 'MessageResponse') {
       this.handleMessageResponse(<MessageResponse>response);
-    } else if (response.responseType === 'ConnectionResponse') {
-      this.connectionId$.next((<ConnectionResponse>response).connectionId);
     } else {
       const commandReference = this.commandReferences[response.referenceId];
 
@@ -190,6 +218,5 @@ export class ConnectionManagerService {
     }
 
     this.connection.setData(this.options, this.bearer);
-    this.connection.reConnect();
   }
 }

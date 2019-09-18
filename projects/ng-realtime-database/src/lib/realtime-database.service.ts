@@ -40,7 +40,7 @@ export class RealtimeDatabase {
    * Reconnect to the connectionManagerService with authentication
    * @param bearer The JWT Token to use for authentication/authorization, if empty removes the JWT Token
    */
-  public setBearer(bearer?: string) {
+  public setBearer(bearer?: string): void {
     this.connectionManagerService.setBearer(bearer);
   }
 

@@ -1,5 +1,5 @@
-import {Inject, Injectable, Type} from '@angular/core';
-import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router} from '@angular/router';
+import {Inject, Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, CanActivate, CanActivateChild, Router, RouterStateSnapshot} from '@angular/router';
 import {Observable, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 import {UserData} from './models/user-data';
@@ -7,12 +7,13 @@ import {RealtimeDatabase} from './realtime-database.service';
 import {RealtimeDatabaseOptions} from './models/realtime-database-options';
 
 @Injectable()
-export class RealtimeAuthGuard implements CanActivate {
+export class RealtimeAuthGuard implements CanActivate, CanActivateChild {
   constructor(private db: RealtimeDatabase, private router: Router,
               @Inject('realtimedatabase.options') private options: RealtimeDatabaseOptions) {}
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.db.auth.isLoggedIn().pipe(switchMap((loggedIn: boolean) => {
+      console.log('logged in: ', loggedIn);
       if (!loggedIn) {
         this.redirect(this.options.loginRedirect, state.url);
         return of(false);
@@ -53,5 +54,9 @@ export class RealtimeAuthGuard implements CanActivate {
         }
       });
     }
+  }
+
+  canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    return this.canActivate(childRoute, state);
   }
 }
