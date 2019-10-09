@@ -13,7 +13,6 @@ export class RealtimeAuthGuard implements CanActivate, CanActivateChild {
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.db.auth.isLoggedIn().pipe(switchMap((loggedIn: boolean) => {
-      console.log('logged in: ', loggedIn);
       if (!loggedIn) {
         this.redirect(this.options.loginRedirect, state.url);
         return of(false);

@@ -1,102 +1,81 @@
 import {ConnectionBase} from './connection-base';
-import {BehaviorSubject, Observable, of} from 'rxjs';
-import {filter, switchMap, take} from 'rxjs/operators';
-import {RealtimeDatabaseOptions} from '../models/realtime-database-options';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {filter, take} from 'rxjs/operators';
+import {HttpClient} from '@angular/common/http';
 import {CommandBase} from '../models/command/command-base';
 import {ResponseBase} from '../models/response/response-base';
 import {NgZone} from '@angular/core';
+import {ConnectionState} from '../models/types';
+import {ConnectionResponse} from '../models/response/connection-response';
 
 export class SseConnection extends ConnectionBase {
-  private connectionString: string;
-
   private eventSource: EventSource;
-  private connectSubject$: BehaviorSubject<boolean>;
-
-  private options: RealtimeDatabaseOptions;
-  private bearer: string;
-
-  private sendQueue: CommandBase[] = [];
-
-  private ready = false;
-  private connectionId: string;
-  private connecting = false;
 
   constructor(private httpClient: HttpClient, private ngZone: NgZone) {
     super();
   }
 
-  // connect$(connectionFailed?: boolean): Observable<boolean> {
-  //   const connectionString = this.createConnectionString();
-  //
-  //   if (this.connectionString === connectionString && !connectionFailed) {
-  //     if (this.connectSubject$ && !this.connectSubject$.closed) {
-  //       return this.connectSubject$.asObservable();
-  //     } else if (this.eventSource && this.eventSource.readyState === EventSource.OPEN) {
-  //       return of(true);
-  //     }
-  //   }
-  //
-  //   this.connectionString = connectionString;
-  //   this.eventSource = new EventSource(this.connectionString);
-  //
-  //   if (!connectionFailed && !this.connectSubject$) {
-  //     this.connectSubject$ = new BehaviorSubject<boolean>(false);
-  //     this.statusListener('connecting');
-  //   }
-  //
-  //   this.eventSource.onmessage = (messageEvent) => {
-  //     this.ngZone.run(() => {
-  //       this.messageHandler(JSON.parse(messageEvent.data));
-  //     });
-  //   };
-  //
-  //   this.eventSource.onopen = () => {
-  //     const waitCommand = () => {
-  //       if (this.eventSource.readyState !== EventSource.OPEN) {
-  //         setTimeout(waitCommand, 10);
-  //         return;
-  //       }
-  //
-  //       this.ngZone.run(() => {
-  //         this.openHandler();
-  //         this.statusListener('ready');
-  //
-  //         if (this.connectSubject$) {
-  //           this.connectSubject$.next(true);
-  //           this.connectSubject$.complete();
-  //           this.connectSubject$ = null;
-  //         }
-  //       });
-  //     };
-  //
-  //     waitCommand();
-  //   };
-  //
-  //   this.eventSource.onerror = () => {
-  //     this.ngZone.run(() => {
-  //       this.bearer = null;
-  //       this.statusListener('disconnected');
-  //
-  //       setTimeout(() => {
-  //         this.statusListener('connecting');
-  //         this.connect$(true);
-  //       }, 1000);
-  //     });
-  //   };
-  //
-  //   return this.connectSubject$.asObservable();
-  // }
+  connect$(): Observable<ConnectionState> {
+    if (this.readyState$.value === 'disconnected') {
+      this.readyState$.next('connecting');
 
-  send(object: CommandBase): boolean {
-    if (this.ready) {
-      this.makePost(object);
-      // this.socket.send(objectString);
-    } else {
-      this.sendQueue.push(object);
+      const connectionString = this.createConnectionString();
+      this.eventSource = new EventSource(connectionString);
+
+      // if (this.connectionString === connectionString && !connectionFailed) {
+      //   if (this.connectSubject$ && !this.connectSubject$.closed) {
+      //     return this.connectSubject$.asObservable();
+      //   } else if (this.eventSource && this.eventSource.readyState === EventSource.OPEN) {
+      //     return of(true);
+      //   }
+      // }
+
+      // if (!connectionFailed && !this.connectSubject$) {
+      //   this.connectSubject$ = new BehaviorSubject<boolean>(false);
+      //   this.statusListener('connecting');
+      // }
+
+      this.eventSource.onopen = () => {
+
+      };
+
+      this.eventSource.onmessage = (messageEvent) => {
+        this.ngZone.run(() => {
+          const message: ResponseBase = JSON.parse(messageEvent.data);
+
+          if (message.responseType === 'ConnectionResponse') {
+            this.connectionResponseHandler(<ConnectionResponse>message);
+            this.openHandler();
+            this.readyState$.next('connected');
+          } else {
+            this.messageHandler(message);
+          }
+        });
+      };
+
+      this.eventSource.onerror = () => {
+        this.ngZone.run(() => {
+          this.readyState$.next('disconnected');
+
+          // setTimeout(() => {
+          //   this.statusListener('connecting');
+          //   this.connect$(true);
+          // }, 1000);
+        });
+      };
     }
 
-    return true;
+    return this.readyState$.asObservable();
+  }
+
+  send(object: CommandBase): void {
+    this.connect$().pipe(
+      filter((state) => state === 'connected'),
+      take(1)
+    ).subscribe(() => {
+      console.log(object);
+      this.makePost(object);
+    });
   }
 
   private makePost(command: CommandBase) {
@@ -150,9 +129,13 @@ export class SseConnection extends ConnectionBase {
   //   return this.connect$();
   // }
 
-  setData(options: RealtimeDatabaseOptions, bearer: string) {
-    this.options = options;
-    this.bearer = bearer;
+  dataUpdated() {
+    console.log('test123');
+
+    setTimeout(() => {
+      this.connect$();
+    }, 10);
+    // this.eventSource.close();
   }
 
   private createConnectionString(): string {

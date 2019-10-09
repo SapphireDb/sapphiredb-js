@@ -1,5 +1,5 @@
-import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
-import {catchError, filter, map, shareReplay, skip, switchMap, take} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
+import {catchError, debounce, delay, filter, map, switchMap, take} from 'rxjs/operators';
 import {LoginCommand} from './command/login-command';
 import {UserData} from './user-data';
 import {LoginResponse} from './response/login-response';
@@ -13,8 +13,7 @@ import {QueryConnectionsCommand} from './command/query-connections-command';
 import {CloseConnectionCommand} from './command/close-connection-command';
 import {CloseConnectionResponse} from './response/close-connection-response';
 import {ConnectionManagerService} from '../connection/connection-manager.service';
-import {CheckAuthCommand} from './command/check-auth-command';
-import {CheckAuthResponse} from './response/check-auth-response';
+import {ConnectionResponse} from './response/connection-response';
 
 export class Auth {
   private authData$: BehaviorSubject<AuthData> = new BehaviorSubject(null);
@@ -72,30 +71,40 @@ export class Auth {
     this.lastCheckResult$ = null;
 
     return this.connectionManagerService.sendCommand(new LoginCommand(username, password))
-      .pipe(map((response: LoginResponse) => {
-        const newAuthData: AuthData = response;
-        localStorage.setItem(LocalstoragePaths.authPath, JSON.stringify(newAuthData));
-        this.authData$.next(newAuthData);
-        this.connectionManagerService.setBearer(newAuthData.authToken);
+      .pipe(
+        map((response: LoginResponse) => {
+          const newAuthData: AuthData = response;
+          localStorage.setItem(LocalstoragePaths.authPath, JSON.stringify(newAuthData));
+          this.authData$.next(newAuthData);
+          this.connectionManagerService.setBearer(newAuthData.authToken);
 
-        return newAuthData.userData;
-      }));
+          return newAuthData.userData;
+        }),
+        debounce(() => this.connectionManagerService.status$.pipe(filter(status => status === 'connected')))
+      );
   }
 
   /**
    * Logout the client
    */
-  public logout(): void {
+  public logout(): Observable<void> {
     localStorage.removeItem(LocalstoragePaths.authPath);
     this.authData$.next(null);
     this.connectionManagerService.setBearer(null);
+
+    return this.connectionManagerService.status$.pipe(
+      delay(200),
+      filter(status => status === 'connected'),
+      take(1),
+      map(() => null)
+    );
   }
 
   /**
-   * Get current connection id
+   * Get current data of current connection
    */
-  public getConnectionId(): Observable<string> {
-    return this.connectionManagerService.connectionId$.asObservable();
+  public getConnectionData(): Observable<ConnectionResponse> {
+    return this.connectionManagerService.connectionData$.asObservable();
   }
 
   /**
@@ -141,33 +150,39 @@ export class Auth {
           return response && !response.error;
         })
       ).subscribe((result: boolean) => {
-        this.renewPending = false;
-        this.renewSubject$.next(result);
-      });
+      this.renewPending = false;
+      this.renewSubject$.next(result);
+    });
   }
 
   private isValid(): Observable<boolean> {
-    return this.authData$.pipe(switchMap((authData: AuthData) => {
-      if (authData) {
-        const expiresAt = new Date(authData.expiresAt);
-        const difference = (expiresAt.getTime() - new Date().getTime()) / 1000;
+    return combineLatest([
+      this.authData$,
+      this.connectionManagerService.connectionData$.pipe(filter(v => !!v))
+    ])
+      .pipe(
+        switchMap(([authData, connectionData]: [AuthData, ConnectionResponse]) => {
+          if (authData) {
+            const expiresAt = new Date(authData.expiresAt);
+            const difference = (expiresAt.getTime() - new Date().getTime()) / 1000;
 
-        const renewFn = () => {
-          if (!this.renewPending) {
-            this.renewToken(authData);
+            const renewFn = () => {
+              if (!this.renewPending) {
+                this.renewToken(authData);
+              }
+
+              return this.renewSubject$.pipe(take(1));
+            };
+
+            if (difference <= (authData.validFor / 2) || !connectionData.bearerValid) {
+              return renewFn();
+            } else {
+              return of(true);
+            }
           }
 
-          return this.renewSubject$.pipe(take(1));
-        };
-
-        if (difference <= (authData.validFor / 2) || !this.connectionManagerService.bearerValid) {
-          return renewFn();
-        } else {
-          return of(true);
-        }
-      }
-
-      return of(false);
-    }));
+          return of(false);
+        })
+      );
   }
 }

@@ -3,96 +3,63 @@ import {RealtimeDatabaseOptions} from '../models/realtime-database-options';
 import {ResponseBase} from '../models/response/response-base';
 import {CommandBase} from '../models/command/command-base';
 import {ConnectionResponse} from '../models/response/connection-response';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {filter, take} from 'rxjs/operators';
+import {ConnectionState} from '../models/types';
 
 export class WebsocketConnection extends ConnectionBase {
   private socket: WebSocket;
 
-  private options: RealtimeDatabaseOptions;
-  private bearer: string;
+  private connect$(): Observable<ConnectionState> {
+    if (this.readyState$.value === 'disconnected') {
+      this.readyState$.next('connecting');
 
-  private ready = false;
-  private connecting = false;
+      const connectionString = this.createConnectionString();
+      this.socket = new WebSocket(connectionString);
 
-  private connect() {
-    console.trace('connect called');
-
-    if (this.connecting) {
-      // this.ready = false;
-      // this.connecting = false;
-      //
-      // if (this.socket) {
-      //   this.socket.close();
-      // }
-      return false;
-    }
-
-    this.connecting = true;
-    const connectionString = this.createConnectionString();
-    this.socket = new WebSocket(connectionString);
-    this.statusListener('connecting');
-
-    this.socket.onopen = () => {
-      const waitCommand = () => {
-        if (this.socket.readyState !== WebSocket.OPEN) {
-          setTimeout(waitCommand, 25);
-          return;
+      this.socket.onmessage = (msg: MessageEvent) => {
+        const message: ResponseBase = JSON.parse(msg.data);
+        if (message.responseType === 'ConnectionResponse') {
+          this.connectionResponseHandler(<ConnectionResponse>message);
+          this.openHandler();
+          this.readyState$.next('connected');
+        } else {
+          this.messageHandler(message);
         }
       };
 
-      waitCommand();
-    };
+      this.socket.onclose = () => {
+        this.readyState$.next('disconnected');
 
-    this.socket.onmessage = (msg: MessageEvent) => {
-      const message: ResponseBase = JSON.parse(msg.data);
-      if (message.responseType === 'ConnectionResponse') {
-        this.connectionResponseHandler(<ConnectionResponse>message);
+        setTimeout(() => {
+          this.connect$();
+        }, 1000);
+      };
 
-        this.statusListener('ready');
+      this.socket.onerror = () => {
+        this.socket.close();
+      };
+    }
 
-        this.ready = true;
-        this.connecting = false;
-        this.openHandler();
-      } else {
-        this.messageHandler(message);
-      }
-    };
-
-    this.socket.onclose = () => {
-      this.ready = false;
-      this.statusListener('disconnected');
-
-      setTimeout(() => {
-        this.statusListener('connecting');
-        this.connect();
-      }, 1000);
-    };
-
-    this.socket.onerror = () => {
-      this.socket.close();
-    };
+    return this.readyState$.asObservable();
   }
 
-  send(object: CommandBase): boolean {
-    if (this.ready) {
+  send(object: CommandBase): void {
+    this.connect$().pipe(
+      filter((state) => state === 'connected'),
+      take(1)
+    ).subscribe(() => {
       this.socket.send(JSON.stringify(object));
-      return true;
-    } else {
-      return false;
-    }
+    });
   }
 
-  setData(options: RealtimeDatabaseOptions, bearer: string) {
-    this.options = options;
-    this.bearer = bearer;
-
-    // this.ready = false;
-    // this.connecting = false;
-    //
-    if (this.socket) {
+  dataUpdated() {
+    if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
       this.socket.close();
     }
+
     setTimeout(() => {
-      this.connect();
+      this.connect$();
     }, 10);
   }
 

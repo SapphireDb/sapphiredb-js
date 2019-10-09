@@ -22,6 +22,7 @@ import {WebsocketConnection} from './websocket-connection';
 import {SseConnection} from './sse-connection';
 import {HttpClient} from '@angular/common/http';
 import {RestConnection} from './rest-connection';
+import {ConnectionState} from '../models/types';
 
 @Injectable()
 export class ConnectionManagerService {
@@ -30,19 +31,17 @@ export class ConnectionManagerService {
   private connection: ConnectionBase;
 
   private storedCommandStorage: CommandBase[] = [];
-  private unsentCommandStorage: CommandBase[] = [];
 
   private commandReferences: CommandReferences  = {};
   private serverMessageHandler: CommandReferences = {};
 
-  public connectionId$: BehaviorSubject<string>;
-  public bearerValid: boolean;
-  public status$: BehaviorSubject<string> = new BehaviorSubject<string>('disconnected');
+  public connectionData$: BehaviorSubject<ConnectionResponse>;
+  public status$: BehaviorSubject<ConnectionState>;
 
   constructor(@Inject('realtimedatabase.options') private options: RealtimeDatabaseOptions,
               private httpClient: HttpClient,
               private ngZone: NgZone) {
-    this.connectionId$ = new BehaviorSubject<string>(null);
+    this.connectionData$ = new BehaviorSubject<ConnectionResponse>(null);
 
     const authData = localStorage.getItem(LocalstoragePaths.authPath);
 
@@ -65,9 +64,9 @@ export class ConnectionManagerService {
       case 'websocket':
         this.connection = new WebsocketConnection();
         break;
-      // case 'sse':
-      //   this.connection = new SseConnection(this.httpClient, this.ngZone);
-      //   break;
+      case 'sse':
+        this.connection = new SseConnection(this.httpClient, this.ngZone);
+        break;
       // case 'rest':
       //   this.connection = new RestConnection(this.httpClient, this.ngZone);
       //   break;
@@ -78,14 +77,6 @@ export class ConnectionManagerService {
         this.storedCommandStorage.forEach(cmd => {
           this.connection.send(cmd);
         });
-
-        const newUnsent = [];
-        this.unsentCommandStorage.forEach(cmd => {
-          if (!this.connection.send(cmd)) {
-            newUnsent.push(cmd);
-          }
-        });
-        this.unsentCommandStorage = newUnsent;
       };
 
       this.connection.messageHandler = (message) => {
@@ -93,25 +84,15 @@ export class ConnectionManagerService {
       };
 
       this.connection.connectionResponseHandler = (response: ConnectionResponse) => {
-        this.connectionId$.next(response.connectionId);
-        this.bearerValid = response.bearerValid;
+        this.connectionData$.next(response);
       };
 
-      this.connection.statusListener = (status) => {
-        this.status$.next(status);
-      };
+      this.status$ = this.connection.readyState$;
 
-      this.connection.setData(this.options, this.bearer);
+      this.connection.bearer = this.bearer;
+      this.connection.options = this.options;
+      this.connection.dataUpdated();
     }
-  }
-
-  public onConnect$(): Observable<void> {
-    return this.status$.pipe(
-      filter(status => status === 'ready'),
-      skip(1),
-      take(1),
-      map(() => null)
-    );
   }
 
   private storeSubscribeCommands(command: CommandBase): boolean {
@@ -141,22 +122,15 @@ export class ConnectionManagerService {
   public sendCommand(command: CommandBase, keep?: boolean, onlySend?: boolean): Observable<ResponseBase> {
     const referenceSubject = new ReplaySubject<ResponseBase>(0);
 
-    if (!onlySend) {
-      this.commandReferences[command.referenceId] = { subject$: referenceSubject, keep: keep};
-    }
-
-    const sent = this.connection.send(command);
-    const stored = this.storeSubscribeCommands(command);
-
-    if (!sent && !stored) {
-      this.unsentCommandStorage.push(command);
-    }
+    this.connection.send(command);
+    this.storeSubscribeCommands(command);
 
     if (onlySend === true) {
       referenceSubject.complete();
       referenceSubject.unsubscribe();
       return of(null);
     } else {
+      this.commandReferences[command.referenceId] = { subject$: referenceSubject, keep: keep};
       return this.createHotCommandObservable(referenceSubject, command);
     }
   }
@@ -205,11 +179,10 @@ export class ConnectionManagerService {
   }
 
   public setBearer(bearer?: string) {
-    this.connectionId$.next(null);
+    this.connectionData$.next(null);
+    this.bearer = bearer;
 
     if (bearer) {
-      this.bearer = bearer;
-
       if (!localStorage.getItem(LocalstoragePaths.authPath)) {
         localStorage.setItem(LocalstoragePaths.bearerPath, bearer);
       }
@@ -217,6 +190,8 @@ export class ConnectionManagerService {
       localStorage.removeItem(LocalstoragePaths.bearerPath);
     }
 
-    this.connection.setData(this.options, this.bearer);
+    this.connection.bearer = this.bearer;
+    this.connection.options = this.options;
+    this.connection.dataUpdated();
   }
 }

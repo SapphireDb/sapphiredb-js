@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {RealtimeDatabase, UserData} from 'ng-realtime-database';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {User} from './model/user';
+import {Observable} from 'rxjs';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +12,7 @@ export class AppComponent {
   userInfo$: Observable<UserData>;
   status$: Observable<any>;
 
-  constructor(private db: RealtimeDatabase) {
+  constructor(private db: RealtimeDatabase, private router: Router) {
     this.userInfo$ = this.db.auth.getUserData();
     this.status$ = this.db.getStatus$();
 
@@ -20,8 +20,9 @@ export class AppComponent {
   }
 
   logout() {
-    this.db.auth.logout();
-    location.reload();
+    this.db.auth.logout().subscribe(() => {
+      this.router.navigate(['account', 'login']);
+    });
   }
 
 }

@@ -7,9 +7,6 @@ import {ResponseBase} from '../models/response/response-base';
 import {NgZone} from '@angular/core';
 
 export class RestConnection extends ConnectionBase {
-  private options: RealtimeDatabaseOptions;
-  private bearer: string;
-
   constructor(private httpClient: HttpClient, private ngZone: NgZone) {
     super();
   }
@@ -41,8 +38,6 @@ export class RestConnection extends ConnectionBase {
     return true;
   }
 
-  setData(options: RealtimeDatabaseOptions, bearer: string) {
-    this.options = options;
-    this.bearer = bearer;
+  dataUpdated() {
   }
 }

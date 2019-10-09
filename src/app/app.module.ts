@@ -22,7 +22,7 @@ import {environment} from '../environments/environment';
       loginRedirect: 'account/login',
       unauthorizedRedirect: 'account/unauthorized',
       secret: 'pw1234',
-      connectionType: 'websocket'
+      connectionType: 'sse'
     }),
     AppRoutingModule,
     Angular2PromiseButtonModule.forRoot()
