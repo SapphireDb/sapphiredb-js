@@ -1,5 +1,5 @@
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
-import {catchError, debounce, delay, filter, map, switchMap, take} from 'rxjs/operators';
+import {catchError, debounce, delay, filter, map, shareReplay, skip, switchMap, take} from 'rxjs/operators';
 import {LoginCommand} from './command/login-command';
 import {UserData} from './user-data';
 import {LoginResponse} from './response/login-response';
@@ -42,19 +42,15 @@ export class Auth {
    * Get the current user data
    */
   public getUserData(): Observable<UserData> {
-    return this.isValid().pipe(switchMap((valid: boolean) => {
-      if (valid) {
-        return this.authData$.pipe(map((authData: AuthData) => {
-          if (authData) {
-            return authData.userData;
-          }
+    return this.authData$.pipe(
+      map((authData: AuthData) => {
+        if (authData) {
+          return authData.userData;
+        }
 
-          return null;
-        }));
-      }
-
-      return of(null);
-    }));
+        return null;
+      })
+    );
   }
 
   /**
@@ -156,33 +152,45 @@ export class Auth {
   }
 
   private isValid(): Observable<boolean> {
-    return combineLatest([
-      this.authData$,
-      this.connectionManagerService.connectionData$.pipe(filter(v => !!v))
-    ])
-      .pipe(
-        switchMap(([authData, connectionData]: [AuthData, ConnectionResponse]) => {
-          if (authData) {
-            const expiresAt = new Date(authData.expiresAt);
-            const difference = (expiresAt.getTime() - new Date().getTime()) / 1000;
+    return this.authData$.pipe(
+      switchMap((authData: AuthData) => {
+        return this.connectionManagerService.connectionData$.pipe(
+          filter(v => !!v),
+          take(1),
+          map((connectionData: ConnectionResponse) => [authData, connectionData]),
+        );
+      }),
+      switchMap(([authData, connectionData]: [AuthData, ConnectionResponse]) => {
+        if (authData) {
+          const expiresAt = new Date(authData.expiresAt);
+          const difference = (expiresAt.getTime() - new Date().getTime()) / 1000;
 
-            const renewFn = () => {
-              if (!this.renewPending) {
-                this.renewToken(authData);
-              }
-
-              return this.renewSubject$.pipe(take(1));
-            };
-
-            if (difference <= (authData.validFor / 2) || !connectionData.bearerValid) {
-              return renewFn();
-            } else {
-              return of(true);
+          const renewFn = () => {
+            if (!this.renewPending) {
+              this.renewToken(authData);
             }
-          }
 
-          return of(false);
-        })
-      );
+            return this.renewSubject$.pipe(take(1));
+          };
+
+          if (difference <= (authData.validFor / 2) || !connectionData.bearerValid) {
+            return renewFn();
+          } else {
+            return of(true);
+          }
+        }
+
+        return of(false);
+      }),
+      take(1)
+    );
+    // combineLatest([
+    //   ,
+    //   this.connectionManagerService.connectionData$.pipe(filter(v => !!v), take(1))
+    // ])
+    //   .pipe(
+    //     // debounce(() => this.connectionManagerService.status$.pipe(filter(s => s === 'connected'))),
+    //
+    //   );
   }
 }

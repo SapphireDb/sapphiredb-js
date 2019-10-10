@@ -28,12 +28,6 @@ export class LoginComponent implements OnInit {
     this.users$ = this.db.execute('user', 'GetUsers').pipe(map((result: ActionResult<AppUser[], null>) => {
       return result.result;
     }));
-
-
-    setTimeout(() => {
-      this.users$.subscribe(console.log);
-
-    }, 1000);
   }
 
   ngOnInit() {

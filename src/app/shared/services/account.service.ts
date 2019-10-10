@@ -25,7 +25,6 @@ export class AccountService {
   login(username: string, password: string) {
     this.db.auth.login(username, password).subscribe((data: UserData) => {
       this.route.queryParams.pipe(take(1)).subscribe(params => {
-        console.log('navigating');
         this.router.navigateByUrl(params['return'] || '');
       });
     });

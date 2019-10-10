@@ -1,7 +1,7 @@
 import {ConnectionBase} from './connection-base';
 import {Observable} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {CommandBase} from '../models/command/command-base';
 import {ResponseBase} from '../models/response/response-base';
 import {NgZone} from '@angular/core';
@@ -10,6 +10,7 @@ import {ConnectionResponse} from '../models/response/connection-response';
 
 export class SseConnection extends ConnectionBase {
   private eventSource: EventSource;
+  private connectionData: ConnectionResponse;
 
   constructor(private httpClient: HttpClient, private ngZone: NgZone) {
     super();
@@ -22,19 +23,6 @@ export class SseConnection extends ConnectionBase {
       const connectionString = this.createConnectionString();
       this.eventSource = new EventSource(connectionString);
 
-      // if (this.connectionString === connectionString && !connectionFailed) {
-      //   if (this.connectSubject$ && !this.connectSubject$.closed) {
-      //     return this.connectSubject$.asObservable();
-      //   } else if (this.eventSource && this.eventSource.readyState === EventSource.OPEN) {
-      //     return of(true);
-      //   }
-      // }
-
-      // if (!connectionFailed && !this.connectSubject$) {
-      //   this.connectSubject$ = new BehaviorSubject<boolean>(false);
-      //   this.statusListener('connecting');
-      // }
-
       this.eventSource.onopen = () => {
 
       };
@@ -44,7 +32,8 @@ export class SseConnection extends ConnectionBase {
           const message: ResponseBase = JSON.parse(messageEvent.data);
 
           if (message.responseType === 'ConnectionResponse') {
-            this.connectionResponseHandler(<ConnectionResponse>message);
+            this.connectionData = <ConnectionResponse>message;
+            this.connectionResponseHandler(this.connectionData);
             this.openHandler();
             this.readyState$.next('connected');
           } else {
@@ -53,14 +42,14 @@ export class SseConnection extends ConnectionBase {
         });
       };
 
-      this.eventSource.onerror = () => {
+      this.eventSource.onerror = (error) => {
         this.ngZone.run(() => {
+          this.bearer = null;
           this.readyState$.next('disconnected');
 
-          // setTimeout(() => {
-          //   this.statusListener('connecting');
-          //   this.connect$(true);
-          // }, 1000);
+          setTimeout(() => {
+            this.connect$();
+          }, 1000);
         });
       };
     }
@@ -73,69 +62,44 @@ export class SseConnection extends ConnectionBase {
       filter((state) => state === 'connected'),
       take(1)
     ).subscribe(() => {
-      console.log(object);
       this.makePost(object);
     });
   }
 
   private makePost(command: CommandBase) {
+    const url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/realtimedatabase/api/${command.commandType}`;
 
+    this.httpClient.post(url, command, {
+      headers: {
+        secret: this.options.secret,
+        connectionId: this.connectionData.connectionId,
+        Authorization: `Bearer ${this.bearer}`
+      }
+    }).subscribe((response: ResponseBase) => {
+      if (!!response) {
+        this.ngZone.run(() => {
+          this.messageHandler(response);
+        });
+      }
+    }, (error: HttpErrorResponse) => {
+      if (!!error) {
+        this.ngZone.run(() => {
+          this.messageHandler(error.error);
+        });
+      }
+    });
   }
 
-  // send(command: CommandBase, connectionId$: Observable<string>) {
-  //   const sendCommand =
-  //     () => connectionId$.pipe(filter(v => !!v), take(1), switchMap((connectionId: string) => {
-  //       const url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/realtimedatabase/api/${command.commandType}`;
-  //
-  //       return this.httpClient.post(url, command, {
-  //         headers: {
-  //           secret: this.options.secret,
-  //           connectionId: connectionId,
-  //           Authorization: `Bearer ${this.bearer}`
-  //         }
-  //       });
-  //     }));
-  //
-  //   let sendObservable$: Observable<any>;
-  //
-  //   if (this.connectSubject$) {
-  //     sendObservable$ = this.connectSubject$.pipe(filter(v => !!v), take(1)).pipe(switchMap(() => {
-  //       return sendCommand();
-  //     }));
-  //   } else {
-  //     sendObservable$ = sendCommand();
-  //   }
-  //
-  //   sendObservable$.subscribe((response: ResponseBase) => {
-  //     if (!!response) {
-  //       this.ngZone.run(() => {
-  //         this.messageHandler(response);
-  //       });
-  //     }
-  //   }, (error: HttpErrorResponse) => {
-  //     if (!!error) {
-  //       this.ngZone.run(() => {
-  //         this.messageHandler(error.error);
-  //       });
-  //     }
-  //   });
-  // }
-
-  // reConnect$() {
-  //   if (this.eventSource) {
-  //     this.eventSource.close();
-  //   }
-  //
-  //   return this.connect$();
-  // }
-
   dataUpdated() {
-    console.log('test123');
+    if (this.eventSource) {
+      this.eventSource.close();
+    }
+
+    this.readyState$.next('disconnected');
 
     setTimeout(() => {
       this.connect$();
     }, 10);
-    // this.eventSource.close();
   }
 
   private createConnectionString(): string {

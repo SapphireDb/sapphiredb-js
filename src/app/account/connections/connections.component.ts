@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {RealtimeDatabase, RealtimeConnection} from 'ng-realtime-database';
+import {RealtimeDatabase, RealtimeConnection, ConnectionResponse} from 'ng-realtime-database';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -10,20 +10,20 @@ import {map} from 'rxjs/operators';
 })
 export class ConnectionsComponent implements OnInit {
 
-  connectionId$: Observable<string>;
+  connectionData$: Observable<ConnectionResponse>;
   connections$: Observable<RealtimeConnection[]>;
 
   constructor(private db: RealtimeDatabase) { }
 
   ngOnInit() {
-    this.connectionId$ = this.db.auth.getConnectionId();
+    this.connectionData$ = this.db.auth.getConnectionData();
     this.queryConnections$();
   }
 
   queryConnections$() {
-    this.connections$ = combineLatest([this.connectionId$, this.db.auth.getConnections()])
-      .pipe(map(([connectionId, connections]: [string, RealtimeConnection[]]) => {
-        return connections.filter(c => c.id !== connectionId);
+    this.connections$ = combineLatest([this.connectionData$, this.db.auth.getConnections()])
+      .pipe(map(([connectionData, connections]: [ConnectionResponse, RealtimeConnection[]]) => {
+        return connections.filter(c => c.id !== connectionData.connectionId);
     }));
   }
 

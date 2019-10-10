@@ -22,6 +22,7 @@ export * from './lib/models/role-data';
 export * from './lib/models/command-result';
 export * from './lib/models/action-result';
 
+export * from './lib/models/response/connection-response';
 export * from './lib/models/response/execute-response';
 export * from './lib/models/response/create-user-response';
 export * from './lib/models/response/update-user-response';

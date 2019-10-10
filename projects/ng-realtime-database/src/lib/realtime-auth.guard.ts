@@ -26,6 +26,10 @@ export class RealtimeAuthGuard implements CanActivate, CanActivateChild {
   private checkRoles(roles: string[], returnUrl: string): Observable<boolean> {
     return this.db.auth.getUserData().pipe(map((userData: UserData) => {
       if (roles && roles.length > 0) {
+        if (!userData) {
+          return false;
+        }
+
         let hasRole = false;
 
         for (const role of roles) {
