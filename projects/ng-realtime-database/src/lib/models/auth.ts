@@ -21,9 +21,6 @@ export class Auth {
   private renewPending = false;
   private renewSubject$ = new Subject<boolean>();
 
-  private lastServerCheck: Date;
-  private lastCheckResult$: Observable<boolean>;
-
   /**
    * Access to auth information commands. Query and manipulate users and roles.
    */
@@ -64,8 +61,6 @@ export class Auth {
    * Log the client in
    */
   public login(username: string, password: string): Observable<UserData> {
-    this.lastCheckResult$ = null;
-
     return this.connectionManagerService.sendCommand(new LoginCommand(username, password))
       .pipe(
         map((response: LoginResponse) => {
@@ -122,9 +117,6 @@ export class Auth {
 
   private renewToken(authData: AuthData) {
     this.renewPending = true;
-
-    this.lastCheckResult$ = null;
-
     this.connectionManagerService.sendCommand(new RenewCommand(authData.userData.id, authData.refreshToken))
       .pipe(
         catchError((err: any) => {
@@ -145,10 +137,11 @@ export class Auth {
 
           return response && !response.error;
         })
-      ).subscribe((result: boolean) => {
-      this.renewPending = false;
-      this.renewSubject$.next(result);
-    });
+      )
+      .subscribe((result: boolean) => {
+        this.renewPending = false;
+        this.renewSubject$.next(result);
+      });
   }
 
   private isValid(): Observable<boolean> {

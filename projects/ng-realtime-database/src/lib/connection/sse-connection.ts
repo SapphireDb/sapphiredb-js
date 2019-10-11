@@ -1,6 +1,6 @@
 import {ConnectionBase} from './connection-base';
-import {Observable} from 'rxjs';
-import {filter, take} from 'rxjs/operators';
+import {Observable, Subscription} from 'rxjs';
+import {filter, take, takeWhile} from 'rxjs/operators';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {CommandBase} from '../models/command/command-base';
 import {ResponseBase} from '../models/response/response-base';
@@ -57,11 +57,15 @@ export class SseConnection extends ConnectionBase {
     return this.readyState$.asObservable();
   }
 
-  send(object: CommandBase): void {
-    this.connect$().pipe(
-      filter((state) => state === 'connected'),
+  send(object: CommandBase, storedCommand: boolean): Subscription {
+    this.connect$().subscribe(console.log);
+
+    return this.connect$().pipe(
+      takeWhile((state) => state !== 'disconnected' || !storedCommand),
+      filter((state) => state === 'connected' && this.eventSource.readyState === EventSource.OPEN),
       take(1)
     ).subscribe(() => {
+      console.log('sending', object);
       this.makePost(object);
     });
   }
@@ -71,7 +75,8 @@ export class SseConnection extends ConnectionBase {
 
     this.httpClient.post(url, command, {
       headers: {
-        secret: this.options.secret,
+        key: this.options.apiKey ? this.options.apiKey : '',
+        secret: this.options.apiSecret ? this.options.apiSecret : '',
         connectionId: this.connectionData.connectionId,
         Authorization: `Bearer ${this.bearer}`
       }
@@ -99,14 +104,14 @@ export class SseConnection extends ConnectionBase {
 
     setTimeout(() => {
       this.connect$();
-    }, 10);
+    }, 30);
   }
 
   private createConnectionString(): string {
     let url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/realtimedatabase/sse?`;
 
-    if (this.options.secret) {
-      url += `secret=${this.options.secret}&`;
+    if (this.options.apiKey && this.options.apiSecret) {
+      url += `key=${this.options.apiKey}&secret=${this.options.apiSecret}&`;
     }
 
     if (this.bearer) {

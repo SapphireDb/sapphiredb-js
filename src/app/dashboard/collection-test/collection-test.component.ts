@@ -10,19 +10,19 @@ import * as faker from 'faker';
 })
 export class CollectionTestComponent implements OnInit {
 
-  // collection: DefaultCollection<User>;
+  collection: DefaultCollection<User>;
 
   constructor(private db: RealtimeDatabase) { }
 
   ngOnInit() {
-    const collection1 = this.db.collection<User>('users').skip(2);
-    const collection2 = this.db.collection<User>('users').skip(2);
-    const collection3 = this.db.collection<User>('users');
+    // const collection1 = this.db.collection<User>('users').skip(2);
+    // const collection2 = this.db.collection<User>('users').skip(2);
+    this.collection = this.db.collection<User>('users');
 
-    const collection4 = collection1.take(4);
-    const collection5 = collection1.take(5);
+    // const collection4 = collection1.take(4);
+    // const collection5 = collection1.take(5);
 
-    collection5.dispose();
+    // collection5.dispose();
     // this.collection = this.db.collection<User>('users');
     //
     // // const sub1 = this.collection.values(new OrderByPrefilter(x => x.id)).subscribe(console.table);
@@ -32,11 +32,11 @@ export class CollectionTestComponent implements OnInit {
   }
 
   addUser() {
-    // this.collection.add({
-    //   username: faker.internet.password(),
-    //   firstName: faker.name.firstName(),
-    //   lastName: faker.name.lastName()
-    // }).subscribe(console.log);
+    this.collection.add({
+      username: faker.internet.password(),
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName()
+    }).subscribe(console.log);
   }
 
 }

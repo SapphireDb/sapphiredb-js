@@ -12,16 +12,15 @@ import {SubscribeCommand} from '../models/command/subscribe-command';
 import {SubscribeMessageCommand} from '../models/command/subscribe-message-command';
 import {SubscribeUsersCommand} from '../models/command/subscribe-users-command';
 import {SubscribeRolesCommand} from '../models/command/subscribe-roles-command';
-import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ResponseBase} from '../models/response/response-base';
-import {filter, finalize, map, skip, switchMap, take} from 'rxjs/operators';
+import {finalize} from 'rxjs/operators';
 import {GuidHelper} from '../helper/guid-helper';
 import {MessageResponse} from '../models/response/message-response';
 import {ConnectionResponse} from '../models/response/connection-response';
 import {WebsocketConnection} from './websocket-connection';
 import {SseConnection} from './sse-connection';
 import {HttpClient} from '@angular/common/http';
-import {RestConnection} from './rest-connection';
 import {ConnectionState} from '../models/types';
 
 @Injectable()
@@ -57,7 +56,11 @@ export class ConnectionManagerService {
     }
 
     if (!this.options.connectionType) {
-      this.options.connectionType = 'websocket';
+      if (!!window['EventSource']) {
+        this.options.connectionType = 'sse';
+      } else {
+        this.options.connectionType = 'websocket';
+      }
     }
 
     switch (this.options.connectionType) {
@@ -67,15 +70,12 @@ export class ConnectionManagerService {
       case 'sse':
         this.connection = new SseConnection(this.httpClient, this.ngZone);
         break;
-      // case 'rest':
-      //   this.connection = new RestConnection(this.httpClient, this.ngZone);
-      //   break;
     }
 
     if (this.connection) {
       this.connection.openHandler = () => {
         this.storedCommandStorage.forEach(cmd => {
-          this.connection.send(cmd);
+          const sendSubscription: Subscription = this.connection.send(cmd, true);
         });
       };
 
@@ -122,8 +122,7 @@ export class ConnectionManagerService {
   public sendCommand(command: CommandBase, keep?: boolean, onlySend?: boolean): Observable<ResponseBase> {
     const referenceSubject = new ReplaySubject<ResponseBase>(0);
 
-    this.connection.send(command);
-    this.storeSubscribeCommands(command);
+    this.connection.send(command, this.storeSubscribeCommands(command));
 
     if (onlySend === true) {
       referenceSubject.complete();
@@ -157,7 +156,9 @@ export class ConnectionManagerService {
   }
 
   private handleResponse(response: ResponseBase) {
-    if (response.responseType === 'MessageResponse') {
+    if (response.responseType === 'WrongApiResponse') {
+      throw new Error('Wrong API key or secret');
+    } else if (response.responseType === 'MessageResponse') {
       this.handleMessageResponse(<MessageResponse>response);
     } else {
       const commandReference = this.commandReferences[response.referenceId];
@@ -192,6 +193,7 @@ export class ConnectionManagerService {
 
     this.connection.bearer = this.bearer;
     this.connection.options = this.options;
+
     this.connection.dataUpdated();
   }
 }

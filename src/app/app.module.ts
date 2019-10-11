@@ -21,7 +21,8 @@ import {environment} from '../environments/environment';
       serverBaseUrl: environment.serverBaseUrl,
       loginRedirect: 'account/login',
       unauthorizedRedirect: 'account/unauthorized',
-      secret: 'pw1234',
+      apiSecret: 'pw1234',
+      apiKey: 'webapp',
       connectionType: 'sse'
     }),
     AppRoutingModule,

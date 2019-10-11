@@ -2,7 +2,7 @@ import {RealtimeDatabaseOptions} from '../models/realtime-database-options';
 import {ResponseBase} from '../models/response/response-base';
 import {CommandBase} from '../models/command/command-base';
 import {ConnectionResponse} from '../models/response/connection-response';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Subscription} from 'rxjs';
 import {ConnectionState} from '../models/types';
 
 export abstract class ConnectionBase {
@@ -15,6 +15,6 @@ export abstract class ConnectionBase {
   public options: RealtimeDatabaseOptions;
   public bearer: string;
 
-  public abstract send(object: CommandBase): void;
+  public abstract send(object: CommandBase, storedCommand: boolean): Subscription;
   public abstract dataUpdated(): void;
 }

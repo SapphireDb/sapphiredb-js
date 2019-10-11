@@ -3,8 +3,8 @@ import {RealtimeDatabaseOptions} from '../models/realtime-database-options';
 import {ResponseBase} from '../models/response/response-base';
 import {CommandBase} from '../models/command/command-base';
 import {ConnectionResponse} from '../models/response/connection-response';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {filter, take} from 'rxjs/operators';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
+import {filter, take, takeWhile} from 'rxjs/operators';
 import {ConnectionState} from '../models/types';
 
 export class WebsocketConnection extends ConnectionBase {
@@ -44,9 +44,10 @@ export class WebsocketConnection extends ConnectionBase {
     return this.readyState$.asObservable();
   }
 
-  send(object: CommandBase): void {
-    this.connect$().pipe(
-      filter((state) => state === 'connected'),
+  send(object: CommandBase, storedCommand: boolean): Subscription {
+    return this.connect$().pipe(
+      takeWhile((state) => state !== 'disconnected' || !storedCommand),
+      filter((state) => state === 'connected' && this.socket.readyState === WebSocket.OPEN),
       take(1)
     ).subscribe(() => {
       this.socket.send(JSON.stringify(object));
@@ -66,8 +67,8 @@ export class WebsocketConnection extends ConnectionBase {
   private createConnectionString(): string {
     let url = `${this.options.useSsl ? 'wss' : 'ws'}://${this.options.serverBaseUrl}/realtimedatabase/socket?`;
 
-    if (this.options.secret) {
-      url += `secret=${this.options.secret}&`;
+    if (this.options.apiSecret && this.options.apiKey) {
+      url += `key=${this.options.apiKey}&secret=${this.options.apiSecret}&`;
     }
 
     if (this.bearer) {
