@@ -9,4 +9,5 @@ export interface RealtimeConnection {
   userId: string;
   userAgent?: string;
   type: 'Websocket';
+  apiName: string;
 }

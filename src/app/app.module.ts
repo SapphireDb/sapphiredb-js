@@ -23,7 +23,7 @@ import {environment} from '../environments/environment';
       unauthorizedRedirect: 'account/unauthorized',
       apiSecret: 'pw1234',
       apiKey: 'webapp',
-      connectionType: 'sse'
+      connectionType: 'websocket'
     }),
     AppRoutingModule,
     Angular2PromiseButtonModule.forRoot()

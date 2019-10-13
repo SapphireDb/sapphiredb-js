@@ -34,8 +34,8 @@ export class SseConnection extends ConnectionBase {
           if (message.responseType === 'ConnectionResponse') {
             this.connectionData = <ConnectionResponse>message;
             this.connectionResponseHandler(this.connectionData);
-            this.openHandler();
             this.readyState$.next('connected');
+            this.openHandler();
           } else {
             this.messageHandler(message);
           }
@@ -58,14 +58,14 @@ export class SseConnection extends ConnectionBase {
   }
 
   send(object: CommandBase, storedCommand: boolean): Subscription {
-    this.connect$().subscribe(console.log);
+    if (storedCommand && this.readyState$.value !== 'connected') {
+      return null;
+    }
 
     return this.connect$().pipe(
-      takeWhile((state) => state !== 'disconnected' || !storedCommand),
       filter((state) => state === 'connected' && this.eventSource.readyState === EventSource.OPEN),
       take(1)
     ).subscribe(() => {
-      console.log('sending', object);
       this.makePost(object);
     });
   }

@@ -21,8 +21,8 @@ export class WebsocketConnection extends ConnectionBase {
         const message: ResponseBase = JSON.parse(msg.data);
         if (message.responseType === 'ConnectionResponse') {
           this.connectionResponseHandler(<ConnectionResponse>message);
-          this.openHandler();
           this.readyState$.next('connected');
+          this.openHandler();
         } else {
           this.messageHandler(message);
         }
