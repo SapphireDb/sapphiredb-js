@@ -33,6 +33,11 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
   }
 
+  createUser() {
+    this.db.execute('user', 'CreateUser', { firstName: 'Morris', lastName: 'Janatzek', email: 'test@test.de', password: 'pw1234' });
+    this.db.execute('user', 'AddRole', 'test@test.de', 'admin');
+  }
+
   select(user: AppUser) {
     this.form.setValue({
       email: user.email,

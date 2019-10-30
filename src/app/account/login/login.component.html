@@ -6,6 +6,8 @@
   <input type="submit" value="Login" />
 </form>
 
+<button (click)="createUser()">Create new User</button>
+
 <div *ngFor="let user of users$ | async" (click)="select(user)">
   {{user | json}}
 </div>
