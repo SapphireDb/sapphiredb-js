@@ -27,7 +27,7 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
     this.account.userData().subscribe((userData: UserData) => {
-      const roles = userData.roles;
+      const roles = userData ? userData.roles : [];
       const collection: DefaultCollection<any> = this.db.collection('users');
 
       combineLatest(

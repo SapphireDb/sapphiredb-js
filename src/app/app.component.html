@@ -1,6 +1,6 @@
 <header class="app-bar bg-blue fg-white" data-role="appbar" data-expand-point="md">
   <a href="" class="d-block brand fg-white no-hover">
-    <span class="border bd-white border-radius p-2">ng-realtime-database</span>
+    <span class="border bd-white border-radius p-2">Realtime Database</span>
   </a>
   <ul class="app-bar-menu ml-auto">
     <li><a href="home">Home</a></li>
@@ -15,7 +15,7 @@
     </li>
 
     <li>
-      <a href="https://github.com/morrisjdev/ng-metro4" target="_blank">
+      <a href="https://github.com/morrisjdev/RealtimeDatabase" target="_blank">
         <span class="mif-github mif-2x d-none d-block-md"></span>
         <span class="d-block d-none-md">Github</span>
       </a>
@@ -30,7 +30,7 @@
 
       {{ status$ | async }}
 
-      <button type="button" (click)="logout()">Logout</button>
+      <button m4-button (click)="logout()">Logout</button>
 
       <p *ngIf="(userInfo$ | async) as user">
         Username: {{user.userName}}<br>

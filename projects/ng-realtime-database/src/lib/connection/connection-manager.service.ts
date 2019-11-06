@@ -23,13 +23,17 @@ import {SseConnection} from './sse-connection';
 import {HttpClient} from '@angular/common/http';
 import {ConnectionState} from '../models/types';
 
+interface SubscribeCommandInfo extends CommandBase {
+  sendWithBearer: boolean;
+}
+
 @Injectable()
 export class ConnectionManagerService {
   private bearer: string;
 
   private connection: ConnectionBase;
 
-  private storedCommandStorage: CommandBase[] = [];
+  private storedCommandStorage: SubscribeCommandInfo[] = [];
 
   private commandReferences: CommandReferences  = {};
   private serverMessageHandler: CommandReferences = {};
@@ -75,7 +79,9 @@ export class ConnectionManagerService {
     if (this.connection) {
       this.connection.openHandler = () => {
         this.storedCommandStorage.forEach(cmd => {
-          const sendSubscription: Subscription = this.connection.send(cmd, true);
+          if (!cmd.sendWithBearer || !!this.bearer) {
+            const sendSubscription: Subscription = this.connection.send(cmd, true);
+          }
         });
       };
 
@@ -103,7 +109,10 @@ export class ConnectionManagerService {
     } else if (command instanceof SubscribeCommand || command instanceof SubscribeMessageCommand
       || command instanceof SubscribeUsersCommand || command instanceof SubscribeRolesCommand) {
       if (this.storedCommandStorage.findIndex(c => c.referenceId === command.referenceId) === -1) {
-        this.storedCommandStorage.push(command);
+        this.storedCommandStorage.push({
+          ...command,
+          sendWithBearer: !!this.bearer
+        });
         return true;
       }
     }

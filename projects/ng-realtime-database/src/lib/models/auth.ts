@@ -33,6 +33,8 @@ export class Auth {
     }
 
     this.info = new AuthInfo(this.connectionManagerService);
+
+    console.log(this);
   }
 
   /**
