@@ -65,4 +65,8 @@ export class CollectionValuesService {
 
     return collectionValue;
   }
+
+  public reset() {
+    Object.keys(this.collectionValues).forEach(k => this.collectionValues[k].forEach(c => c.subject.complete()));
+  }
 }

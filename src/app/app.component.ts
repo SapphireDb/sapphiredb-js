@@ -21,6 +21,7 @@ export class AppComponent {
 
   logout() {
     this.db.auth.logout().subscribe(() => {
+      this.db.reset();
       this.router.navigate(['account', 'login']);
     });
   }

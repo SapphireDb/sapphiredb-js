@@ -79,4 +79,8 @@ export class CollectionManagerService {
     const prefilterHash = ArrayHelper.createPrefilterHash(prefilters);
     return c => c.collectionName === collectionName && ArrayHelper.createPrefilterHash(c.prefilters) === prefilterHash;
   }
+
+  public reset() {
+    this.collections.forEach(c => c.reset());
+  }
 }

@@ -134,4 +134,9 @@ export class CollectionBase<T, Y> {
   public dispose() {
     this.collectionManagerService.removeCollection(<any>this);
   }
+
+  public reset() {
+    this.dispose();
+    this.collectionValuesService.reset();
+  }
 }

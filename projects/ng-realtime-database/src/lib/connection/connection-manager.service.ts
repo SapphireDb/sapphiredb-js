@@ -205,4 +205,9 @@ export class ConnectionManagerService {
 
     this.connection.dataUpdated();
   }
+
+  public reset() {
+    this.storedCommandStorage = [];
+    this.connection.dataUpdated();
+  }
 }

@@ -1,6 +1,6 @@
 {
   "name": "ng-realtime-database",
-  "version": "3.2.0",
+  "version": "3.3.1",
   "description": "a realtime database connector for angular to connect to realtime database for asp.net core and entity framework",
   "peerDependencies": {
     "@angular/common": "~8.1.0",

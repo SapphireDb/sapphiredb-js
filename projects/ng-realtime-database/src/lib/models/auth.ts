@@ -33,8 +33,6 @@ export class Auth {
     }
 
     this.info = new AuthInfo(this.connectionManagerService);
-
-    console.log(this);
   }
 
   /**
@@ -179,13 +177,5 @@ export class Auth {
       }),
       take(1)
     );
-    // combineLatest([
-    //   ,
-    //   this.connectionManagerService.connectionData$.pipe(filter(v => !!v), take(1))
-    // ])
-    //   .pipe(
-    //     // debounce(() => this.connectionManagerService.status$.pipe(filter(s => s === 'connected'))),
-    //
-    //   );
   }
 }
