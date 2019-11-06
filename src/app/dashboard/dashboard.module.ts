@@ -10,6 +10,7 @@ import { CollectionTestComponent } from './collection-test/collection-test.compo
 import {Angular2PromiseButtonModule} from 'angular2-promise-buttons';
 import {RealtimeAuthGuard} from '../../../projects/ng-realtime-database/src/lib/realtime-auth.guard';
 import { PrefiltersComponent } from './prefilters/prefilters.component';
+import {NgMetro4Module} from 'ng-metro4';
 
 @NgModule({
   imports: [
@@ -17,6 +18,7 @@ import { PrefiltersComponent } from './prefilters/prefilters.component';
     FormsModule,
     DashboardRoutingModule,
     Angular2PromiseButtonModule,
+    NgMetro4Module
   ],
   declarations: [MainComponent, TestComponent, AuthComponent, CollectionTestComponent, PrefiltersComponent]
 })

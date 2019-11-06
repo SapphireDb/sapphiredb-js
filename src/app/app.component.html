@@ -1,12 +1,45 @@
-<h1>Demo Client for Realtime Database</h1>
+<header class="app-bar bg-blue fg-white" data-role="appbar" data-expand-point="md">
+  <a href="" class="d-block brand fg-white no-hover">
+    <span class="border bd-white border-radius p-2">ng-realtime-database</span>
+  </a>
+  <ul class="app-bar-menu ml-auto">
+    <li><a href="home">Home</a></li>
 
-{{ status$ | async }}
 
-<button type="button" (click)="logout()">Logout</button>
+    <li>
+      <a href="#" class="dropdown-toggle">More</a>
+      <ul class="d-menu" data-role="dropdown">
+        <li><a href="">Dropdown link 1</a></li>
+        <li><a href="">Dropdown link 2</a></li>
+      </ul>
+    </li>
 
-<p *ngIf="(userInfo$ | async) as user">
-  Username: {{user.userName}}<br>
-  {{user | json}}
-</p>
+    <li>
+      <a href="https://github.com/morrisjdev/ng-metro4" target="_blank">
+        <span class="mif-github mif-2x d-none d-block-md"></span>
+        <span class="d-block d-none-md">Github</span>
+      </a>
+    </li>
+  </ul>
+</header>
 
-<router-outlet></router-outlet>
+<div class="container-fluid">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12">
+      <h1>Demo Client for Realtime Database</h1>
+
+      {{ status$ | async }}
+
+      <button type="button" (click)="logout()">Logout</button>
+
+      <p *ngIf="(userInfo$ | async) as user">
+        Username: {{user.userName}}<br>
+        {{user | json}}
+      </p>
+    </div>
+
+    <div class="col-12">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

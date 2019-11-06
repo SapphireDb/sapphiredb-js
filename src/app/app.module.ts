@@ -8,6 +8,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {Angular2PromiseButtonModule} from 'angular2-promise-buttons';
 import {environment} from '../environments/environment';
+import {NgMetro4Module} from 'ng-metro4';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import {environment} from '../environments/environment';
       connectionType: 'websocket'
     }),
     AppRoutingModule,
-    Angular2PromiseButtonModule.forRoot()
+    Angular2PromiseButtonModule.forRoot(),
+    NgMetro4Module
   ],
   bootstrap: [AppComponent]
 })
