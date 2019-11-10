@@ -3,10 +3,11 @@ import { Routes, RouterModule } from '@angular/router';
 import {RealtimeAuthGuard} from 'ng-realtime-database';
 
 const routes: Routes = [
-  { path: 'dashboard', loadChildren: './dashboard/dashboard.module#DashboardModule', canActivate: [ RealtimeAuthGuard ] },
-  { path: 'account', loadChildren: './account/account.module#AccountModule' },
-  { path: 'message', loadChildren: './message/message.module#MessageModule'/*, canActivate: [AuthGuard]*/ },
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+  { path: 'start', loadChildren: () => import('./start/start.module').then(m => m.StartModule) },
+  { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [ RealtimeAuthGuard ] },
+  { path: 'account', loadChildren: () =>  import('./account/account.module').then(m => m.AccountModule) },
+  { path: 'message', loadChildren: () => import('./message/message.module').then(m => m.MessageModule)/*, canActivate: [AuthGuard]*/ },
+  { path: '', redirectTo: 'start', pathMatch: 'full' }
 ];
 
 @NgModule({

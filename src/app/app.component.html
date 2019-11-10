@@ -25,18 +25,18 @@
 
 <div class="container-fluid">
   <div class="row flex-xl-nowrap">
-    <div class="col-12">
-      <h1>Demo Client for Realtime Database</h1>
+<!--    <div class="col-12">-->
+<!--      <h1>Demo Client for Realtime Database</h1>-->
 
-      {{ status$ | async }}
+<!--      {{ status$ | async }}-->
 
-      <button m4-button (click)="logout()">Logout</button>
+<!--      <button m4-button (click)="logout()">Logout</button>-->
 
-      <p *ngIf="(userInfo$ | async) as user">
-        Username: {{user.userName}}<br>
-        {{user | json}}
-      </p>
-    </div>
+<!--      <p *ngIf="(userInfo$ | async) as user">-->
+<!--        Username: {{user.userName}}<br>-->
+<!--        {{user | json}}-->
+<!--      </p>-->
+<!--    </div>-->
 
     <div class="col-12">
       <router-outlet></router-outlet>
