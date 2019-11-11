@@ -1,14 +1,16 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
 
-import { StartRoutingModule } from './start-routing.module';
-import { MainComponent } from './main/main.component';
+import {StartRoutingModule} from './start-routing.module';
+import {MainComponent} from './main/main.component';
+import {NetCoreComponent} from './net-core/net-core.component';
+import {AngularComponent} from './angular/angular.component';
+import {SharedModule} from '../shared.module';
 
 
 @NgModule({
-  declarations: [MainComponent],
+  declarations: [MainComponent, NetCoreComponent, AngularComponent],
   imports: [
-    CommonModule,
+    SharedModule,
     StartRoutingModule
   ]
 })

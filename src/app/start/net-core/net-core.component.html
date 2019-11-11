@@ -1,0 +1,44 @@
+<h1>Get started - Setup server</h1>
+
+<p>
+  Realtime database server runs on an Asp.Net Core application. First step is to setup the server to use Realtime database.<br>
+  You need to have a running Asp.Net Core application and a configured DbContext.
+</p>
+
+<h2>Installation</h2>
+
+<h3>Install package</h3>
+<p class="mb-5">To install the package execute the following command in you package manager console</p>
+
+<pre><code [highlight]="'PM> Install-Package RealtimeDatabase'" [languages]="[ 'ps' ]"></code></pre>
+
+<p>
+  You can also install the extension using Nuget package manager. The project can be found here:
+  <a href="https://www.nuget.org/packages/RealtimeDatabase/" target="_blank">https://www.nuget.org/packages/RealtimeDatabase/</a>
+</p>
+
+<h3>Configure DbContext</h3>
+<p>You now have to change your DbContext to derive from <code>RealtimeContext</code>. Also make sure to adjust the constructor parameters.</p>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(ts:MyDbContext.cs)
+    // Change DbContext to RealtimeDbContext\n
+    public class MyDbContext : RealtimeDbContext\n
+    {
+      \t//Add RealtimeDatabaseNotifier for DI
+      \tpublic RealtimeContext(DbContextOptions<RealtimeContext> options, RealtimeDatabaseNotifier notifier) : base(options, notifier)
+      \t{
+
+      \t}
+
+      \tpublic DbSet<User> Users { get; set; }
+
+      \tpublic DbSet<Test> Tests { get; set; }
+
+      \t...
+    }
+    ]]>
+  </div>
+</app-doc>

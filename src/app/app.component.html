@@ -1,9 +1,17 @@
 <header class="app-bar bg-blue fg-white" data-role="appbar" data-expand-point="md">
-  <a href="" class="d-block brand fg-white no-hover">
-    <span class="border bd-white border-radius p-2">Realtime Database</span>
+  <a routerLink="" class="d-block brand fg-white no-hover">
+    <span class="border bd-white border-radius p-2">Realtime database</span>
   </a>
   <ul class="app-bar-menu ml-auto">
-    <li><a href="home">Home</a></li>
+    <li>
+      <a href="#" class="dropdown-toggle">Home</a>
+      <ul class="d-menu" data-role="dropdown">
+        <li><a routerLink="start">Start</a></li>
+        <li class="divider bg-lightGray"></li>
+        <li><a routerLink="start/net-core">Server - Asp.Net Core</a></li>
+        <li><a routerLink="start/angular">Client - Angular</a></li>
+      </ul>
+    </li>
 
 
     <li>
@@ -38,7 +46,7 @@
 <!--      </p>-->
 <!--    </div>-->
 
-    <div class="col-12">
+    <div [ngClass]="router.url === '/start/main' ? 'cell-12' : 'cell-md-8 offset-md-2'">
       <router-outlet></router-outlet>
     </div>
   </div>
