@@ -1,0 +1,122 @@
+<h1>Manage data</h1>
+
+<p>Realtime database provides all methods you need to manage your data. You don't have to write Create, Update and Delete methods.</p>
+
+<h2>Create data</h2>
+
+<app-doc>
+  {{ values$ | async | json }}<br>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+      \tcollection: DefaultCollection<any>;\n
+      \tvalues$: Observable<any>;\n\n
+
+      \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+      \tngOnInit() {\n
+        \t\t// Use a collection object to easily access the methods of a collection\n
+        \t\tthis.collection = this.db.collection('entries', 'demo');\n
+        \t\tthis.values$ = this.collection.values();\n
+      \t}\n\n
+
+      \taddValue() {\n
+        \t\t// Use the method .add to add a new object\n
+        \t\tthis.collection.add({\n
+          \t\t\tcontent: 'test value'\n
+        \t\t}).subscribe();\n
+      \t}\n
+    }
+
+    \f:(csharp:DemoContext.cs)
+    public class DemoContext : RealtimeDbContext\n
+    {\n
+    \tpublic DemoContext(DbContextOptions<DemoContext> options, RealtimeDatabaseNotifier notifier) : base(options, notifier)\n
+    \t{\n
+    \t}\n\n
+
+    \tpublic DbSet<DemoEntry> Entries { get; set; }\n
+    }
+
+    \f:(csharp:DemoEntry.cs)
+    public class DemoEntry\n
+    {\n
+    \t[Key]\n
+    \tpublic int Id { get; set; }\n\n
+
+    \tpublic string Content { get; set; }\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Delete data</h2>
+
+<app-doc>
+  <div class="row">
+    <div class="cell-4" *ngFor="let v of values$ | async" (click)="deleteValue(v)"><span class="mif-cross"></span> {{ v | json}}</div>
+  </div>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+      \tcollection: DefaultCollection<any>;\n
+
+      \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+      \tngOnInit() {\n
+        \t\tthis.collection = this.db.collection('entries', 'demo');\n
+      \t}\n\n
+
+      \tdeleteValue(value: any) {\n
+        \t\tthis.collection.remove(value).subscribe();\n
+      \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Update data</h2>
+
+<p>You can also update value very easy. Make sure to add the <code>[Updatable]</code>-annotation to the model class or to specific fields to make them updatable.</p>
+
+<app-doc>
+  <div class="row">
+    <div class="cell-4" *ngFor="let v of values$ | async" (click)="updateValue(v)"><span class="mif-pencil"></span> {{ v | json}}</div>
+  </div>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+      \tcollection: DefaultCollection<any>;\n
+
+      \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+      \tngOnInit() {\n
+        \t\tthis.collection = this.db.collection('entries', 'demo');\n
+      \t}\n\n
+
+      \tupdateValue(value: any) {\n
+        \t\tthis.collection.update({\n
+          \t\t\t...value,\n
+          \t\t\tcontent: v\n
+        \t\t}).subscribe();\n
+      \t}\n
+    }
+
+    \f:(csharp:DemoEntry.cs)
+    [Updatable]\n
+    public class DemoEntry\n
+    {\n
+    \t[Key]\n
+    \tpublic int Id { get; set; }\n\n
+
+    \tpublic string Content { get; set; }\n
+    }
+    ]]>
+  </div>
+</app-doc>

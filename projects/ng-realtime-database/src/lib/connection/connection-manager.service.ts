@@ -80,7 +80,7 @@ export class ConnectionManagerService {
       this.connection.openHandler = () => {
         this.storedCommandStorage.forEach(cmd => {
           if (!cmd.sendWithBearer || !!this.bearer) {
-            const sendSubscription: Subscription = this.connection.send(cmd, true);
+            this.connection.send(cmd, true);
           }
         });
       };
@@ -138,7 +138,7 @@ export class ConnectionManagerService {
       referenceSubject.unsubscribe();
       return of(null);
     } else {
-      this.commandReferences[command.referenceId] = { subject$: referenceSubject, keep: keep};
+      this.commandReferences[command.referenceId] = { subject$: referenceSubject, keep: keep };
       return this.createHotCommandObservable(referenceSubject, command);
     }
   }

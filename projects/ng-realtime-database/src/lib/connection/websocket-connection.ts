@@ -45,6 +45,10 @@ export class WebsocketConnection extends ConnectionBase {
   }
 
   send(object: CommandBase, storedCommand: boolean): Subscription {
+    if (storedCommand && this.readyState$.value !== 'connected') {
+      return;
+    }
+
     return this.connect$().pipe(
       takeWhile((state) => state !== 'disconnected' || !storedCommand),
       filter((state) => state === 'connected' && this.socket.readyState === WebSocket.OPEN),

@@ -1,0 +1,68 @@
+<h1>Query data</h1>
+
+<p>To create a query is very simple. ng-realtime-database uses RxJs to provide the values of the collection.</p>
+
+<p>
+  You can simply query all data of a collection.<br>
+  Using the method <code>.values()</code> will create a subscription on the server and the server will notify the client if something has changed.
+</p>
+
+<app-doc>
+  {{ values$ | async | json }}<br>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+  <![CDATA[
+  \f:(typescript:demo.component.ts)
+  export class DemoComponent implements OnInit {\n
+    \tvalues$: Observable<any>;\n\n
+
+    \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+    \tngOnInit() {\n
+      \t\tthis.values$ = this.db.collection('entries').values();\n
+    \t}\n
+  }
+
+  \f:(csharp:DemoContext.cs)
+  public class DemoContext : RealtimeDbContext\n
+  {\n
+    \tpublic DemoContext(DbContextOptions<DemoContext> options, RealtimeDatabaseNotifier notifier) : base(options, notifier)\n
+    \t{\n
+    \t}\n\n
+
+    \tpublic DbSet<DemoEntry> Entries { get; set; }\n
+  }
+
+  \f:(csharp:DemoEntry.cs)
+  public class DemoEntry\n
+  {\n
+    \t[Key]\n
+    \tpublic int Id { get; set; }\n\n
+
+    \tpublic string Content { get; set; }\n
+  }
+  ]]>
+  </div>
+</app-doc>
+
+<p>If you only want to get the data once without updates use <code>.snapshot()</code></p>
+
+<app-doc>
+  {{ valuesSnapshot$ | async | json }}
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+    \tvalues$: Observable<any>;\n\n
+
+    \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+    \tngOnInit() {\n
+    \t\tthis.values$ = this.db.collection('entries').snapshot();\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<a routerLink="../manage">Continue with data management <span class="mif-arrow-right"></span></a>

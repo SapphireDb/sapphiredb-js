@@ -4,9 +4,12 @@ import {RealtimeAuthGuard} from 'ng-realtime-database';
 
 const routes: Routes = [
   { path: 'start', loadChildren: () => import('./start/start.module').then(m => m.StartModule) },
+  { path: 'data', loadChildren: () => import('./data/data.module').then(m => m.DataModule) },
+
   { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [ RealtimeAuthGuard ] },
   { path: 'account', loadChildren: () =>  import('./account/account.module').then(m => m.AccountModule) },
   { path: 'message', loadChildren: () => import('./message/message.module').then(m => m.MessageModule)/*, canActivate: [AuthGuard]*/ },
+
   { path: '', redirectTo: 'start', pathMatch: 'full' }
 ];
 

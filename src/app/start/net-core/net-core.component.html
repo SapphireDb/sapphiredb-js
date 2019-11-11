@@ -2,13 +2,13 @@
 
 <p>
   Realtime database server runs on an Asp.Net Core application. First step is to setup the server to use Realtime database.<br>
-  You need to have a running Asp.Net Core application and a configured DbContext.
+  You need to have a working Asp.Net Core application and a configured DbContext.
 </p>
 
 <h2>Installation</h2>
 
 <h3>Install package</h3>
-<p class="mb-5">To install the package execute the following command in you package manager console</p>
+<p class="mb-5">To install the package execute the following command in your package manager console</p>
 
 <pre><code [highlight]="'PM> Install-Package RealtimeDatabase'" [languages]="[ 'ps' ]"></code></pre>
 
@@ -26,19 +26,48 @@
     \f:(ts:MyDbContext.cs)
     // Change DbContext to RealtimeDbContext\n
     public class MyDbContext : RealtimeDbContext\n
-    {
-      \t//Add RealtimeDatabaseNotifier for DI
-      \tpublic RealtimeContext(DbContextOptions<RealtimeContext> options, RealtimeDatabaseNotifier notifier) : base(options, notifier)
-      \t{
+    {\n
+      \t//Add RealtimeDatabaseNotifier for DI\n
+      \tpublic RealtimeContext(DbContextOptions<RealtimeContext> options, RealtimeDatabaseNotifier notifier) : base(options, notifier)\n
+      \t{\n\n
 
-      \t}
+      \t}\n\n
 
-      \tpublic DbSet<User> Users { get; set; }
+      \tpublic DbSet<User> Users { get; set; }\n\n
 
-      \tpublic DbSet<Test> Tests { get; set; }
-
-      \t...
+      \tpublic DbSet<Test> Tests { get; set; }\n
     }
     ]]>
   </div>
 </app-doc>
+
+<h3>Register services and update pipeline</h3>
+<p>To use the realtime database you also have to make some changes in your <code>Startup.cs</code>-File.</p>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(ts:Startup.cs)
+    public class Startup\n
+    {\n
+      \tpublic void ConfigureServices(IServiceCollection services)\n
+      \t{\n
+        \t\t//Register services\n
+        \t\tservices.AddRealtimeDatabase(...)\n
+          \t\t\t.AddContext<MyDbContext>(cfg => ...);\n
+      \t}\n\n
+
+      \tpublic void Configure(IApplicationBuilder app)\n
+      \t{\n
+        \t\t//Add Middleware\n
+        \t\tapp.UseRealtimeDatabase();\n
+      \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Done</h2>
+
+<p>Your realtime database server should now work.</p>
+<a routerLink="../angular">Continue with the setup of a client <span class="mif-arrow-right"></span></a>

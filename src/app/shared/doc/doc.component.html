@@ -11,11 +11,11 @@
 <div class="pl-2 mr-2">
   <ul data-role="tabs" data-expand-point="xs">
     <li *ngFor="let lang of languages">
-      <a [href]="'#_target_' + lang.lang">{{ lang.name ? lang.name : lang.lang }}</a>
+      <a [href]="'#_target_' + lang.nameNormalized">{{ lang.name ? lang.name : lang.lang }}</a>
     </li>
   </ul>
   <div class="border bd-default no-border-top p-2">
-    <div [id]="'_target_' + lang.lang" *ngFor="let lang of languages">
+    <div [id]="'_target_' + lang.nameNormalized" *ngFor="let lang of languages">
       <pre><code [highlight]="lang.content" [languages]="[ lang.lang ]"></code></pre>
     </div>
   </div>

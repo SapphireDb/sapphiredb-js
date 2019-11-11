@@ -8,7 +8,7 @@ import {Component, ComponentRef, ElementRef, Input, OnChanges, OnInit, SimpleCha
 export class DocComponent implements OnInit, OnChanges {
   @Input() showContent = true;
 
-  languages: { lang: string, content: string, name: string }[];
+  languages: { lang: string, content: string, name: string, nameNormalized: string }[];
   @ViewChild('langElement', {static: true}) langElementRef: ElementRef;
 
   constructor() { }
@@ -24,12 +24,12 @@ export class DocComponent implements OnInit, OnChanges {
           return {
             name: languageParts[1],
             lang: languageParts[0],
+            nameNormalized: languageParts[1].split('.').join(''),
             content: v.substr(v.indexOf(')') + 1).split('\\n').map(l => {
               return l.trim().split('\\t').map(iv => iv.trim()).join('  ');
             }).join('\n')
           };
         });
-
     }
   }
 
