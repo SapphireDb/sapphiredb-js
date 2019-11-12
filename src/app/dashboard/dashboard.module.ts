@@ -7,8 +7,6 @@ import {FormsModule} from '@angular/forms';
 import { TestComponent } from './test/test.component';
 import { AuthComponent } from './auth/auth.component';
 import { CollectionTestComponent } from './collection-test/collection-test.component';
-import {Angular2PromiseButtonModule} from 'angular2-promise-buttons';
-import {RealtimeAuthGuard} from '../../../projects/ng-realtime-database/src/lib/realtime-auth.guard';
 import { PrefiltersComponent } from './prefilters/prefilters.component';
 import {NgMetro4Module} from 'ng-metro4';
 
@@ -17,7 +15,6 @@ import {NgMetro4Module} from 'ng-metro4';
     CommonModule,
     FormsModule,
     DashboardRoutingModule,
-    Angular2PromiseButtonModule,
     NgMetro4Module
   ],
   declarations: [MainComponent, TestComponent, AuthComponent, CollectionTestComponent, PrefiltersComponent]

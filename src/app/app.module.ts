@@ -13,7 +13,6 @@ import {AppComponent} from './app.component';
 import {RealtimeDatabaseModule} from 'ng-realtime-database';
 import {ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
-import {Angular2PromiseButtonModule} from 'angular2-promise-buttons';
 import {environment} from '../environments/environment';
 import {HighlightModule} from 'ngx-highlightjs';
 import {SharedModule} from './shared.module';
@@ -49,7 +48,6 @@ export function hljsLanguages() {
       languages: hljsLanguages
     }),
     AppRoutingModule,
-    Angular2PromiseButtonModule.forRoot(),
     SharedModule
   ],
   bootstrap: [AppComponent]
