@@ -1,0 +1,48 @@
+<h1>Authorization</h1>
+
+<p>
+  You also want to control what the user is allowed to do and what not. Realtime database comes with a lot
+  mechanisms to control that.
+</p>
+
+<h2>Server - Model attributes</h2>
+
+<div class="remark success">
+  Realtime database includes attributes that can be used on models to control what the user can do.
+  Available attributes: <code>[QueryAuth]</code>, <code>[CreateAuth]</code>, <code>[UpdateAuth]</code> and <code>[RemoveAuth]</code>
+</div>
+
+<div class="remark info">
+  Every auth-attribute can be used in three ways.
+  <ol class="decimal">
+    <li>Without attributes: Authentication required</li>
+    <li>Array of strings: The user has to be in one of the given roles</li>
+    <li>String: The string is the name of a boolean-function that is executed for every user</li>
+  </ol>
+</div>
+
+<a routerLink="../model-attributes">Read more about model attributes</a>
+
+<h2>Client - Auth guard</h2>
+
+<div class="remark success">
+  ng-realtime-database comes with an AuthGuard that can be used to check if the user is logged in and if the user is allowed to access specific routes.
+</div>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(typescript:example-routing.module.ts)
+    const routes: Routes = [\n
+    \t{ path: '', component: MainComponent, canActivate: [ RealtimeAuthGuard ] }\n
+    \t{ path: '', component: AdminComponent, canActivate: [ RealtimeAuthGuard ], data: { roles: ['admin'] } }\n
+    ];\n\n
+
+    @NgModule({\n
+      \timports: [RouterModule.forChild(routes)],\n
+      \texports: [RouterModule]\n
+    })\n
+    export class ExampleRoutingModule { }
+    ]]>
+  </div>
+</app-doc>

@@ -1,0 +1,92 @@
+<h1>Server setup - Authentication</h1>
+
+<p>
+  Realtime database comes with methods for authentication and role-based authorization.<br>
+  You can simply authenticate your client using the built in methods. It also comes with a user and role management.
+</p>
+
+<h2>Simple setup</h2>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:Startup.cs)
+    public class Startup\n
+    {\n
+      \tpublic void ConfigureServices(IServiceCollection services)\n
+      \t{\n
+        \t\t//Register services\n
+        \t\tservices.AddRealtimeAuth<RealtimeAuthContext<IdentityUser>, IdentityUser>(new JwtOptions("secret key", "issuer")), cfg => ...);\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<h2>JWT Options</h2>
+
+<p>
+  The JWT Options are used to generate the jwt-token for client authentication.<br>
+  You can either directly create an object with the options or use data from a configuration file.
+</p>
+
+<h4>Example: Load configuration from appsettings</h4>
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:Startup.cs)
+    public class Startup\n
+    {\n
+      \tpublic void ConfigureServices(IServiceCollection services)\n
+      \t{\n
+    \t\t//Register services\n
+    \t\tservices.AddRealtimeAuth<RealtimeAuthContext<IdentityUser>, IdentityUser>(new JwtOptions(Configuration.GetSection(nameof(JwtOptions)), cfg => ...);\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Custom user object</h2>
+
+<p>
+  Realtime database uses the <code>IdentityUser</code> as user object.<br>
+  You can simply create a custom user object to include custom fields and information.<br>
+  Make sure to replace the user type used in <code>Startup.cs</code>
+</p>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:CustomAppUser.cs)
+    public class AppUser : IdentityUser\n
+    {\n
+      \t[AuthUserInformation]\n
+      \t[AuthClaimInformation]\n
+      \tpublic string FirstName { get; set; }\n\n
+
+      \t[AuthUserInformation]\n
+      \tpublic string LastName { get; set; }\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<div class="remark success">
+  The attribute <code>[AuthUserInformation]</code> is used to mark the field to be included in the user information.<br>
+  That means, that the client receives it in the returned object when calling the login method with valid credentials.<br><br>
+
+  The attribute <code>[AuthClaimInformation]</code> is used to include the information in the bearer.<br>
+  This is useful to identify a user by it's given claims on server side.
+</div>
+
+<h2>Custom DbContext</h2>
+
+<p>If you want you can create your own auth-context to store custom data etc. Just derive it from <code>RealtimeAuthContext</code></p>
+
+<h2>Access user details</h2>
+
+<p>
+  To access the details of a user you can use the default methods provided by identity.<br>
+  Whenever you get an instance of <code>HttpContext</code> you can access the user details by accessing <code>.User</code>
+</p>

@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {MainComponent} from './main/main.component';
+import { RealtimeAuthGuard } from 'ng-realtime-database';
 
 const routes: Routes = [
-  { path: '', component: MainComponent }
+  { path: '', component: MainComponent, canActivate: [ RealtimeAuthGuard ] }
 ];
 
 @NgModule({

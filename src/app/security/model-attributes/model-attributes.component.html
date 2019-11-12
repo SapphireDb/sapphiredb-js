@@ -1,0 +1,17 @@
+<h1>Authorization - Model attributes</h1>
+
+<div class="remark success">
+  Realtime database includes attributes that can be used on models to control what the user can do.
+  Available attributes: <code>[QueryAuth]</code>, <code>[CreateAuth]</code>, <code>[UpdateAuth]</code> and <code>[RemoveAuth]</code>
+</div>
+
+<div class="remark info">
+  Every auth-attribute can be used in three ways.
+  <ol class="decimal">
+    <li>Without attributes: Authentication required</li>
+    <li>Array of strings: The user has to be in one of the given roles</li>
+    <li>String: The string is the name of a boolean-function that is executed for every user</li>
+  </ol>
+</div>
+
+<h2>Basic usage</h2>

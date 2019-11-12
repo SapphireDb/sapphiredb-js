@@ -1,0 +1,77 @@
+<h1>Manage users/roles</h1>
+
+<p>Realtime database includes functionality to manage users and roles</p>
+
+<div class="remark info">
+  The methods for management are only accessible by authenticated users in admin-role in default configuration. You can adjust this on server side.
+</div>
+
+<h2>Query users/roles</h2>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(typescript:auth.component.ts)
+    this.users$ = this.db.auth.info.getUsers();\n
+    this.roles$ = this.db.auth.info.getRoles();
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Create/Update user</h2>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(typescript:auth.component.ts)
+    this.db.auth.info.createUser(\n
+      \t'username'\n
+      \t'email',\n
+      \t'password',\n
+      \t['role1', 'role2'],\n
+      \t{\n
+        \t\t// Additional data (defined in custom user class)\n
+        \t\tfirstName: '...',\n
+        \t\tlastName: '...'\n
+      \t}\n
+    ).subscribe();\n\n
+
+    this.db.auth.info.updateUser(\n
+      \tuserId\n
+      \t'username'\n
+      \t'email',\n
+      \t'password',\n
+      \t['role1', 'role2'],\n
+      \t{\n
+          \t\t// Additional data (defined in custom user class)\n
+          \t\tfirstName: '...',\n
+          \t\tlastName: '...'\n
+        \t}\n
+    ).subscribe();
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Create/Update role</h2>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(typescript:auth.component.ts)
+    this.db.auth.info.createRole('name').subscribe();\n
+    this.db.auth.info.updateRole(roleId, 'name').subscribe();
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Delete user/role</h2>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(typescript:auth.component.ts)
+    this.db.auth.info.deleteUser(userId).subscribe();\n
+    this.db.auth.info.deleteRole(roleId).subscribe();
+    ]]>
+  </div>
+</app-doc>
