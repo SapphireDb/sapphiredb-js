@@ -1,0 +1,67 @@
+<h1>Filter data - Where prefilter</h1>
+
+<p>
+  You can use the <code>where</code>-prefilter to filter the data the server returns.<br>
+  The extension method expects a javascript function that returns a boolean if the value should get queried.
+</p>
+
+<h2>Basic query</h2>
+
+<p>
+  In this small example only values that start with <code>testValue</code> are queried.
+</p>
+
+<app-doc>
+  {{ values$ | async | json }}<br>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+    \tvalues$: Observable<any>;\n\n
+
+    \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+    \tngOnInit() {\n
+    \t\tthis.values$ = this.db.collection('entries')}\n
+      \t\t\t.where(v => v.content.startsWith('testValue'))\n
+      \t\t\t.values();\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<div class="remark success">
+  You can use normal javascript to write your query.
+</div>
+
+<h2>Parameters</h2>
+
+<p>
+  If you need to pass parameters to the query can just append them in the <code>.where()</code> method call<br>
+  You can than use them as parameters in your function.
+</p>
+
+<app-doc>
+  {{ values2$ | async | json }}<br>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+    \tvalues$: Observable<any>;\n\n
+
+    \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+    \tngOnInit() {\n
+    \t\tthis.values$ = this.db.collection('entries')\n
+    \t\t\t.where((v, [x, x2]) => v.content === x || v.content === x2, 'testValue', 'testValue2')\n
+    \t\t\t.values();\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<a routerLink="../order">Continue with order prefilters <span class="mif-arrow-right"></span></a>

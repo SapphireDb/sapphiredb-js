@@ -1,0 +1,37 @@
+<h1>Select data</h1>
+
+<p>
+  You can use the <code>select</code> prefilter to select specific data
+</p>
+
+<p>
+  In this example the content is selected directly.<br>
+  It is not possible to update selected values directly because information like primary keys get lost.
+</p>
+
+<app-doc>
+  {{ values$ | async | json }}<br>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+      \tvalues$: Observable<any>;\n
+
+      \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+      \tngOnInit() {\n
+    \t\tthis.values$ = this.db.collection<any>('entries')\n
+    \t\t\t.select(v => v.content.toUpperCase())\n
+    \t\t\t.values();\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<div class="remark info">
+  Just like all other prefilters with js-method as selector you can pass additional parameters.
+</div>
+
+<a routerLink="../count">Continue with count prefilter <span class="mif-arrow-right"></span></a>

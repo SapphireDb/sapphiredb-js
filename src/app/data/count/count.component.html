@@ -1,0 +1,27 @@
+<h1>Count data</h1>
+
+<p>
+  You can use the <code>count</code> prefilter to count the values of your collection.
+</p>
+
+<app-doc>
+  {{ values$ | async | json }}<br>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+      \tvalues$: Observable<number>;\n
+
+      \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+      \tngOnInit() {\n
+    \t\tthis.values$ = this.db.collection<any>('entries')\n
+    \t\t\t.count()\n
+    \t\t\t.values();\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+

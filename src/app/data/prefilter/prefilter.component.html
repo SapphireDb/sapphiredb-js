@@ -1,0 +1,34 @@
+<h1>Prefilters</h1>
+
+<p>Realtime database comes with several prefilters that are executed on server side. You can use them to filter, order or select your data.</p>
+
+<p>
+  The usage is very easy. Just use the extension methods on the collection.
+</p>
+
+<p>
+  In this small example only values that start with <code>testValue</code> are queried.
+</p>
+
+<app-doc>
+  {{ values$ | async | json }}<br>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+    \tvalues$: Observable<any>;\n\n
+
+    \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+    \tngOnInit() {\n
+    \t\tthis.values$ = this.db.collection('entries')}\n
+      \t\t\t.where(v => v.content.startsWith('testValue'))\n
+      \t\t\t.values();\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<a routerLink="../where">Continue with where prefilter <span class="mif-arrow-right"></span></a>

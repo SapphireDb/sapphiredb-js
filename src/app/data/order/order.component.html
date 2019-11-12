@@ -1,0 +1,53 @@
+<h1>Order data - OrderBy/ThenOrderBy prefilter</h1>
+
+<p>
+  You can use the <code>orderBy</code>-prefilter to change the ordering of the data the server returns.<br>
+  The extension method expects a javascript function that returns the object that should used for sorting.
+</p>
+
+<p>
+  In this example the values are sorted by content. The first example is in ascending order, the second in descending order.
+</p>
+
+<app-doc>
+  {{ values$ | async | json }}<br><br>
+  {{ values2$ | async | json }}<br>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+      \tvalues$: Observable<any>;\n
+      \tvalues2$: Observable<any>;\n\n
+
+      \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+      \tngOnInit() {\n
+        \t\tthis.values$ = this.db.collection<any>('entries')\n
+          \t\t\t.orderBy(v => v.content, false)\n
+          \t\t\t.values();\n\n
+
+        \t\tthis.values2$ = this.db.collection<any>('entries')\n
+          \t\t\t.orderBy(v => v.content, true)\n
+          \t\t\t.values();\n
+      \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<div class="remark success">
+  The second parameter of the method is used to define the direction of sorting. If false the values are sorted in ascending order, if true in descending order.
+</div>
+
+<div class="remark info">
+  If you want to sort by more than one object use <code>thenOrderBy</code> for following sorting statements.
+</div>
+
+<h2>Parameters</h2>
+
+<p>
+  The <code>orderBy</code> and <code>thanOrderBy</code> methods allow parameters just like the <code>where</code>-Prefilter
+</p>
+
+<a routerLink="../limit">Continue with limit prefilters <span class="mif-arrow-right"></span></a>
