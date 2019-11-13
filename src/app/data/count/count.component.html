@@ -16,7 +16,7 @@
       \tconstructor(private db: RealtimeDatabase) { }\n\n
 
       \tngOnInit() {\n
-    \t\tthis.values$ = this.db.collection<any>('entries')\n
+    \t\tthis.values$ = this.db.collection<Entry>('entries')\n
     \t\t\t.count()\n
     \t\t\t.values();\n
     \t}\n

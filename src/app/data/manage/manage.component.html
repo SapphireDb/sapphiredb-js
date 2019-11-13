@@ -11,14 +11,14 @@
     <![CDATA[
     \f:(typescript:demo.component.ts)
     export class DemoComponent implements OnInit {\n
-      \tcollection: DefaultCollection<any>;\n
-      \tvalues$: Observable<any>;\n\n
+      \tcollection: DefaultCollection<Entry>;\n
+      \tvalues$: Observable<Entry[]>;\n\n
 
       \tconstructor(private db: RealtimeDatabase) { }\n\n
 
       \tngOnInit() {\n
         \t\t// Use a collection object to easily access the methods of a collection\n
-        \t\tthis.collection = this.db.collection('entries', 'demo');\n
+        \t\tthis.collection = this.db.collection<Entry>('entries', 'demo');\n
         \t\tthis.values$ = this.collection.values();\n
       \t}\n\n
 
@@ -63,15 +63,15 @@
     <![CDATA[
     \f:(typescript:demo.component.ts)
     export class DemoComponent implements OnInit {\n
-      \tcollection: DefaultCollection<any>;\n
+      \tcollection: DefaultCollection<Entry>;\n
 
       \tconstructor(private db: RealtimeDatabase) { }\n\n
 
       \tngOnInit() {\n
-        \t\tthis.collection = this.db.collection('entries', 'demo');\n
+        \t\tthis.collection = this.db.collection<Entry>('entries', 'demo');\n
       \t}\n\n
 
-      \tdeleteValue(value: any) {\n
+      \tdeleteValue(value: Entry) {\n
         \t\tthis.collection.remove(value).subscribe();\n
       \t}\n
     }
@@ -92,15 +92,15 @@
     <![CDATA[
     \f:(typescript:demo.component.ts)
     export class DemoComponent implements OnInit {\n
-      \tcollection: DefaultCollection<any>;\n
+      \tcollection: DefaultCollection<Entry>;\n
 
       \tconstructor(private db: RealtimeDatabase) { }\n\n
 
       \tngOnInit() {\n
-        \t\tthis.collection = this.db.collection('entries', 'demo');\n
+        \t\tthis.collection = this.db.collection<Entry>('entries', 'demo');\n
       \t}\n\n
 
-      \tupdateValue(value: any) {\n
+      \tupdateValue(value: Entry) {\n
         \t\tthis.collection.update({\n
           \t\t\t...value,\n
           \t\t\tcontent: v\n

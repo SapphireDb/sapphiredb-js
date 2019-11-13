@@ -4,7 +4,7 @@ import {map} from 'rxjs/operators';
 import {ArrayHelper} from '../helper/array-helper';
 
 export class AuthCollectionInfo {
-  constructor (private collectionInformation: Observable<InfoResponse>) {}
+  constructor (public collectionInformation: Observable<InfoResponse>) {}
 
   /**
    * Check if the collection needs authentication for queries

@@ -8,6 +8,8 @@ import {OrderComponent} from './order/order.component';
 import {LimitComponent} from './limit/limit.component';
 import {SelectComponent} from './select/select.component';
 import {CountComponent} from './count/count.component';
+import {EventsComponent} from './events/events.component';
+import {InfoComponent} from './info/info.component';
 
 
 const routes: Routes = [
@@ -19,6 +21,8 @@ const routes: Routes = [
   { path: 'limit', component: LimitComponent },
   { path: 'select', component: SelectComponent },
   { path: 'count', component: CountComponent },
+  { path: 'info', component: InfoComponent },
+  { path: 'events', component: EventsComponent },
   { path: '', redirectTo: 'query', pathMatch: 'full' }
 ];
 

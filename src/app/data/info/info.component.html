@@ -1,0 +1,64 @@
+<h1>Collection information</h1>
+
+<p>
+  Realtime database includes methods to get information about the collection.
+  This is useful if you dont know if the client instance is allowed to access the collection.
+</p>
+
+<h2>Get collection information</h2>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+    \tinfo: AuthCollectionInfo;\n\n
+
+    \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+    \tngOnInit() {\n
+    \t\tthis.info = this.db.collection('entries').authInfo;\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Check access</h2>
+
+<app-doc>
+  {{ info.collectionInformation | async | json }}
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+    \tvalues$: Observable<any>;\n\n
+
+    \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+    \tngOnInit() {\n
+    \t\tthis.values$ = this.db.collection('entries').values();\n
+    \t}\n
+    }
+
+    \f:(csharp:DemoContext.cs)
+    public class DemoContext : RealtimeDbContext\n
+    {\n
+    \tpublic DemoContext(DbContextOptions<DemoContext> options, RealtimeDatabaseNotifier notifier) : base(options, notifier)\n
+    \t{\n
+    \t}\n\n
+
+    \tpublic DbSet<DemoEntry> Entries { get; set; }\n
+    }
+
+    \f:(csharp:DemoEntry.cs)
+    public class DemoEntry\n
+    {\n
+    \t[Key]\n
+    \tpublic int Id { get; set; }\n\n
+
+    \tpublic string Content { get; set; }\n
+    }
+    ]]>
+  </div>
+</app-doc>

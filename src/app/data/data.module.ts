@@ -10,10 +10,12 @@ import { OrderComponent } from './order/order.component';
 import { LimitComponent } from './limit/limit.component';
 import { SelectComponent } from './select/select.component';
 import { CountComponent } from './count/count.component';
+import { InfoComponent } from './info/info.component';
+import { EventsComponent } from './events/events.component';
 
 
 @NgModule({
-  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent],
+  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent, InfoComponent, EventsComponent],
   imports: [
     SharedModule,
     DataRoutingModule

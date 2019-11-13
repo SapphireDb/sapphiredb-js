@@ -1,6 +1,6 @@
 <h1>Query data</h1>
 
-<p>To create a query is very simple. ng-realtime-database uses RxJs to provide the values of the collection.</p>
+<p>Creating a query is very simple. ng-realtime-database uses RxJs to provide the values of the collection.</p>
 
 <p>
   You can simply query all data of a collection.<br>
@@ -14,12 +14,12 @@
   <![CDATA[
   \f:(typescript:demo.component.ts)
   export class DemoComponent implements OnInit {\n
-    \tvalues$: Observable<any>;\n\n
+    \tvalues$: Observable<Entry[]>;\n\n
 
     \tconstructor(private db: RealtimeDatabase) { }\n\n
 
     \tngOnInit() {\n
-      \t\tthis.values$ = this.db.collection('entries').values();\n
+      \t\tthis.values$ = this.db.collection<Entry>('entries').values();\n
     \t}\n
   }
 
@@ -53,12 +53,12 @@
     <![CDATA[
     \f:(typescript:demo.component.ts)
     export class DemoComponent implements OnInit {\n
-    \tvalues$: Observable<any>;\n\n
+    \tvalues$: Observable<Entry[]>;\n\n
 
     \tconstructor(private db: RealtimeDatabase) { }\n\n
 
     \tngOnInit() {\n
-    \t\tthis.values$ = this.db.collection('entries').snapshot();\n
+    \t\tthis.values$ = this.db.collection<Entry>('entries').snapshot();\n
     \t}\n
     }
     ]]>

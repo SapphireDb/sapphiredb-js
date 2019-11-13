@@ -1,0 +1,44 @@
+<h1>Connection types</h1>
+
+<div class="remark success">
+  Realtime database supports different types of connection. This makes client implementations very easy.
+</div>
+
+<h2>Websocket</h2>
+
+<div class="remark info">
+  Websocket is a modern technology for bi-directional data transfer. The server and client can push data through the connection.
+</div>
+
+<h2>Server sent events</h2>
+
+<div class="remark info">
+  Server sent events use an open connection that can be used by the server to push data to the client. The client can send
+  data using normal http requests.
+</div>
+
+<h2>Change connection type</h2>
+
+<div class="remark success">
+  ng-realtime-database automatically switches the connection type to one the client supports. You can also define it manually.
+</div>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(typescript:app.module.ts)
+    @NgModule({\n
+      \t...\n
+      \timports: [\n
+        \t\t...\n
+        \t\tRealtimeDatabaseModule.config({\n
+          \t\t\tconnectionType: 'websocket' or 'sse'\n
+        \t\t}),\n
+      \t\t...\n
+      \t],\n
+      \t...\n
+    })\n
+    export class AppModule {}
+    ]]>
+  </div>
+</app-doc>

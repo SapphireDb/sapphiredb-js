@@ -8,10 +8,13 @@ import { AngularComponent } from './angular/angular.component';
 import { ManageComponent } from './manage/manage.component';
 import { AuthorizationComponent } from './authorization/authorization.component';
 import { ModelAttributesComponent } from './model-attributes/model-attributes.component';
+import { AttributesComponent } from './attributes/attributes.component';
+import { ActionAttributesComponent } from './action-attributes/action-attributes.component';
+import { ConnectionManagementComponent } from './connection-management/connection-management.component';
 
 
 @NgModule({
-  declarations: [AuthenticationComponent, NetCoreComponent, AngularComponent, ManageComponent, AuthorizationComponent, ModelAttributesComponent],
+  declarations: [AuthenticationComponent, NetCoreComponent, AngularComponent, ManageComponent, AuthorizationComponent, ModelAttributesComponent, AttributesComponent, ActionAttributesComponent, ConnectionManagementComponent],
   imports: [
     SharedModule,
     SecurityRoutingModule

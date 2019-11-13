@@ -17,17 +17,17 @@
     <![CDATA[
     \f:(typescript:demo.component.ts)
     export class DemoComponent implements OnInit {\n
-      \tvalues$: Observable<any>;\n
-      \tvalues2$: Observable<any>;\n\n
+      \tvalues$: Observable<Entry[]>;\n
+      \tvalues2$: Observable<Entry[]>;\n\n
 
       \tconstructor(private db: RealtimeDatabase) { }\n\n
 
       \tngOnInit() {\n
-        \t\tthis.values$ = this.db.collection<any>('entries')\n
+        \t\tthis.values$ = this.db.collection<Entry>('entries')\n
           \t\t\t.orderBy(v => v.content, false)\n
           \t\t\t.values();\n\n
 
-        \t\tthis.values2$ = this.db.collection<any>('entries')\n
+        \t\tthis.values2$ = this.db.collection<Entry>('entries')\n
           \t\t\t.orderBy(v => v.content, true)\n
           \t\t\t.values();\n
       \t}\n

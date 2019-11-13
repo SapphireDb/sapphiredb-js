@@ -17,12 +17,12 @@
     <![CDATA[
     \f:(typescript:demo.component.ts)
     export class DemoComponent implements OnInit {\n
-    \tvalues$: Observable<any>;\n\n
+    \tvalues$: Observable<Entry[]>;\n\n
 
     \tconstructor(private db: RealtimeDatabase) { }\n\n
 
     \tngOnInit() {\n
-    \t\tthis.values$ = this.db.collection('entries')}\n
+    \t\tthis.values$ = this.db.collection<Entry>('entries')}\n
       \t\t\t.where(v => v.content.startsWith('testValue'))\n
       \t\t\t.values();\n
     \t}\n
