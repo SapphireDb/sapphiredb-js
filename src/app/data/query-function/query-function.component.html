@@ -1,0 +1,45 @@
+<h1>Server - Query function</h1>
+
+<p>
+  If you want to restrict the data of a collection a user can query you have to options.<br>
+  You could add the <code>[QueryAuth]</code> attribute to the model-class. This will lead to one problem. The values first
+  will be queried from the database and then the check is made for every value.<br>
+  To improve performance you can also use <code>[QueryFunction]</code>. This attribute has to reference a static function in
+  your model, that returns a boolean lambda function. This function is then used in the query and executed in the database
+  directly.
+</p>
+
+<h2>Example</h2>
+
+<div class="remark success">
+  You can use dependency injection for the method. Realtime database will provide you the current <code>HttpContext</code> and the instances found in the <code>DI-Container</code>.
+</div>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:Message.cs)
+    [QueryFunction("QueryFunction")]\n
+    public class Message\n
+    {\n
+      \tpublic static Func<Message, bool> QueryFunction(HttpContext context)\n
+      \t{\n
+        \t\tstring userId = context.User.Claims.FirstOrDefault(cl => cl.Type == "Id")?.Value;\n\n
+
+        \t\tif (string.IsNullOrEmpty(userId))\n
+        \t\t{\n
+          \t\t\treturn (m) => false;\n
+        \t\t}\n\n
+
+        \t\treturn (m) => m.UserId == userId || m.ToId == userId;\n
+      \t}\n\n
+
+      \tpublic string UserId { get; set; }\n\n
+
+      \tpublic string ToId { get; set; }\n\n
+
+      \tpublic string Content { get; set; }\n\n
+    }
+    ]]>
+  </div>
+</app-doc>

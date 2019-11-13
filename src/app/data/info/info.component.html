@@ -26,39 +26,36 @@
 
 <h2>Check access</h2>
 
-<app-doc>
-  {{ info.collectionInformation | async | json }}
+<p>ng-realtime-database provides multiple methods to check if the user can access the collection</p>
+
+<app-doc [showContent]="false">
   <div lang>
     <![CDATA[
     \f:(typescript:demo.component.ts)
-    export class DemoComponent implements OnInit {\n
-    \tvalues$: Observable<any>;\n\n
-
-    \tconstructor(private db: RealtimeDatabase) { }\n\n
-
-    \tngOnInit() {\n
-    \t\tthis.values$ = this.db.collection('entries').values();\n
-    \t}\n
-    }
-
-    \f:(csharp:DemoContext.cs)
-    public class DemoContext : RealtimeDbContext\n
-    {\n
-    \tpublic DemoContext(DbContextOptions<DemoContext> options, RealtimeDatabaseNotifier notifier) : base(options, notifier)\n
-    \t{\n
-    \t}\n\n
-
-    \tpublic DbSet<DemoEntry> Entries { get; set; }\n
-    }
-
-    \f:(csharp:DemoEntry.cs)
-    public class DemoEntry\n
-    {\n
-    \t[Key]\n
-    \tpublic int Id { get; set; }\n\n
-
-    \tpublic string Content { get; set; }\n
-    }
+    // Checks if authentication is required for query\n
+    this.info.queryAuth(),\n\n
+    // Checks if the roles can query\n
+    this.info.canQuery(roles),\n\n
+    // Checks if authentication is required for create\n
+    this.info.createAuth(),\n\n
+    // Checks if the roles can create\n
+    this.info.canCreate(roles),\n\n
+    // Checks if authentication is required for update\n
+    this.info.updateAuth(),\n\n
+    // Checks if the roles can update\n
+    this.info.canUpdate(roles),\n\n
+    // Checks if authentication is required for remove\n
+    this.info.removeAuth(),\n\n
+    // Checks if the roles can remove\n
+    this.info.canRemove(roles),\n\n
+    // Checks if authentication is required for query of property firstname\n
+    this.info.queryPropertyAuth('firstName'),\n\n
+    // Checks if the roles can query the property firstname\n
+    this.info.canQueryProperty('firstName', roles),\n\n
+    // Checks if authentication is required for update of firstname\n
+    this.info.updatePropertyAuth('firstName'),\n\n
+    // Checks if the roles can update the property firstname\n
+    this.info.canUpdateProperty('firstName', roles)\n
     ]]>
   </div>
 </app-doc>

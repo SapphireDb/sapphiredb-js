@@ -1,0 +1,108 @@
+<h1>Actions</h1>
+
+<p>
+  Realtime database comes with an alternative for controllers. They are called <code>ActionHandler</code>. You can use them like
+  controllers in Asp.Net. You can define public methods that are exposed through the realtime database.
+</p>
+
+<h2>Basic example</h2>
+
+<div class="remark info">
+  Just create a class in your project and derive it from <code>ActionHandlerBase</code>.<br>
+  You can use dependency injection in the constructor of the class.<br>
+  The methods allow any serializable return type and you can also use async methods.
+</div>
+
+<div class="remark success">
+  Calling the methods on client side is pretty easy. Just pass the name of the handler as first parameter and the name of the method as second.<br>
+  Every other parameters will be used as parameters for the method.
+</div>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:ExampleActions.cs)
+    public class ExampleActions : ActionHandlerBase\n
+    {\n
+      \tprivate readonly ExampleDb db;\n\n
+
+      \tpublic ExampleActions(ExampleDb db)\n
+      \t{\n
+        \tthis.db = db;\n
+      \t}\n\n
+
+      \tpublic async Task<int> AsyncTask()\n
+      \t{\n
+        \t\tfor (int i = 0; i <= 100; i++)\n
+        \t\t{\n
+          \t\t\tThread.Sleep(10);\n
+        \t\t}\n\n
+
+        \t\treturn 33;\n
+      \t}\n\n
+
+      \tpublic string MethodWithParameters(string param1, string param2)\n
+      \t{\n
+        \t\treturn param1 + param2;\n
+      \t}\n\n
+
+      \tpublic void NoReturn()\n
+      \t{\n
+        \t\tConsole.WriteLine("This is a test");\n
+      \t}\n
+    }
+
+    \f:(typescript:actions.component.ts)
+    this.db.execute('example', 'MethodWithParameters', 'parameter1', 'parameter2')\n
+      \t.subscribe(console.log);
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Notifications</h2>
+
+<div class="remark info">
+  Because realtime database allows a bidirectional communication between client and server you can also send data during
+  method execution. This is useful to transfer a state for example.<br>
+  Use the <code>Notify</code>-method in your action handler to achieve that.
+</div>
+
+<div class="remark success">
+  The client side can use the action helper to distinguish between notification and final result.
+</div>
+
+<app-doc>
+  <m4-progress [value]="rangeValue$ | async"></m4-progress><br>
+  <button m4-button (click)="execute()">Execute</button>
+
+  <div lang>
+    <![CDATA[
+    \f:(csharp:AsyncActions.cs)
+    public class AsyncActions : ActionHandlerBase\n
+    {\n
+      \tpublic async Task<string> AsyncDelay()\n
+      \t{\n
+        \t\tfor (int i = 0; i <= 100; i++)\n
+        \t\t{\n
+          \t\t\tawait Task.Delay(10);\n
+          \t\t\tNotify(i);\n
+        \t\t}\n\n
+
+        \t\treturn "complete";\n
+      \t}\n
+    }
+
+    \f:(typescript:async-actions.component.ts)
+    this.db.execute('example', 'MethodWithParameters', 'parameter1', 'parameter2')\n
+      \t.subscribe(ActionHelper.result<string, number>(\n
+        \t\t(result) => {\n
+          \t\t\talert(result);\n
+        \t\t},\n
+        \t\t(notification) => {\n
+          \t\t\tconsole.log(notification);\n
+        \t\t}\n
+      \t)\n
+    );
+    ]]>
+  </div>
+</app-doc>

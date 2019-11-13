@@ -1,1 +1,72 @@
-<p>events works!</p>
+<h1>Server - Events</h1>
+
+<p>Realtime database introduces different event hooks for models that can used to manipulate the behavior of the model when created, updated or removed</p>
+
+<h2>General</h2>
+
+<div class="remark info">
+  The event hook is an attribute that can be applied to the model class.<br>
+  Available event attributes: <code>[CreateEvent]</code>, <code>[UpdateEvent]</code> and <code>[RemoveEvent]</code>
+</div>
+
+<div class="remark success">
+  Each event hook has three parameters. You can define a method name for every parameter.
+  <ul>
+    <li><b>before</b>: The method will get executed before the model get's manipulated by realtime database</li>
+    <li><b>beforeSave</b>: The method will get executed before the model get's stored in database</li>
+    <li><b>after</b>: The method will get executed after the model was stored in database</li>
+  </ul>
+</div>
+
+<h2>Example</h2>
+
+<p>
+  In this example the <code>OnCreate</code>-method is called before the model gets filled with values.
+  This example ensures that the model has the value <code>CreatedOn</code>.
+</p>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:Log.cs)
+    [CreateEvent("OnCreate")]\n
+    public class Log : Base\n
+    {\n
+      \tpublic DateTime CreatedOn { get; set; }\n\n
+
+      \tpublic string Message { get; set; }\n\n
+
+      \tpublic void OnCreate()\n
+      \t{\n
+        \t\tCreatedOn = DateTime.UtcNow;\n
+      \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Dependency Injection</h2>
+
+<div class="remark success">
+  You can use dependency injection for the method. Realtime database will provide you the current <code>HttpContext</code> and the instances found in the <code>DI-Container</code>.
+</div>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:Log.cs)
+    [CreateEvent("OnCreate")]\n
+    public class Log : Base\n
+    {\n
+      \tpublic DateTime CreatedOn { get; set; }\n\n
+
+      \tpublic string Message { get; set; }\n\n
+
+      \tpublic void OnCreate(DemoDb db, HttpContext context)\n
+      \t{\n
+    \t\tCreatedOn = DateTime.UtcNow;\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>

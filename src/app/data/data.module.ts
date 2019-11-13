@@ -12,10 +12,11 @@ import { SelectComponent } from './select/select.component';
 import { CountComponent } from './count/count.component';
 import { InfoComponent } from './info/info.component';
 import { EventsComponent } from './events/events.component';
+import { QueryFunctionComponent } from './query-function/query-function.component';
 
 
 @NgModule({
-  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent, InfoComponent, EventsComponent],
+  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent, InfoComponent, EventsComponent, QueryFunctionComponent],
   imports: [
     SharedModule,
     DataRoutingModule

@@ -6,6 +6,8 @@ const routes: Routes = [
   { path: 'start', loadChildren: () => import('./start/start.module').then(m => m.StartModule) },
   { path: 'data', loadChildren: () => import('./data/data.module').then(m => m.DataModule) },
   { path: 'security', loadChildren: () => import('./security/security.module').then(m => m.SecurityModule) },
+  { path: 'actions', loadChildren: () => import('./actions/actions.module').then(m => m.ActionsModule) },
+  { path: 'messaging', loadChildren: () => import('./messaging/messaging.module').then(m => m.MessagingModule) },
 
   { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [ RealtimeAuthGuard ] },
   { path: 'account', loadChildren: () =>  import('./account/account.module').then(m => m.AccountModule) },

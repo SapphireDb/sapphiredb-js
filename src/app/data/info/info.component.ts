@@ -7,13 +7,8 @@ import {AuthCollectionInfo, RealtimeDatabase} from 'ng-realtime-database';
   styleUrls: ['./info.component.less']
 })
 export class InfoComponent implements OnInit {
-
-  info: AuthCollectionInfo;
-
-  constructor(private db: RealtimeDatabase) { }
+  constructor() { }
 
   ngOnInit() {
-    this.info = this.db.collection('entries', 'demo').authInfo;
   }
-
 }
