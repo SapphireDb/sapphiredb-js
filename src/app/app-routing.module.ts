@@ -8,6 +8,7 @@ const routes: Routes = [
   { path: 'security', loadChildren: () => import('./security/security.module').then(m => m.SecurityModule) },
   { path: 'actions', loadChildren: () => import('./actions/actions.module').then(m => m.ActionsModule) },
   { path: 'messaging', loadChildren: () => import('./messaging/messaging.module').then(m => m.MessagingModule) },
+  { path: 'configuration', loadChildren: () => import('./configuration/configuration.module').then(m => m.ConfigurationModule) },
 
   { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [ RealtimeAuthGuard ] },
   { path: 'account', loadChildren: () =>  import('./account/account.module').then(m => m.AccountModule) },
