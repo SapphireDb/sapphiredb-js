@@ -6,10 +6,11 @@ import { LoginComponent } from './login/login.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import { ManageComponent } from './manage/manage.component';
 import { ConnectionsComponent } from './connections/connections.component';
+import {SharedModule} from '../../shared.module';
 
 @NgModule({
   imports: [
-    CommonModule,
+    SharedModule,
     ReactiveFormsModule,
     AccountRoutingModule
   ],

@@ -4,7 +4,7 @@ import {MainComponent} from './main/main.component';
 import {TestComponent} from './test/test.component';
 import {AuthComponent} from './auth/auth.component';
 import {CollectionTestComponent} from './collection-test/collection-test.component';
-import {AuthGuard} from '../shared/auth.guard';
+import {AuthGuard} from '../auth.guard';
 import {RealtimeAuthGuard} from 'ng-realtime-database';
 import {PrefiltersComponent} from './prefilters/prefilters.component';
 

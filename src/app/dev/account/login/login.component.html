@@ -1,12 +1,12 @@
 <h4>Login</h4>
-<form [formGroup]="form" novalidate (ngSubmit)="login()">
+<form [formGroup]="form" novalidate (submit)="login()">
   <input type="text" required name="email" placeholder="Email" formControlName="email" />
   <input type="password" required name="password" placeholder="Password" formControlName="password" />
 
   <input type="submit" value="Login" />
 </form>
 
-<button (click)="createUser()">Create new User</button>
+<button m4-button (click)="createUser()">Create new User</button>
 
 <div *ngFor="let user of users$ | async" (click)="select(user)">
   {{user | json}}

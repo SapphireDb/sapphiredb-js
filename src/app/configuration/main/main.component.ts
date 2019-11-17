@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import {RealtimeDatabase} from 'ng-realtime-database';
+import {Observable, of, Subject} from 'rxjs';
+import {debounce, debounceTime, filter, map, switchMap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-main',
@@ -7,9 +10,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainComponent implements OnInit {
 
-  constructor() { }
+  input$ = new Subject<string>();
+  hash$: Observable<string>;
+
+  constructor(private db: RealtimeDatabase) { }
 
   ngOnInit() {
+    this.hash$ = this.input$.pipe(
+      debounceTime(200),
+      filter(v => !!v),
+      switchMap((v) => {
+        return this.db.execute<string, null>('Example', 'CreateHash', v).pipe(
+          map(r => r.result)
+        );
+      })
+    );
   }
-
 }

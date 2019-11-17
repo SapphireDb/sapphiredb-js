@@ -57,7 +57,12 @@
 
     <li><a routerLink="configuration">Configuration</a></li>
 
-    <li><a routerLink="demos">Demos</a></li>
+    <li>
+      <a href="#" class="dropdown-toggle">Demos</a>
+      <ul class="d-menu" data-role="dropdown">
+        <li><a routerLink="demos/chat">Chat</a></li>
+      </ul>
+    </li>
 
     <li>
       <a href="https://github.com/morrisjdev/RealtimeDatabase" target="_blank">
@@ -70,19 +75,6 @@
 
 <div class="container-fluid">
   <div class="row flex-xl-nowrap">
-<!--    <div class="col-12">-->
-<!--      <h1>Demo Client for Realtime Database</h1>-->
-
-<!--      {{ status$ | async }}-->
-
-<!--      <button m4-button (click)="logout()">Logout</button>-->
-
-<!--      <p *ngIf="(userInfo$ | async) as user">-->
-<!--        Username: {{user.userName}}<br>-->
-<!--        {{user | json}}-->
-<!--      </p>-->
-<!--    </div>-->
-
     <div [ngClass]="router.url === '/start/main' ? 'cell-12' : 'cell-md-8 offset-md-2'">
       <router-outlet></router-outlet>
     </div>

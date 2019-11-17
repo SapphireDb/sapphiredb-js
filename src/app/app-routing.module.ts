@@ -1,6 +1,5 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import {RealtimeAuthGuard} from 'ng-realtime-database';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 
 const routes: Routes = [
   { path: 'start', loadChildren: () => import('./start/start.module').then(m => m.StartModule) },
@@ -9,10 +8,9 @@ const routes: Routes = [
   { path: 'actions', loadChildren: () => import('./actions/actions.module').then(m => m.ActionsModule) },
   { path: 'messaging', loadChildren: () => import('./messaging/messaging.module').then(m => m.MessagingModule) },
   { path: 'configuration', loadChildren: () => import('./configuration/configuration.module').then(m => m.ConfigurationModule) },
+  { path: 'demos', loadChildren: () => import('./demos/demos.module').then(m => m.DemosModule) },
 
-  { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [ RealtimeAuthGuard ] },
-  { path: 'account', loadChildren: () =>  import('./account/account.module').then(m => m.AccountModule) },
-  { path: 'message', loadChildren: () => import('./message/message.module').then(m => m.MessageModule)/*, canActivate: [AuthGuard]*/ },
+  { path: 'dev', loadChildren: () => import('./dev/dev.module').then(m => m.DevModule) },
 
   { path: '', redirectTo: 'start', pathMatch: 'full' }
 ];

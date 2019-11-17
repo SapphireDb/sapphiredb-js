@@ -1,0 +1,122 @@
+<h1>Demos - Chat</h1>
+
+<m4-panel title="Source" [collapsible]="true" [collapsed]="true">
+  <app-doc [showContent]="false">
+    <div lang>
+      <![CDATA[
+      \f:(typescript:chat.component.ts)
+      export class ChatComponent implements OnInit {\n
+        \tfrom: string;\n
+        \tto: string;\n
+        \tmessage: string;\n\n
+
+        \tfrom$ = new ReplaySubject<string>();\n
+        \tto$ = new ReplaySubject<string>();\n\n
+
+        \tmessages$: Observable<Message[]>;\n\n
+
+        \tmessageCollection: DefaultCollection<Message>;\n\n
+
+        \tconstructor(private db: RealtimeDatabase) { }\n\n
+
+        \tngOnInit() {\n
+          \t\t// Get the collection\n
+          \t\tthis.messageCollection = this.db.collection<Message>('messages', 'demo');\n\n
+
+          \t\t// Creates an observable that changes the loaded messages when from or to change\n
+          \t\tthis.messages$ = combineLatest([this.from$, this.to$]).pipe(\n
+            \t\t\t// Add a delay to the input of from and to\n
+            \t\t\tdebounceTime(200),\n
+            \t\t\t// Map the from and to values to the actual messages\n
+            \t\t\tswitchMap(([from, to]: [string, string]) => {\n
+              \t\t\t\tif (!from || !to) {\n
+                \t\t\t\t\treturn of([]);\n
+              \t\t\t\t}\n\n
+
+              \t\t\t\t// The actual logic for message loading\n
+              \t\t\t\treturn this.messageCollection\n
+                \t\t\t\t\t.where((m, [valueFrom, valueTo]) => (m.from === valueFrom || m.to === valueFrom) && (m.to === valueTo || m.from === valueTo), from, to)\n
+                \t\t\t\t\t.values();\n
+            \t\t\t})\n
+          \t\t);\n
+        \t}\n\n
+
+        \tsend() {\n
+          \t\tif (!!this.message) {\n
+            \t\t\tthis.messageCollection.add({\n
+              \t\t\t\tfrom: this.from,\n
+              \t\t\t\tto: this.to,\n
+              \t\t\t\tcontent: this.message\n
+            \t\t\t}).subscribe();\n\n
+
+            \t\t\tthis.message = '';\n
+          \t\t}\n
+        \t}\n
+      }
+      \f:(html:chat.component.html)
+      <div class="row">\n
+        \t<div class="cell-md-6">\n
+          \t\t<m4-input [(ngModel)]="from" (ngModelChange)="from$.next($event)" prepend="From"></m4-input>\n
+        \t</div>\n
+        \t<div class="cell-md-6">\n
+          \t\t<m4-input [(ngModel)]="to" (ngModelChange)="to$.next($event)" prepend="To"></m4-input>\n
+        \t</div>\n
+        \t<div class="cell-12" *ngIf="from && to">\n
+          \t\t<m4-input [(ngModel)]="message" prepend="Message" (keyup.enter)="send()" (search-button-click)="send()" search-button="true" search-button-icon="<span class='mif-paper-plane'></span>"></m4-input>\n
+        \t</div>\n
+      </div>\n\n
+
+      <ng-container *ngIf="from && to">\n
+        \t<h2>Messages</h2>\n\n
+
+        \t<blockquote *ngFor="let message of messages$ | async" [class.right-side]="message.from === from">\n
+          \t\t<p [innerText]="message.content"></p>\n
+        \t</blockquote>\n
+      </ng-container>
+
+      \f:(csharp:Message.cs)
+      public class Message\n
+      {\n
+        \tpublic Message()\n
+        \t{\n
+          \t\tCreatedOn = DateTime.UtcNow;\n
+        \t}\n\n
+
+        \t[Key]\n
+        \tpublic int Id { get; set; }\n\n
+
+        \tpublic DateTime CreatedOn { get; set; }\n\n
+
+        \tpublic string From { get; set; }\n\n
+
+        \tpublic string To { get; set; }\n\n
+
+        \tpublic string Content { get; set; }\n
+      }
+      ]]>
+    </div>
+  </app-doc>
+</m4-panel>
+
+<p>To start chatting first enter names in fields from and to:</p>
+
+<div class="row">
+  <div class="cell-md-6">
+    <m4-input [(ngModel)]="from" (ngModelChange)="from$.next($event)" prepend="From"></m4-input>
+  </div>
+  <div class="cell-md-6">
+    <m4-input [(ngModel)]="to" (ngModelChange)="to$.next($event)" prepend="To"></m4-input>
+  </div>
+  <div class="cell-12" *ngIf="from && to">
+    <m4-input [(ngModel)]="message" prepend="Message" (keyup.enter)="send()" (search-button-click)="send()" search-button="true" search-button-icon="<span class='mif-paper-plane'></span>"></m4-input>
+  </div>
+</div>
+
+<ng-container *ngIf="from && to">
+  <h2>Messages</h2>
+
+  <blockquote *ngFor="let message of messages$ | async" [class.right-side]="message.from === from">
+    <p>{{ message.content }}</p>
+    <small>{{ message.from }} {{ message.createdOn | date:'hh:mm dd.MM.yyyy' }}</small>
+  </blockquote>
+</ng-container>

@@ -3,7 +3,7 @@ import {ActionHelper, ActionResult, DefaultCollection, ExecuteResponseType, Real
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {User} from '../../model/user';
 import {concatMap, debounceTime, filter, map, shareReplay, switchMap, take, takeWhile} from 'rxjs/operators';
-import {AccountService} from '../../shared/services/account.service';
+import {AccountService} from '../../services/account.service';
 import {Log} from '../../model/log';
 
 @Component({

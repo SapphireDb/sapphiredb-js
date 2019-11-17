@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {AccountService} from '../../shared/services/account.service';
+import {AccountService} from '../../services/account.service';
 import {RealtimeDatabase, UserData} from 'ng-realtime-database';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AppUser} from '../../model/app-user';
-import {ActionResult} from '../../../../projects/ng-realtime-database/src/lib/models/action-result';
+import {ActionResult} from '../../../../../projects/ng-realtime-database/src/lib/models/action-result';
 
 @Component({
   selector: 'app-login',

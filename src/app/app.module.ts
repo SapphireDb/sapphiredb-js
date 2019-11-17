@@ -38,8 +38,8 @@ export function hljsLanguages() {
     HttpClientModule,
     RealtimeDatabaseModule.config({
       serverBaseUrl: environment.serverBaseUrl,
-      loginRedirect: 'account/login',
-      unauthorizedRedirect: 'account/unauthorized',
+      loginRedirect: 'dev/account/login',
+      unauthorizedRedirect: 'dev/account/unauthorized',
       apiSecret: 'pw1234',
       apiKey: 'webapp',
       connectionType: 'websocket'
