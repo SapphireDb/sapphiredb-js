@@ -37,7 +37,7 @@ export function hljsLanguages() {
     ReactiveFormsModule,
     HttpClientModule,
     RealtimeDatabaseModule.config({
-      serverBaseUrl: environment.serverBaseUrl,
+      // serverBaseUrl: environment.serverBaseUrl,
       loginRedirect: 'dev/account/login',
       unauthorizedRedirect: 'dev/account/unauthorized',
       apiSecret: 'pw1234',
