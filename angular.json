@@ -23,8 +23,9 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
+              "src/favicon.ico",
               "src/assets",
-              "src/manifest.webmanifest"
+              "src/manifest.json"
             ],
             "styles": [
               "src/styles.less"
@@ -49,7 +50,16 @@
               "vendorChunk": false,
               "buildOptimizer": true,
               "serviceWorker": true,
-              "ngswConfigPath": "ngsw-config.json"
+              "ngswConfigPath": "ngsw-config.json",
+              "assets": [
+                "src/favicon.ico",
+                "src/manifest.json",
+                {
+                  "glob": "**",
+                  "input": "src/assets/icon/",
+                  "output": "/icon/"
+                }
+              ]
             }
           }
         },
@@ -82,8 +92,9 @@
             ],
             "scripts": [],
             "assets": [
+              "src/favicon.ico",
               "src/assets",
-              "src/manifest.webmanifest"
+              "src/manifest.json"
             ]
           }
         },
