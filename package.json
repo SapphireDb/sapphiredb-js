@@ -20,6 +20,7 @@
     "@angular/platform-browser": "~8.1.0",
     "@angular/platform-browser-dynamic": "~8.1.0",
     "@angular/router": "~8.1.0",
+    "@angular/service-worker": "~8.1.0",
     "core-js": "^2.5.4",
     "faker": "^4.1.0",
     "highlight.js": "^9.16.2",
