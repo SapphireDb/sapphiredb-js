@@ -44,11 +44,11 @@ export class CollectionBase<T, Y> {
 
     return <Observable<Y>>this.connectionManagerService.sendCommand(queryCommand).pipe(
       map((response: QueryResponse) => {
-        let array = response.result;
+        const array = response.result;
 
-        for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(this.prefilters)) {
-          array = prefilter.execute(array);
-        }
+        // for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(this.prefilters)) {
+        //   array = prefilter.execute(array);
+        // }
 
         return array;
       })
@@ -75,9 +75,9 @@ export class CollectionBase<T, Y> {
         this.collectionValuesService.removeCollectionValue(this.collectionName, collectionValue);
       }
     }), pipe(map((array: T[]) => {
-      for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(prefilters)) {
-        array = prefilter.execute(array);
-      }
+      // for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(prefilters)) {
+      //   array = prefilter.execute(array);
+      // }
 
       return array;
     })));
