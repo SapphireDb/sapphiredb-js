@@ -1,5 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
+import {LegalDisclosureComponent} from './shared/legal-disclosure/legal-disclosure.component';
+import {PrivacyComponent} from './shared/privacy/privacy.component';
 
 const routes: Routes = [
   { path: 'start', loadChildren: () => import('./start/start.module').then(m => m.StartModule) },
@@ -11,6 +13,9 @@ const routes: Routes = [
   { path: 'demos', loadChildren: () => import('./demos/demos.module').then(m => m.DemosModule) },
 
   { path: 'dev', loadChildren: () => import('./dev/dev.module').then(m => m.DevModule) },
+
+  { path: 'legal-details', component: LegalDisclosureComponent },
+  { path: 'privacy', component: PrivacyComponent },
 
   { path: '', redirectTo: 'start', pathMatch: 'full' }
 ];

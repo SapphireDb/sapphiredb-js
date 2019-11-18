@@ -16,6 +16,9 @@ import {HttpClientModule} from '@angular/common/http';
 import {environment} from '../environments/environment';
 import {HighlightModule} from 'ngx-highlightjs';
 import {SharedModule} from './shared.module';
+import {LegalDisclosureComponent} from './shared/legal-disclosure/legal-disclosure.component';
+import {PrivacyComponent} from './shared/privacy/privacy.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 export function hljsLanguages() {
   return [
@@ -31,6 +34,8 @@ export function hljsLanguages() {
 @NgModule({
   declarations: [
     AppComponent,
+    LegalDisclosureComponent,
+    PrivacyComponent
   ],
   imports: [
     BrowserModule,
@@ -48,7 +53,8 @@ export function hljsLanguages() {
       languages: hljsLanguages
     }),
     AppRoutingModule,
-    SharedModule
+    SharedModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   bootstrap: [AppComponent]
 })

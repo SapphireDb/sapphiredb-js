@@ -1,82 +1,114 @@
-<header class="app-bar bg-blue fg-white" data-role="appbar" data-expand-point="md">
-  <a routerLink="" class="d-block brand fg-white no-hover">
-    <span class="border bd-white border-radius p-2">Realtime database</span>
-  </a>
-  <ul class="app-bar-menu ml-auto">
-    <li>
-      <a href="#" class="dropdown-toggle">Home</a>
-      <ul class="d-menu" data-role="dropdown">
-        <li><a routerLink="start">Start</a></li>
-        <li class="divider bg-lightGray"></li>
-        <li><a routerLink="start/net-core">Server - Asp.Net Core</a></li>
-        <li><a routerLink="start/angular">Client - Angular</a></li>
-        <li class="divider bg-lightGray"></li>
-        <li><a routerLink="start/connection-types">Connection types</a></li>
-      </ul>
-    </li>
+<div class="page-container">
+  <header class="app-bar bg-darkBlue fg-white" data-role="appbar" data-expand-point="md">
+    <a routerLink="" class="d-block brand fg-white no-hover">
+      <span class="border bd-white border-radius p-2">Realtime database</span>
+    </a>
+    <ul class="app-bar-menu ml-auto">
+      <li>
+        <a href="#" class="dropdown-toggle">Home</a>
+        <ul class="d-menu" data-role="dropdown">
+          <li><a routerLink="start">Start</a></li>
+          <li class="divider bg-lightGray"></li>
+          <li><a routerLink="start/net-core">Server - Asp.Net Core</a></li>
+          <li><a routerLink="start/angular">Client - Angular</a></li>
+          <li class="divider bg-lightGray"></li>
+          <li><a routerLink="start/connection-types">Connection types</a></li>
+        </ul>
+      </li>
 
-    <li>
-      <a href="#" class="dropdown-toggle">Data</a>
-      <ul class="d-menu" data-role="dropdown">
-        <li><a routerLink="data">Query data</a></li>
-        <li><a routerLink="data/manage">Manage data</a></li>
-        <li class="divider bg-lightGray"></li>
-        <li><a routerLink="data/prefilter">Prefilters</a></li>
-        <li><a routerLink="data/where">Filter data</a></li>
-        <li><a routerLink="data/order">Order data</a></li>
-        <li><a routerLink="data/limit">Limit data</a></li>
-        <li><a routerLink="data/select">Select data</a></li>
-        <li><a routerLink="data/count">Count data</a></li>
-        <li class="divider bg-lightGray"></li>
-        <li><a routerLink="data/info">Collection info</a></li>
-        <li><a routerLink="data/events">Events</a></li>
-        <li><a routerLink="data/query-function">Query function</a></li>
-      </ul>
-    </li>
+      <li>
+        <a href="#" class="dropdown-toggle">Data</a>
+        <ul class="d-menu" data-role="dropdown">
+          <li><a routerLink="data">Query data</a></li>
+          <li><a routerLink="data/manage">Manage data</a></li>
+          <li class="divider bg-lightGray"></li>
+          <li><a routerLink="data/prefilter">Prefilters</a></li>
+          <li><a routerLink="data/where">Filter data</a></li>
+          <li><a routerLink="data/order">Order data</a></li>
+          <li><a routerLink="data/limit">Limit data</a></li>
+          <li><a routerLink="data/select">Select data</a></li>
+          <li><a routerLink="data/count">Count data</a></li>
+          <li class="divider bg-lightGray"></li>
+          <li><a routerLink="data/info">Collection info</a></li>
+          <li><a routerLink="data/events">Events</a></li>
+          <li><a routerLink="data/query-function">Query function</a></li>
+        </ul>
+      </li>
 
-    <li>
-      <a href="#" class="dropdown-toggle">Security</a>
-      <ul class="d-menu" data-role="dropdown">
-        <li><a routerLink="security">Authentication</a></li>
-        <li><a routerLink="security/net-core">Server setup - Asp.Net Core</a></li>
-        <li><a routerLink="security/angular">Client setup - Angular</a></li>
-        <li><a routerLink="security/manage">Manage users/roles</a></li>
-        <li><a routerLink="security/authorization">Authorization</a></li>
-        <li class="divider bg-lightGray"></li>
-        <li><a routerLink="security/attributes">Attributes</a></li>
-        <li><a routerLink="security/model-attributes">Model attributes</a></li>
-        <li><a routerLink="security/action-attributes">Action attributes</a></li>
-        <li class="divider bg-lightGray"></li>
-        <li><a routerLink="security/connection-management">Connection management</a></li>
-      </ul>
-    </li>
+      <li>
+        <a href="#" class="dropdown-toggle">Security</a>
+        <ul class="d-menu" data-role="dropdown">
+          <li><a routerLink="security">Authentication</a></li>
+          <li><a routerLink="security/net-core">Server setup - Asp.Net Core</a></li>
+          <li><a routerLink="security/angular">Client setup - Angular</a></li>
+          <li><a routerLink="security/manage">Manage users/roles</a></li>
+          <li><a routerLink="security/authorization">Authorization</a></li>
+          <li class="divider bg-lightGray"></li>
+          <li><a routerLink="security/attributes">Attributes</a></li>
+          <li><a routerLink="security/model-attributes">Model attributes</a></li>
+          <li><a routerLink="security/action-attributes">Action attributes</a></li>
+          <li class="divider bg-lightGray"></li>
+          <li><a routerLink="security/connection-management">Connection management</a></li>
+        </ul>
+      </li>
 
-    <li><a routerLink="actions">Actions</a></li>
+      <li><a routerLink="actions">Actions</a></li>
 
-    <li><a routerLink="messaging">Messaging</a></li>
+      <li><a routerLink="messaging">Messaging</a></li>
 
-    <li><a routerLink="configuration">Configuration</a></li>
+      <li><a routerLink="configuration">Configuration</a></li>
 
-    <li>
-      <a href="#" class="dropdown-toggle">Demos</a>
-      <ul class="d-menu" data-role="dropdown">
-        <li><a routerLink="demos/chat">Chat</a></li>
-      </ul>
-    </li>
+      <li>
+        <a href="#" class="dropdown-toggle">Demos</a>
+        <ul class="d-menu" data-role="dropdown">
+          <li><a routerLink="demos/chat">Chat</a></li>
+          <li><a routerLink="demos/editor">Editor</a></li>
+        </ul>
+      </li>
 
-    <li>
-      <a href="https://github.com/morrisjdev/RealtimeDatabase" target="_blank">
-        <span class="mif-github mif-2x d-none d-block-md"></span>
-        <span class="d-block d-none-md">Github</span>
-      </a>
-    </li>
-  </ul>
-</header>
+      <li>
+        <a href="https://github.com/morrisjdev/RealtimeDatabase" target="_blank">
+          <span class="mif-github mif-2x d-none d-block-md"></span>
+          <span class="d-block d-none-md">Github</span>
+        </a>
+      </li>
+    </ul>
+  </header>
 
-<div class="container-fluid">
-  <div class="row flex-xl-nowrap">
-    <div [ngClass]="router.url === '/start/main' ? 'cell-12' : 'cell-md-8 offset-md-2'">
-      <router-outlet></router-outlet>
+  <div class="container-fluid page-content">
+    <div class="row">
+      <div [ngClass]="router.url === '/start/main' ? 'cell-12' : 'cell-md-8 offset-md-2'">
+        <router-outlet></router-outlet>
+      </div>
     </div>
   </div>
+
+  <footer class="bg-light footer-position">
+    <div class="container pt-10 pb-10">
+      <div class="text-center">
+        <ul class="inline-list reduce-1" id="social-menu">
+          <li><a href="https://github.com/morrisjdev/RealtimeDatabase" target="_blank">RealtimeDatabase <span class="mif-github"></span></a></li>
+          <li><a href="https://github.com/morrisjdev/ng-realtime-database" target="_blank">ng-realtime-database <span class="mif-github"></span></a></li>
+        </ul>
+      </div>
+
+      <div class="text-center mt-10">
+        <ul class="inline-list reduce-1" id="footer-menu">
+          <li><a href="https://github.com/morrisjdev/RealtimeDatabase/blob/master/LICENSE" target="_blank">License</a></li>
+          <li><a href="https://github.com/morrisjdev" target="_blank">Author</a></li>
+          <li><a href="https://github.com/morrisjdev/RealtimeDatabase/issues" target="_blank">Issues</a></li>
+          <li><a href="https://github.com/morrisjdev/RealtimeDatabase/releases" target="_blank">Releases</a></li>
+          <li><a routerLink="legal-details">Legal details</a></li>
+          <li><a routerLink="privacy">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+
+      <div class="text-center mt-10 reduce-1">
+        ng-realtime-database &copy; 2018-2019 by <a href="https://github.com/morrisjdev" class="no-wrap" target="_blank">morrisjdev</a>.<br>
+        RealtimeDatabase &copy; 2018-2019 by <a href="https://github.com/morrisjdev" class="no-wrap" target="_blank">morrisjdev</a>.
+      </div>
+    </div>
+  </footer>
+
 </div>
