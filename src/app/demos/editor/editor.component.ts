@@ -32,16 +32,16 @@ export class EditorComponent implements OnInit {
       debounceTime(200),
       filter(v => !!v),
       switchMap((name: string) => {
-        const documents$: Observable<Document[]> = this.collection
+        const document$: Observable<Document> = this.collection
           .where((d, [documentName]) => d.name === documentName, name)
-          .take(1)
+          .first()
           .values();
 
-        return documents$.pipe(
+        return document$.pipe(
           skip(1),
-          switchMap((documents: Document[]) => {
-            if (documents.length === 1) {
-              return of(documents[0]);
+          switchMap((document: Document) => {
+            if (!!document) {
+              return of(document);
             }
 
             return this.collection.add({

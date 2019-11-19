@@ -12,6 +12,8 @@ import {SelectPrefilter} from './prefilter/select-prefilter';
 import {CountPrefilter} from './prefilter/count-prefilter';
 import {OrderedCollection} from './ordered-collection';
 import {ConnectionManagerService} from '../connection/connection-manager.service';
+import {FirstPrefilter} from './prefilter/first-prefilter';
+import {LastPrefilter} from './prefilter/last-prefilter';
 
 export class DefaultCollection<T> extends CollectionBase<T, T[]> {
   constructor(collectionName: string,
@@ -78,5 +80,19 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    */
   public count(): ReducedCollection<T, number> {
     return this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters, new CountPrefilter());
+  }
+
+  /**
+   * Get the first element of the collection. Returns null if nothing was found.
+   */
+  public first(): ReducedCollection<T, T> {
+    return this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters, new FirstPrefilter());
+  }
+
+  /**
+   * Get the last element of the collection. Returns null if nothing was found.
+   */
+  public last(): ReducedCollection<T, T> {
+    return this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters, new LastPrefilter());
   }
 }
