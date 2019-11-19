@@ -9,7 +9,7 @@ import {debounceTime, filter} from 'rxjs/operators';
   styleUrls: ['./app.component.less']
 })
 export class AppComponent {
-  constructor(private router: Router, private activityService: ActivityService) {
+  constructor(public router: Router, private activityService: ActivityService) {
     let activity;
 
     this.router.events.pipe(

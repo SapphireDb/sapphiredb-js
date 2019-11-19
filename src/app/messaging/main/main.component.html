@@ -58,3 +58,13 @@
   ]]>
   </div>
 </app-doc>
+
+<h2>Example</h2>
+
+<m4-input prepend="Message" [(ngModel)]="message"></m4-input><br>
+
+<m4-textarea prepend="Message" [ngModel]="message$ | async | json"></m4-textarea>
+<button m4-button (click)="send()">Send</button><br>
+
+<m4-textarea prepend="Topic message" [ngModel]="topic$ | async | json"></m4-textarea>
+<button m4-button (click)="publish()">Publish to topic 'test'</button>

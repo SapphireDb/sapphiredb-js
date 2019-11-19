@@ -1,0 +1,44 @@
+<h1>Server - NLB Configuration</h1>
+
+<p>
+  Realtime database supports running in a NLB configuration. The data between the different instances will be transferred
+  through a webhook-like interface.
+</p>
+
+<h2>General</h2>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(json:appsettings.json)
+    "RealtimeDatabase": {\n
+      \t"Nlb": {\n
+        \t\t"Enabled": true,\n\n
+
+        \t\t// A unique id of the current instance. Will be used in nlb configurations of other instances.\n
+        \t\t"Id": "nlb1"\n\n
+
+        \t\t// Secret for current instance. Should be unique for every instance of the application. Has to be a SHA512 Hash\n
+        \t\t"Secret": "77CF97E34BED553679748144E3676A95942F91EC470BBD7AD9887DC2F0BED0C53A91413F6E366AD25F037222EE4583775B8660A3E5BC72F41066E702A8989851", //= nlbSecret\n\n
+
+        \t\t// Key for encryption of the communication. Has to be the same for all instances.\n
+        \t\t"EncryptionKey": "E546C8DF278CD5931069B522E695D4F2",\n\n
+
+        \t\t// Urls, ids and secrets of all other instances of the application\n
+        \t\t"Entries": [\n
+          \t\t\t{\n
+            \t\t\t\t"Url": "http://localhost:5001",\n
+            \t\t\t\t"Secret": "nlbSecret"\n
+            \t\t\t\t"Id": "nlb2"\n
+          \t\t\t},\n
+          \t\t\t{\n
+            \t\t\t\t"Url": "http://localhost:5002",\n
+            \t\t\t\t"Secret": "nlbSecret"\n
+            \t\t\t\t"Id": "nlb3"\n
+          \t\t\t}\n
+        \t\t]\n
+      \t}\n
+    },
+    ]]>
+  </div>
+</app-doc>

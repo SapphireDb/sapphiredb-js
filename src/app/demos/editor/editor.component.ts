@@ -4,7 +4,7 @@ import {Observable, of, ReplaySubject} from 'rxjs';
 import {debounceTime, filter, map, skip, switchMap} from 'rxjs/operators';
 
 interface Document {
-  id?: number;
+  id?: string;
   name: string;
   content: string;
 }

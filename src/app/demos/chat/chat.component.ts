@@ -8,7 +8,7 @@ interface Message {
   to: string;
   content: string;
   createdOn?: string;
-  id?: number;
+  id?: string;
 }
 
 @Component({
