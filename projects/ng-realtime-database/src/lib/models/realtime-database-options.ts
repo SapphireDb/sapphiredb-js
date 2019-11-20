@@ -1,5 +1,5 @@
 export interface RealtimeDatabaseOptions {
-  connectionType?: 'websocket'|'sse';
+  connectionType?: 'websocket'|'sse'|'poll';
   serverBaseUrl?: string;
   useSsl?: boolean;
   apiKey?: string;

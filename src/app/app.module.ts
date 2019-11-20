@@ -47,7 +47,7 @@ export function hljsLanguages() {
       unauthorizedRedirect: 'dev/account/unauthorized',
       apiSecret: 'pw1234',
       apiKey: 'webapp',
-      connectionType: 'websocket'
+      connectionType: 'poll'
     }),
     HighlightModule.forRoot({
       languages: hljsLanguages

@@ -22,6 +22,7 @@ import {WebsocketConnection} from './websocket-connection';
 import {SseConnection} from './sse-connection';
 import {HttpClient} from '@angular/common/http';
 import {ConnectionState} from '../models/types';
+import {PollConnection} from './poll-connection';
 
 interface SubscribeCommandInfo extends CommandBase {
   sendWithBearer: boolean;
@@ -62,8 +63,10 @@ export class ConnectionManagerService {
     if (!this.options.connectionType) {
       if (!!window['EventSource']) {
         this.options.connectionType = 'sse';
-      } else {
+      } else if (!!window['Websocket']) {
         this.options.connectionType = 'websocket';
+      } else {
+        this.options.connectionType = 'poll';
       }
     }
 
@@ -73,6 +76,9 @@ export class ConnectionManagerService {
         break;
       case 'sse':
         this.connection = new SseConnection(this.httpClient, this.ngZone);
+        break;
+      case 'poll':
+        this.connection = new PollConnection(this.httpClient, this.ngZone);
         break;
     }
 
