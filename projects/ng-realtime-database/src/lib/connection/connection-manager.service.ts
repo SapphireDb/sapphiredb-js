@@ -1,5 +1,5 @@
 import {Inject, Injectable, NgZone} from '@angular/core';
-import {RealtimeDatabaseOptions} from '../models/realtime-database-options';
+import {REALTIME_DATABASE_OPTIONS, RealtimeDatabaseOptions} from '../models/realtime-database-options';
 import {LocalstoragePaths} from '../helper/localstorage-paths';
 import {ConnectionBase} from './connection-base';
 import {CommandBase} from '../models/command/command-base';
@@ -42,7 +42,7 @@ export class ConnectionManagerService {
   public connectionData$: BehaviorSubject<ConnectionResponse>;
   public status$: BehaviorSubject<ConnectionState>;
 
-  constructor(@Inject('realtimedatabase.options') private options: RealtimeDatabaseOptions,
+  constructor(@Inject(REALTIME_DATABASE_OPTIONS) private options: RealtimeDatabaseOptions,
               private httpClient: HttpClient,
               private ngZone: NgZone) {
     this.connectionData$ = new BehaviorSubject<ConnectionResponse>(null);
@@ -68,6 +68,10 @@ export class ConnectionManagerService {
       } else {
         this.options.connectionType = 'poll';
       }
+    }
+
+    if (!this.options.pollingTime) {
+      this.options.pollingTime = 300;
     }
 
     switch (this.options.connectionType) {

@@ -1,11 +1,11 @@
 import {ConnectionResponse} from '../models/response/connection-response';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {NgZone} from '@angular/core';
-import {Observable, Subscription} from 'rxjs';
+import {BehaviorSubject, concat, Observable, of, Subscription} from 'rxjs';
 import {ConnectionState} from '../models/types';
 import {ResponseBase} from '../models/response/response-base';
 import {CommandBase} from '../models/command/command-base';
-import {filter, take} from 'rxjs/operators';
+import {catchError, concatMap, delay, filter, map, skip, take, takeUntil, tap} from 'rxjs/operators';
 import {ConnectionBase} from './connection-base';
 
 export class PollConnection extends ConnectionBase {
@@ -29,34 +29,71 @@ export class PollConnection extends ConnectionBase {
           Authorization: `Bearer ${this.bearer}`
         }
       }).subscribe((response: ConnectionResponse) => {
-        this.connectionData = response;
-        this.connectionResponseHandler(this.connectionData);
-        this.readyState$.next('connected');
-        this.openHandler();
-      }, (error) => {
         setTimeout(() => {
-          this.readyState$.next('disconnected');
+          this.connectionData = response;
+          this.connectionResponseHandler(this.connectionData);
+          this.readyState$.next('connected');
+          this.openHandler();
+          this.startPolling(baseConnectionString);
+        }, 500);
+      }, (error) => {
+        if (error.status === 401) {
+          this.bearer = null;
+        }
+
+        this.readyState$.next('disconnected');
+
+        setTimeout(() => {
           this.connect$();
         }, 1000);
       });
-
-      // this.eventSource.onmessage = (messageEvent) => {
-      //   this.ngZone.run(() => {
-      //     const message: ResponseBase = JSON.parse(messageEvent.data);
-      //
-      //     if (message.responseType === 'ConnectionResponse') {
-      //       this.connectionData = <ConnectionResponse>message;
-      //       this.connectionResponseHandler(this.connectionData);
-      //       this.readyState$.next('connected');
-      //       this.openHandler();
-      //     } else {
-      //       this.messageHandler(message);
-      //     }
-      //   });
-      // };
     }
 
     return this.readyState$.asObservable();
+  }
+
+  startPolling(baseConnectionString: string) {
+    const load$ = new BehaviorSubject(null);
+
+    const whenToRefresh$ = of(null).pipe(
+      delay(this.options.pollingTime),
+      tap(() => load$.next(null)),
+      skip(1),
+    );
+
+    const poll$ = load$.pipe(
+      concatMap(() => {
+        const request$ = this.httpClient.get(baseConnectionString, {
+          headers: {
+            key: this.options.apiKey ? this.options.apiKey : '',
+            secret: this.options.apiSecret ? this.options.apiSecret : '',
+            connectionId: this.connectionData.connectionId,
+            Authorization: `Bearer ${this.bearer}`
+          }
+        });
+
+        return concat(request$, whenToRefresh$);
+      }),
+      takeUntil(
+        this.readyState$.pipe(
+          filter(s => s === 'disconnected')
+        )
+      )
+    );
+
+    poll$.subscribe((responses: ResponseBase[]) => {
+      responses.forEach(response => this.messageHandler(response));
+    }, (error) => {
+      if (error.status === 404) {
+        this.bearer = null;
+      }
+
+      this.readyState$.next('disconnected');
+
+      setTimeout(() => {
+        this.connect$();
+      }, 1000);
+    });
   }
 
   send(object: CommandBase, storedCommand: boolean): Subscription {

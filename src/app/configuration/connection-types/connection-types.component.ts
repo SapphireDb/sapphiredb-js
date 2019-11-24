@@ -12,4 +12,8 @@ export class ConnectionTypesComponent implements OnInit {
   ngOnInit() {
   }
 
+  setConnectionType(type: string) {
+    localStorage.setItem('connectionType', type);
+    location.reload();
+  }
 }

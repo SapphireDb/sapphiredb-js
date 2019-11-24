@@ -10,7 +10,7 @@ import csharp from 'highlight.js/lib/languages/cs';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {RealtimeDatabaseModule} from 'ng-realtime-database';
+import {REALTIME_DATABASE_OPTIONS, RealtimeDatabaseModule, RealtimeDatabaseOptions} from 'ng-realtime-database';
 import {ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {environment} from '../environments/environment';
@@ -31,6 +31,17 @@ export function hljsLanguages() {
   ];
 }
 
+export function createRealtimeOptions(): RealtimeDatabaseOptions {
+  return {
+    // serverBaseUrl: environment.serverBaseUrl,
+    loginRedirect: 'dev/account/login',
+    unauthorizedRedirect: 'dev/account/unauthorized',
+    apiSecret: 'pw1234',
+    apiKey: 'webapp',
+    connectionType: <any>(localStorage.getItem('connectionType') || 'websocket')
+  };
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -41,20 +52,16 @@ export function hljsLanguages() {
     BrowserModule,
     ReactiveFormsModule,
     HttpClientModule,
-    RealtimeDatabaseModule.config({
-      // serverBaseUrl: environment.serverBaseUrl,
-      loginRedirect: 'dev/account/login',
-      unauthorizedRedirect: 'dev/account/unauthorized',
-      apiSecret: 'pw1234',
-      apiKey: 'webapp',
-      connectionType: 'poll'
-    }),
+    RealtimeDatabaseModule,
     HighlightModule.forRoot({
       languages: hljsLanguages
     }),
     AppRoutingModule,
     SharedModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+  ],
+  providers: [
+    { provide: REALTIME_DATABASE_OPTIONS, useFactory: createRealtimeOptions }
   ],
   bootstrap: [AppComponent]
 })

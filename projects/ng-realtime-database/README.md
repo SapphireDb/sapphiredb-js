@@ -20,21 +20,7 @@ npm install ng-realtime-database -S
 ```
 imports: [
     BrowserModule,
-    ...,
     RealtimeDatabaseModule, 
-]
-```
-
-or using custom configuration
-
-```
-imports: [
-    BrowserModule,
-    ...,
-    RealtimeDatabaseModule.config({
-        serverBaseUrl: `${location.hostname}:${location.port}`,
-        useSecuredSocket: false
-    }) 
 ]
 ```
 

@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RealtimeDatabase} from './realtime-database.service';
-import {RealtimeDatabaseOptions} from './models/realtime-database-options';
+import {REALTIME_DATABASE_OPTIONS, RealtimeDatabaseOptions} from './models/realtime-database-options';
 import {CollectionInformationService} from './collection-information.service';
 import {CollectionManagerService} from './collection-manager.service';
 import {RealtimeAuthGuard} from './realtime-auth.guard';
@@ -21,17 +21,25 @@ const defaultOptions: RealtimeDatabaseOptions = {
     CollectionInformationService,
     CollectionManagerService,
     CollectionValuesService,
-    { provide: 'realtimedatabase.options', useValue: defaultOptions},
+    { provide: REALTIME_DATABASE_OPTIONS, useValue: defaultOptions },
     RealtimeAuthGuard
   ]
 })
 export class RealtimeDatabaseModule {
-  static config(options: RealtimeDatabaseOptions) {
-    return {
-      ngModule: RealtimeDatabaseModule,
-      providers: [
-        { provide: 'realtimedatabase.options', useValue: options }
-      ]
-    };
-  }
+  // static config(options: (RealtimeDatabaseOptions|{ builder: () => RealtimeDatabaseOptions })) {
+  //   let optionsObject: RealtimeDatabaseOptions;
+  //
+  //   if (!!(<any>options).builder && typeof (<any>options).builder === 'function') {
+  //     optionsObject = (<any>options).builder();
+  //   } else {
+  //     optionsObject = <RealtimeDatabaseOptions>options;
+  //   }
+  //
+  //   return {
+  //     ngModule: RealtimeDatabaseModule,
+  //     providers: [
+  //       { provide: 'realtimedatabase.options', useValue: optionsObject }
+  //     ]
+  //   };
+  // }
 }

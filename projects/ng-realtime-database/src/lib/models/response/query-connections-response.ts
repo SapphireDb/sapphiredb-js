@@ -6,8 +6,14 @@ export interface QueryConnectionsResponse extends ResponseBase {
 
 export interface RealtimeConnection {
   id: string;
-  userId: string;
+  information: HttpInformation;
+  type: 'Websocket'|'SSE'|'Poll';
+}
+
+export interface HttpInformation {
+  remotePort: number;
+  localPort: number;
+  userId?: string;
   userAgent?: string;
-  type: 'Websocket';
   apiName: string;
 }

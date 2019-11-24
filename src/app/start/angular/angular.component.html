@@ -24,16 +24,22 @@
     <![CDATA[
     \f:(typescript:app.module.ts)
     @NgModule({\n
-      \t...\n
       \timports: [\n
-        \t\t...\n
-        \t\tRealtimeDatabaseModule.config({\n
-          \t\t\tserverBaseUrl: environment.serverBaseUrl,\n
-          \t\t\tconnectionType: 'websocket'\n
-      \t\t}),\n
-      \t\t...\n
+        \t\tRealtimeDatabaseModule\n
       \t],\n
-      \t...\n
+      \tproviders: [\n
+        \t\t{\n
+          \t\t\tprovide: REALTIME_DATABASE_OPTIONS,\n
+          \t\t\tuseValue: {\n
+            \t\t\t\tserverBaseUrl: environment.serverBaseUrl,\n
+            \t\t\t\tloginRedirect: 'dev/account/login',\n
+            \t\t\t\tunauthorizedRedirect: 'dev/account/unauthorized',\n
+            \t\t\t\tapiSecret: 'pw1234',\n
+            \t\t\t\tapiKey: 'webapp',\n
+            \t\t\t\tconnectionType: 'websocket'\n
+          \t\t\t}\n
+        \t\t}\n
+      \t],\n
     })\n
     export class AppModule {}
     ]]>
@@ -41,8 +47,8 @@
 </app-doc>
 
 <div class="remark success">
-  You can skip <code>serverBaseUrl</code>. ng-realtime-database will automatically get the current url, port and protocol and call the correct endpoint.<br>
-  <code>connectionType</code> is also not required and ng-realtime-database will figure out a working connection type for your client.
+  <code>REALTIME_DATABASE_OPTIONS</code> is optional. ng-realtime-database will automatically get the current url, port and protocol and call the correct endpoint.<br>
+  ng-realtime-database will also figure out a working connection type for your client.
 </div>
 
 <h3>Access the database</h3>

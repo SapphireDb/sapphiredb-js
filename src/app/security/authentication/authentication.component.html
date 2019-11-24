@@ -48,12 +48,21 @@
   <div lang>
     <![CDATA[
     \f:(typescript:app.module.ts)
-    RealtimeDatabaseModule.config({\n
-      \t...\n
-      \tloginRedirect: 'account/login',\n
-      \tunauthorizedRedirect: 'account/unauthorized',\n
-      \t...\n
-    }),
+    @NgModule({\n
+      \timports: [\n
+        \t\tRealtimeDatabaseModule\n
+      \t],\n
+      \tproviders: [\n
+        \t\t{\n
+    \t\t\tprovide: REALTIME_DATABASE_OPTIONS,\n
+    \t\t\tuseValue: {\n
+            \t\t\t\tloginRedirect: 'dev/account/login',\n
+            \t\t\t\tunauthorizedRedirect: 'dev/account/unauthorized',\n
+          \t\t\t}\n
+    \t\t}\n
+      \t],\n
+    })\n
+    export class AppModule {}
     ]]>
   </div>
 </app-doc>
