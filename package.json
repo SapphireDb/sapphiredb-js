@@ -24,7 +24,7 @@
     "core-js": "^2.5.4",
     "faker": "^4.1.0",
     "highlight.js": "^9.16.2",
-    "metro4": "^4.3.3",
+    "metro4": "^4.3.4",
     "moment": "^2.24.0",
     "ng-metro4": "^1.0.7",
     "ngx-highlightjs": "^3.0.3",
