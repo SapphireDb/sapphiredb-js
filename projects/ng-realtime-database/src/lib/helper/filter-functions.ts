@@ -1,5 +1,5 @@
-import {IPrefilter} from '../models/prefilter/iprefilter';
-import {CollectionData} from '../models/collection-data';
+import {IPrefilter} from '../collection/prefilter/iprefilter';
+import {CollectionData} from '../collection/collection-data';
 
 // @dynamic
 export class FilterFunctions {

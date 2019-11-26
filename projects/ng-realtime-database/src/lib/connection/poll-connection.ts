@@ -1,10 +1,10 @@
-import {ConnectionResponse} from '../models/response/connection-response';
+import {ConnectionResponse} from '../command/connection/connection-response';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {NgZone} from '@angular/core';
 import {BehaviorSubject, concat, Observable, of, Subscription} from 'rxjs';
 import {ConnectionState} from '../models/types';
-import {ResponseBase} from '../models/response/response-base';
-import {CommandBase} from '../models/command/command-base';
+import {ResponseBase} from '../command/response-base';
+import {CommandBase} from '../command/command-base';
 import {catchError, concatMap, delay, filter, map, skip, take, takeUntil, tap} from 'rxjs/operators';
 import {ConnectionBase} from './connection-base';
 

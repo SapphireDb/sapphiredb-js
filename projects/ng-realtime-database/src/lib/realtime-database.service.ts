@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
-import {CollectionManagerService} from './collection-manager.service';
-import {ExecuteCommand} from './models/command/execute-command';
+import {CollectionManagerService} from './collection/services/collection-manager.service';
+import {ExecuteCommand} from './command/execute/execute-command';
 import {concatMap, map, takeWhile} from 'rxjs/operators';
-import {ExecuteResponse, ExecuteResponseType} from './models/response/execute-response';
+import {ExecuteResponse, ExecuteResponseType} from './command/execute/execute-response';
 import {Observable, of} from 'rxjs';
-import {ActionResult} from './models/action-result';
-import {Messaging} from './models/messaging';
-import {Auth} from './models/auth';
-import {DefaultCollection} from './models/default-collection';
-import {ConnectionManagerService} from './connection/connection-manager.service';
+import {ActionResult} from './modules/action/action-result';
+import {Messaging} from './modules/messaging/messaging';
+import {Auth} from './modules/auth/auth';
+import {DefaultCollection} from './collection/default-collection';
+import {ConnectionManagerService} from './connection/services/connection-manager.service';
 
 @Injectable()
 export class RealtimeDatabase {

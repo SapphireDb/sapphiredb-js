@@ -2,11 +2,11 @@ import {ConnectionBase} from './connection-base';
 import {Observable, Subscription} from 'rxjs';
 import {filter, take, takeWhile} from 'rxjs/operators';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {CommandBase} from '../models/command/command-base';
-import {ResponseBase} from '../models/response/response-base';
+import {CommandBase} from '../command/command-base';
+import {ResponseBase} from '../command/response-base';
 import {NgZone} from '@angular/core';
 import {ConnectionState} from '../models/types';
-import {ConnectionResponse} from '../models/response/connection-response';
+import {ConnectionResponse} from '../command/connection/connection-response';
 
 export class SseConnection extends ConnectionBase {
   private eventSource: EventSource;

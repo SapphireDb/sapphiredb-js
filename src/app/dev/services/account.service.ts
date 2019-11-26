@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {RealtimeDatabase} from 'ng-realtime-database';
-import {UserData} from '../../../../projects/ng-realtime-database/src/lib/models/user-data';
+import {UserData} from '../../../../projects/ng-realtime-database/src/lib/modules/auth/user-data';
 import {take} from 'rxjs/operators';
 
 @Injectable({

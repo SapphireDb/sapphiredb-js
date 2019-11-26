@@ -1,12 +1,12 @@
-import {UnloadResponse} from '../models/response/unload-response';
-import {InfoResponse} from '../models/response/info-response';
+import {UnloadResponse} from '../command/subscribe/unload-response';
+import {InfoResponse} from '../command/info/info-response';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {LoadResponse} from '../models/response/load-response';
-import {ChangeResponse, ChangeState} from '../models/response/change-response';
+import {LoadResponse} from '../command/subscribe/load-response';
+import {ChangeResponse, ChangeState} from '../command/subscribe/change-response';
 import {FilterFunctions} from './filter-functions';
-import {SelectPrefilter} from '../models/prefilter/select-prefilter';
-import {CountPrefilter} from '../models/prefilter/count-prefilter';
-import {IPrefilter} from '../models/prefilter/iprefilter';
+import {SelectPrefilter} from '../collection/prefilter/select-prefilter';
+import {CountPrefilter} from '../collection/prefilter/count-prefilter';
+import {IPrefilter} from '../collection/prefilter/iprefilter';
 
 // @dynamic
 export class CollectionHelper {

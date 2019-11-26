@@ -1,5 +1,5 @@
-import {ActionResult} from '../models/action-result';
-import {ExecuteResponseType} from '../models/response/execute-response';
+import {ActionResult} from '../modules/action/action-result';
+import {ExecuteResponseType} from '../command/execute/execute-response';
 
 // @dynamic
 export class ActionHelper {

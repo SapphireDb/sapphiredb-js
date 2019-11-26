@@ -1,7 +1,7 @@
 import {RealtimeDatabaseOptions} from '../models/realtime-database-options';
-import {ResponseBase} from '../models/response/response-base';
-import {CommandBase} from '../models/command/command-base';
-import {ConnectionResponse} from '../models/response/connection-response';
+import {ResponseBase} from '../command/response-base';
+import {CommandBase} from '../command/command-base';
+import {ConnectionResponse} from '../command/connection/connection-response';
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {ConnectionState} from '../models/types';
 

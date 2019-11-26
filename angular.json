@@ -54,11 +54,7 @@
               "assets": [
                 "src/favicon.ico",
                 "src/manifest.json",
-                {
-                  "glob": "**",
-                  "input": "src/assets/icon/",
-                  "output": "/icon/"
-                }
+                "src/assets"
               ]
             }
           }
@@ -149,7 +145,7 @@
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
             "tsConfig": "projects/ng-realtime-database/tsconfig.lib.json",
-            "project": "projects/ng-realtime-database/ng-package.json",
+            "project": "projects/ng-realtime-database/ng-package.json"
           },
           "configurations": {
             "production": {

@@ -1,4 +1,4 @@
-import {IPrefilter} from '../models/prefilter/iprefilter';
+import {IPrefilter} from '../collection/prefilter/iprefilter';
 
 Object.defineProperty(Array.prototype, '_realtime_', {
   value: { sorting: [] },

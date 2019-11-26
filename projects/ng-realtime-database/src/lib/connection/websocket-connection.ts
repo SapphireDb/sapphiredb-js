@@ -1,8 +1,8 @@
 import {ConnectionBase} from './connection-base';
 import {RealtimeDatabaseOptions} from '../models/realtime-database-options';
-import {ResponseBase} from '../models/response/response-base';
-import {CommandBase} from '../models/command/command-base';
-import {ConnectionResponse} from '../models/response/connection-response';
+import {ResponseBase} from '../command/response-base';
+import {CommandBase} from '../command/command-base';
+import {ConnectionResponse} from '../command/connection/connection-response';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {filter, take, takeWhile} from 'rxjs/operators';
 import {ConnectionState} from '../models/types';
