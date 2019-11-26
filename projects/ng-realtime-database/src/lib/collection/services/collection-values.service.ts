@@ -31,7 +31,7 @@ export class CollectionValuesService {
       collectionValue = this.collectionValues[collectionName][index];
       collectionValue.subscriberCount++;
     } else {
-      collectionValue = this.createWebsocketValuesSubscription(collectionName, contextName, collectionInformation, prefilters);
+      collectionValue = this.createValuesSubscription(collectionName, contextName, collectionInformation, prefilters);
     }
 
     return collectionValue;
@@ -42,7 +42,7 @@ export class CollectionValuesService {
     this.collectionValues[collectionName].splice(indexToRemove, 1);
   }
 
-  private createWebsocketValuesSubscription<T>(collectionName: string, contextName: string, collectionInformation: Observable<InfoResponse>,
+  private createValuesSubscription<T>(collectionName: string, contextName: string, collectionInformation: Observable<InfoResponse>,
                                                prefilters: IPrefilter<any, any>[]): CollectionValue<T> {
     const subscribeCommand = new SubscribeCommand(collectionName, contextName, prefilters);
     const collectionValue = new CollectionValue<T>(subscribeCommand.referenceId, prefilters);
