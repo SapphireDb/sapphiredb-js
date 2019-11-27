@@ -7,20 +7,20 @@ import {ConnectionManagerService} from '../../connection/services/connection-man
 
 @Injectable()
 export class CollectionInformationService {
-  private collectionInformation: { [collectionName: string]: Observable<InfoResponse> } = {};
+  private collectionInformation: { [name: string]: Observable<InfoResponse> } = {};
 
   constructor(private connectionManagerService: ConnectionManagerService) { }
 
   public getCollectionInformation(collectionName: string, contextName: string) {
-    if (!this.collectionInformation[collectionName]) {
+    if (!this.collectionInformation[`${contextName}:${collectionName}`]) {
       const subject$ = new BehaviorSubject<InfoResponse>(null);
-      this.collectionInformation[collectionName] = subject$;
+      this.collectionInformation[`${contextName}:${collectionName}`] = subject$;
       this.connectionManagerService.sendCommand(new InfoCommand(collectionName, contextName)).subscribe((info: InfoResponse) => {
         subject$.next(info);
       });
     }
 
-    return this.collectionInformation[collectionName].pipe(
+    return this.collectionInformation[`${contextName}:${collectionName}`].pipe(
       filter(v => !!v),
       take(1)
     );

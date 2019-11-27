@@ -1,6 +1,5 @@
 import {Observable} from 'rxjs';
 import {InfoResponse} from '../command/info/info-response';
-import {CollectionValuesService} from './services/collection-values.service';
 import {ThenOrderByPrefilter} from './prefilter/then-order-by-prefilter';
 import {CollectionManagerService} from './services/collection-manager.service';
 import {DefaultCollection} from './default-collection';
@@ -11,9 +10,8 @@ export class OrderedCollection<T> extends DefaultCollection<T> {
               contextName: string,
               connectionManagerService: ConnectionManagerService,
               collectionInformation: Observable<InfoResponse>,
-              collectionValuesService: CollectionValuesService,
               collectionManagerService: CollectionManagerService) {
-    super(collectionName, contextName, connectionManagerService, collectionInformation, collectionValuesService, collectionManagerService);
+    super(collectionName, contextName, connectionManagerService, collectionInformation, collectionManagerService);
   }
 
   /**

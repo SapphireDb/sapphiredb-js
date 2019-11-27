@@ -77,7 +77,6 @@ export class RealtimeDatabase {
    * Reset the current session. Useful if you want to reset when the current user logged out.
    */
   public reset() {
-    this.collectionManager.reset();
     this.connectionManagerService.reset();
   }
 }

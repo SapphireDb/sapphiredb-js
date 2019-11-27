@@ -1,36 +1,16 @@
-import {BehaviorSubject, Subscription} from 'rxjs';
-import {IPrefilter} from './prefilter/iprefilter';
+import {ReplaySubject, Subscription} from 'rxjs';
 
 export class CollectionValue<T> {
   referenceId: string;
-  prefilterHash: string;
-  subject: BehaviorSubject<T[]>;
+  subject: ReplaySubject<T[]>;
   socketSubscription: Subscription;
-  subscriberCount: number;
 
-  constructor(referenceId: string, prefilters: IPrefilter<any, any>[]) {
+  constructor(referenceId: string) {
     this.referenceId = referenceId;
-    this.prefilterHash = this.generatePrefilterHash(prefilters);
-    this.subject = new BehaviorSubject<T[]>([]);
-    this.subscriberCount = 1;
+    this.subject = new ReplaySubject<T[]>(null);
   }
 
   public setSubscription(socketSubscription: Subscription) {
     this.socketSubscription = socketSubscription;
-  }
-
-  public samePrefilters(prefilters: IPrefilter<any, any>[]): boolean {
-    return this.generatePrefilterHash(prefilters) === this.prefilterHash;
-  }
-
-
-  private generatePrefilterHash(prefilters: IPrefilter<any, any>[]): string {
-    let result = 'prefilters?';
-
-    for (const prefilter of prefilters) {
-      result += `${prefilter.hash()}&`;
-    }
-
-    return result;
   }
 }

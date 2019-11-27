@@ -6,9 +6,8 @@ import {DeleteResponse} from '../command/delete/delete-response';
 import {UpdateCommand} from '../command/update/update-command';
 import {UpdateResponse} from '../command/update/update-response';
 import {DeleteCommand} from '../command/delete/delete-command';
-import {finalize, map, switchMap} from 'rxjs/operators';
+import {finalize, map, share, switchMap} from 'rxjs/operators';
 import {InfoResponse} from '../command/info/info-response';
-import {CollectionValuesService} from './services/collection-values.service';
 import {AuthCollectionInfo} from '../modules/auth/auth-collection-info';
 import {QueryCommand} from '../command/query/query-command';
 import {QueryResponse} from '../command/query/query-response';
@@ -18,6 +17,10 @@ import {UnsubscribeCommand} from '../command/unsubscribe/unsubscribe-command';
 import {CollectionManagerService} from './services/collection-manager.service';
 import {CollectionHelper} from '../helper/collection-helper';
 import {ConnectionManagerService} from '../connection/services/connection-manager.service';
+import {SubscribeCommand} from '../command/subscribe/subscribe-command';
+import {ChangeResponse} from '../command/subscribe/change-response';
+import {UnloadResponse} from '../command/subscribe/unload-response';
+import {LoadResponse} from '../command/subscribe/load-response';
 
 export class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
@@ -31,7 +34,6 @@ export class CollectionBase<T, Y> {
               public contextName: string,
               protected connectionManagerService: ConnectionManagerService,
               protected collectionInformation: Observable<InfoResponse>,
-              protected collectionValuesService: CollectionValuesService,
               protected collectionManagerService: CollectionManagerService) {
     this.authInfo = new AuthCollectionInfo(this.collectionInformation);
   }
@@ -59,28 +61,9 @@ export class CollectionBase<T, Y> {
    * Get the values of the collection and also get updates if the collection has changed
    */
   public values(): Observable<Y> {
-    const collectionValue = this.collectionValuesService
-      .getCollectionValue(this.collectionName, this.contextName, this.prefilters, this.collectionInformation);
-    return this.createCollectionObservable$(collectionValue, this.prefilters);
-  }
-
-  private createCollectionObservable$(collectionValue: CollectionValue<any>, prefilters: IPrefilter<any, any>[]): Observable<Y> {
-    return <Observable<any>>collectionValue.subject.pipe(finalize(() => {
-      collectionValue.subscriberCount--;
-
-      if (collectionValue.subscriberCount === 0)  {
-        this.connectionManagerService.sendCommand(
-          new UnsubscribeCommand(this.collectionName, this.contextName, collectionValue.referenceId), false, true);
-        collectionValue.socketSubscription.unsubscribe();
-        this.collectionValuesService.removeCollectionValue(this.collectionName, collectionValue);
-      }
-    }), pipe(map((array: T[]) => {
-      // for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(prefilters)) {
-      //   array = prefilter.execute(array);
-      // }
-
-      return array;
-    })));
+    const collectionValue = this.createValuesSubscription(this.collectionName, this.contextName,
+      this.collectionInformation, this.prefilters);
+    return this.createCollectionObservable$(collectionValue);
   }
 
   /**
@@ -128,15 +111,44 @@ export class CollectionBase<T, Y> {
     }));
   }
 
-  /**
-   * Dispose this collection and remove it from collection storage
-   */
-  public dispose() {
-    this.collectionManagerService.removeCollection(<any>this);
+  private createValuesSubscription(collectionName: string, contextName: string, collectionInformation: Observable<InfoResponse>,
+                                   prefilters: IPrefilter<any, any>[]): CollectionValue<T> {
+    const subscribeCommand = new SubscribeCommand(collectionName, contextName, prefilters);
+    const collectionValue = new CollectionValue<T>(subscribeCommand.referenceId);
+
+    const wsSubscription = this.connectionManagerService.sendCommand(subscribeCommand, true)
+      .subscribe((response: (QueryResponse | ChangeResponse | UnloadResponse | LoadResponse)) => {
+        if (response.responseType === 'QueryResponse') {
+          collectionValue.subject.next((<QueryResponse>response).result);
+        } else if (response.responseType === 'ChangeResponse') {
+          CollectionHelper.updateCollection<T>(collectionValue.subject, collectionInformation, <ChangeResponse>response);
+        } else if (response.responseType === 'UnloadResponse') {
+          CollectionHelper.unloadItem<T>(collectionValue.subject, collectionInformation, <UnloadResponse>response);
+        } else if (response.responseType === 'LoadResponse') {
+          CollectionHelper.loadItem<T>(collectionValue.subject, <LoadResponse>response);
+        }
+      });
+
+    collectionValue.setSubscription(wsSubscription);
+
+    return collectionValue;
   }
 
-  public reset() {
-    this.dispose();
-    this.collectionValuesService.reset();
+  private createCollectionObservable$(collectionValue: CollectionValue<any>): Observable<Y> {
+    return <Observable<any>>collectionValue.subject.pipe(
+      finalize(() => {
+        this.connectionManagerService.sendCommand(
+          new UnsubscribeCommand(this.collectionName, this.contextName, collectionValue.referenceId), false, true);
+        collectionValue.socketSubscription.unsubscribe();
+      }),
+      map((array: T[]) => {
+        // for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(prefilters)) {
+        //   array = prefilter.execute(array);
+        // }
+
+        return array;
+      }),
+      share()
+    );
   }
 }

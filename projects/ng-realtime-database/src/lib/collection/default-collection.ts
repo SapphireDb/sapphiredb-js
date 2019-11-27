@@ -1,6 +1,5 @@
 import {Observable} from 'rxjs';
 import {InfoResponse} from '../command/info/info-response';
-import {CollectionValuesService} from './services/collection-values.service';
 import {WherePrefilter} from './prefilter/where-prefilter';
 import {SkipPrefilter} from './prefilter/skip-prefilter';
 import {TakePrefilter} from './prefilter/take-prefilter';
@@ -20,9 +19,8 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
               contextName: string,
               connectionManagerService: ConnectionManagerService,
               collectionInformation: Observable<InfoResponse>,
-              collectionValuesService: CollectionValuesService,
               collectionManagerService: CollectionManagerService) {
-    super(collectionName, contextName, connectionManagerService, collectionInformation, collectionValuesService, collectionManagerService);
+    super(collectionName, contextName, connectionManagerService, collectionInformation, collectionManagerService);
   }
 
   /**
