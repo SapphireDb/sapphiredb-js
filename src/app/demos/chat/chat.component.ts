@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {DefaultCollection, RealtimeDatabase} from 'ng-realtime-database';
+import {DefaultCollection, SapphireDb} from 'ng-sapphiredb';
 import {combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {debounceTime, switchMap} from 'rxjs/operators';
 
@@ -28,7 +28,7 @@ export class ChatComponent implements OnInit {
 
   messageCollection: DefaultCollection<Message>;
 
-  constructor(private db: RealtimeDatabase) { }
+  constructor(private db: SapphireDb) { }
 
   ngOnInit() {
     this.messageCollection = this.db.collection<Message>('messages', 'demo');

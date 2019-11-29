@@ -10,7 +10,7 @@ import csharp from 'highlight.js/lib/languages/cs';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {REALTIME_DATABASE_OPTIONS, RealtimeDatabaseModule, RealtimeDatabaseOptions} from 'ng-realtime-database';
+import { SapphireDbModule, SapphireDbOptions, SAPPHIRE_DB_OPTIONS } from 'ng-sapphiredb';
 import {ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {environment} from '../environments/environment';
@@ -31,7 +31,7 @@ export function hljsLanguages() {
   ];
 }
 
-export function createRealtimeOptions(): RealtimeDatabaseOptions {
+export function createRealtimeOptions(): SapphireDbOptions {
   return {
     // serverBaseUrl: environment.serverBaseUrl,
     loginRedirect: 'dev/account/login',
@@ -52,7 +52,7 @@ export function createRealtimeOptions(): RealtimeDatabaseOptions {
     BrowserModule,
     ReactiveFormsModule,
     HttpClientModule,
-    RealtimeDatabaseModule,
+    SapphireDbModule,
     HighlightModule.forRoot({
       languages: hljsLanguages
     }),
@@ -61,7 +61,7 @@ export function createRealtimeOptions(): RealtimeDatabaseOptions {
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
-    { provide: REALTIME_DATABASE_OPTIONS, useFactory: createRealtimeOptions }
+    { provide: SAPPHIRE_DB_OPTIONS, useFactory: createRealtimeOptions }
   ],
   bootstrap: [AppComponent]
 })

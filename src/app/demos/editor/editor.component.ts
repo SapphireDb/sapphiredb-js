@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {DefaultCollection, RealtimeDatabase} from 'ng-realtime-database';
+import {DefaultCollection, SapphireDb} from 'ng-sapphiredb';
 import {Observable, of, ReplaySubject} from 'rxjs';
 import {debounceTime, filter, map, skip, switchMap} from 'rxjs/operators';
 
@@ -23,7 +23,7 @@ export class EditorComponent implements OnInit {
 
   document$: Observable<Document>;
 
-  constructor(private db: RealtimeDatabase) { }
+  constructor(private db: SapphireDb) { }
 
   ngOnInit() {
     this.collection = this.db.collection<Document>('documents', 'demo');

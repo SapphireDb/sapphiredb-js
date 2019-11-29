@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
-import {RealtimeDatabase} from 'ng-realtime-database';
+import {SapphireDb} from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-main',
@@ -13,7 +13,7 @@ export class MainComponent implements OnInit {
 
   message: string;
 
-  constructor(private db: RealtimeDatabase) { }
+  constructor(private db: SapphireDb) { }
 
   ngOnInit() {
     this.message$ = this.db.messaging.messages();

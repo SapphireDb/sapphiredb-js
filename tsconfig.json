@@ -19,11 +19,11 @@
       "dom"
     ],
     "paths": {
-      "ng-realtime-database": [
-        "dist/ng-realtime-database"
+      "ng-sapphiredb": [
+        "dist/ng-sapphiredb"
       ],
-      "ng-realtime-database/*": [
-        "dist/ng-realtime-database/*"
+      "ng-sapphiredb/*": [
+        "dist/ng-sapphiredb/*"
       ]
     }
   }

@@ -71,7 +71,7 @@ export class SseConnection extends ConnectionBase {
   }
 
   private makePost(command: CommandBase) {
-    const url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/realtimedatabase/api/${command.commandType}`;
+    const url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/sapphire/api/${command.commandType}`;
 
     this.httpClient.post(url, command, {
       headers: {
@@ -108,7 +108,7 @@ export class SseConnection extends ConnectionBase {
   }
 
   private createConnectionString(): string {
-    let url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/realtimedatabase/sse?`;
+    let url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/sapphire/sse?`;
 
     if (this.options.apiKey && this.options.apiSecret) {
       url += `key=${this.options.apiKey}&secret=${this.options.apiSecret}&`;

@@ -3,13 +3,13 @@ import {ActivatedRouteSnapshot, CanActivate, CanActivateChild, Router, RouterSta
 import {Observable, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 import {UserData} from './user-data';
-import {RealtimeDatabase} from '../../realtime-database.service';
-import {REALTIME_DATABASE_OPTIONS, RealtimeDatabaseOptions} from '../../models/realtime-database-options';
+import {SapphireDb} from '../../sapphire-db.service';
+import {SAPPHIRE_DB_OPTIONS, SapphireDbOptions} from '../../models/sapphire-db-options';
 
 @Injectable()
-export class RealtimeAuthGuard implements CanActivate, CanActivateChild {
-  constructor(private db: RealtimeDatabase, private router: Router,
-              @Inject(REALTIME_DATABASE_OPTIONS) private options: RealtimeDatabaseOptions) {}
+export class SapphireAuthGuard implements CanActivate, CanActivateChild {
+  constructor(private db: SapphireDb, private router: Router,
+              @Inject(SAPPHIRE_DB_OPTIONS) private options: SapphireDbOptions) {}
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.db.auth.isLoggedIn().pipe(switchMap((loggedIn: boolean) => {

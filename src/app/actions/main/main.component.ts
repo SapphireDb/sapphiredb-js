@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ActionResult, ExecuteResponseType, RealtimeDatabase, ActionHelper} from 'ng-realtime-database';
+import {ActionResult, ExecuteResponseType, SapphireDb, ActionHelper} from 'ng-sapphiredb';
 import {concatMap, filter, map, shareReplay, takeWhile} from 'rxjs/operators';
 import {Observable, of} from 'rxjs';
 
@@ -12,7 +12,7 @@ export class MainComponent implements OnInit {
 
   rangeValue$: Observable<number>;
 
-  constructor(private db: RealtimeDatabase) { }
+  constructor(private db: SapphireDb) { }
 
   ngOnInit() {
   }

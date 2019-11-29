@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {RealtimeDatabase, UserData, RoleData, DefaultCollection} from 'ng-realtime-database';
+import {SapphireDb, UserData, RoleData, DefaultCollection} from 'ng-sapphiredb';
 import {Message} from '../../model/message';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {map, publish, share, shareReplay, switchMap} from 'rxjs/operators';
@@ -20,7 +20,7 @@ export class MainComponent implements OnInit {
   userMessages$: Observable<Message[]>;
   message: string;
 
-  constructor(private db: RealtimeDatabase) {
+  constructor(private db: SapphireDb) {
     this.messageCollection = this.db.collection<Message>('messages');
     this.messages$ = this.db.auth.getUserData().pipe(switchMap(u => {
       return this.messageCollection.where((x, [user]) => x.userId ===  user.id || x.toId === user.id, u).values();

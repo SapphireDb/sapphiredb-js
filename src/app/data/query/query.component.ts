@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {RealtimeDatabase} from 'ng-realtime-database';
+import {SapphireDb} from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {DialogService} from 'ng-metro4';
 
@@ -13,7 +13,7 @@ export class QueryComponent implements OnInit {
   values$: Observable<any>;
   valuesSnapshot$: Observable<any>;
 
-  constructor(private db: RealtimeDatabase, private dialogService: DialogService) { }
+  constructor(private db: SapphireDb, private dialogService: DialogService) { }
 
   ngOnInit() {
     this.values$ = this.db.collection('entries', 'demo').values();

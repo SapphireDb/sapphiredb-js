@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {AccountService} from '../../services/account.service';
-import {RealtimeDatabase, UserData} from 'ng-realtime-database';
+import {SapphireDb, UserData, ActionResult} from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AppUser} from '../../model/app-user';
-import {ActionResult} from '../../../../../projects/ng-realtime-database/src/lib/modules/action/action-result';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +16,7 @@ export class LoginComponent implements OnInit {
   public users$: Observable<AppUser[]>;
   public form: FormGroup;
 
-  constructor(private accountService: AccountService, private db: RealtimeDatabase) {
+  constructor(private accountService: AccountService, private db: SapphireDb) {
     this.form = new FormGroup({
       email: new FormControl(),
       password: new FormControl()

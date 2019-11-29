@@ -1,5 +1,5 @@
 import {Inject, Injectable, NgZone} from '@angular/core';
-import {REALTIME_DATABASE_OPTIONS, RealtimeDatabaseOptions} from '../../models/realtime-database-options';
+import {SAPPHIRE_DB_OPTIONS, SapphireDbOptions} from '../../models/sapphire-db-options';
 import {LocalstoragePaths} from '../../helper/localstorage-paths';
 import {ConnectionBase} from '../connection-base';
 import {CommandBase} from '../../command/command-base';
@@ -42,7 +42,7 @@ export class ConnectionManagerService {
   public connectionData$: BehaviorSubject<ConnectionResponse>;
   public status$: BehaviorSubject<ConnectionState>;
 
-  constructor(@Inject(REALTIME_DATABASE_OPTIONS) private options: RealtimeDatabaseOptions,
+  constructor(@Inject(SAPPHIRE_DB_OPTIONS) private options: SapphireDbOptions,
               private httpClient: HttpClient,
               private ngZone: NgZone) {
     this.connectionData$ = new BehaviorSubject<ConnectionResponse>(null);

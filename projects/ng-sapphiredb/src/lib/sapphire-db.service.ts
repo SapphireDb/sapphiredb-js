@@ -11,7 +11,7 @@ import {DefaultCollection} from './collection/default-collection';
 import {ConnectionManagerService} from './connection/services/connection-manager.service';
 
 @Injectable()
-export class RealtimeDatabase {
+export class SapphireDb {
   /**
    * Realtime messaging API
    */

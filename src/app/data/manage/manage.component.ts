@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
-import {RealtimeDatabase, DefaultCollection} from 'ng-realtime-database';
+import {SapphireDb, DefaultCollection} from 'ng-sapphiredb';
 import {DialogService} from 'ng-metro4';
 
 @Component({
@@ -12,7 +12,7 @@ export class ManageComponent implements OnInit {
   collection: DefaultCollection<any>;
   values$: Observable<any>;
 
-  constructor(private db: RealtimeDatabase, private dialogService: DialogService) { }
+  constructor(private db: SapphireDb, private dialogService: DialogService) { }
 
   ngOnInit() {
     this.collection = this.db.collection('entries', 'demo');

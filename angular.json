@@ -135,38 +135,38 @@
         }
       }
     },
-    "ng-realtime-database": {
-      "root": "projects/ng-realtime-database",
-      "sourceRoot": "projects/ng-realtime-database/src",
+    "ng-sapphiredb": {
+      "root": "projects/ng-sapphiredb",
+      "sourceRoot": "projects/ng-sapphiredb/src",
       "projectType": "library",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/ng-realtime-database/tsconfig.lib.json",
-            "project": "projects/ng-realtime-database/ng-package.json"
+            "tsConfig": "projects/ng-sapphiredb/tsconfig.lib.json",
+            "project": "projects/ng-sapphiredb/ng-package.json"
           },
           "configurations": {
             "production": {
-              "project": "projects/ng-realtime-database/ng-package.prod.json"
+              "project": "projects/ng-sapphiredb/ng-package.prod.json"
             }
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/ng-realtime-database/src/test.ts",
-            "tsConfig": "projects/ng-realtime-database/tsconfig.spec.json",
-            "karmaConfig": "projects/ng-realtime-database/karma.conf.js"
+            "main": "projects/ng-sapphiredb/src/test.ts",
+            "tsConfig": "projects/ng-sapphiredb/tsconfig.spec.json",
+            "karmaConfig": "projects/ng-sapphiredb/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/ng-realtime-database/tsconfig.lib.json",
-              "projects/ng-realtime-database/tsconfig.spec.json"
+              "projects/ng-sapphiredb/tsconfig.lib.json",
+              "projects/ng-sapphiredb/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"

@@ -1,11 +1,11 @@
 /*
- * Public API Surface of ng-realtime-database
+ * Public API Surface of ng-sapphiredb
  */
 
-export * from './lib/models/realtime-database-options';
-export * from './lib/realtime-database.service';
-export * from './lib/realtime-database.module';
-export * from './lib/modules/auth/realtime-auth.guard';
+export * from './lib/models/sapphire-db-options';
+export * from './lib/sapphire-db.service';
+export * from './lib/sapphire-db.module';
+export * from './lib/modules/auth/sapphire-auth.guard';
 
 export * from './lib/helper/action-helper';
 

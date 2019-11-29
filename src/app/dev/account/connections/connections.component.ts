@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {RealtimeDatabase, RealtimeConnection, ConnectionResponse} from 'ng-realtime-database';
+import {SapphireDb, RealtimeConnection, ConnectionResponse} from 'ng-sapphiredb';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -13,7 +13,7 @@ export class ConnectionsComponent implements OnInit {
   connectionData$: Observable<ConnectionResponse>;
   connections$: Observable<RealtimeConnection[]>;
 
-  constructor(private db: RealtimeDatabase) { }
+  constructor(private db: SapphireDb) { }
 
   ngOnInit() {
     this.connectionData$ = this.db.auth.getConnectionData();

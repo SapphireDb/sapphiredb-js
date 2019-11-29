@@ -1,5 +1,5 @@
 import {ConnectionBase} from './connection-base';
-import {RealtimeDatabaseOptions} from '../models/realtime-database-options';
+import {SapphireDbOptions} from '../models/sapphire-db-options';
 import {ResponseBase} from '../command/response-base';
 import {CommandBase} from '../command/command-base';
 import {ConnectionResponse} from '../command/connection/connection-response';
@@ -69,7 +69,7 @@ export class WebsocketConnection extends ConnectionBase {
   }
 
   private createConnectionString(): string {
-    let url = `${this.options.useSsl ? 'wss' : 'ws'}://${this.options.serverBaseUrl}/realtimedatabase/socket?`;
+    let url = `${this.options.useSsl ? 'wss' : 'ws'}://${this.options.serverBaseUrl}/sapphire/socket?`;
 
     if (this.options.apiSecret && this.options.apiKey) {
       url += `key=${this.options.apiKey}&secret=${this.options.apiSecret}&`;

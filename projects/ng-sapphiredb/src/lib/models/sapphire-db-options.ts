@@ -1,6 +1,6 @@
 import {InjectionToken} from '@angular/core';
 
-export interface RealtimeDatabaseOptions {
+export interface SapphireDbOptions {
   connectionType?: 'websocket'|'sse'|'poll';
   serverBaseUrl?: string;
   useSsl?: boolean;
@@ -12,4 +12,4 @@ export interface RealtimeDatabaseOptions {
   unauthorizedRedirect?: string;
 }
 
-export const REALTIME_DATABASE_OPTIONS = new InjectionToken<RealtimeDatabaseOptions>('realtimedatabase.options');
+export const SAPPHIRE_DB_OPTIONS = new InjectionToken<SapphireDbOptions>('sapphire-db.options');

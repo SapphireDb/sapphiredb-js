@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {MainComponent} from './main/main.component';
-import { RealtimeAuthGuard } from 'ng-realtime-database';
+import { SapphireAuthGuard } from 'ng-sapphiredb';
 
 const routes: Routes = [
-  { path: '', component: MainComponent, canActivate: [ RealtimeAuthGuard ] }
+  { path: '', component: MainComponent, canActivate: [ SapphireAuthGuard ] }
 ];
 
 @NgModule({

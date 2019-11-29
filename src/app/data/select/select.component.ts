@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
 import {DialogService} from 'ng-metro4';
-import {RealtimeDatabase} from 'ng-realtime-database';
+import {SapphireDb} from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-select',
@@ -12,7 +12,7 @@ export class SelectComponent implements OnInit {
 
   values$: Observable<any>;
 
-  constructor(private db: RealtimeDatabase, private dialogService: DialogService) { }
+  constructor(private db: SapphireDb, private dialogService: DialogService) { }
 
   ngOnInit() {
     this.values$ = this.db.collection<any>('entries', 'demo')

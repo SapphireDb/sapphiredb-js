@@ -1,4 +1,4 @@
-import {RealtimeDatabaseOptions} from '../models/realtime-database-options';
+import {SapphireDbOptions} from '../models/sapphire-db-options';
 import {ResponseBase} from '../command/response-base';
 import {CommandBase} from '../command/command-base';
 import {ConnectionResponse} from '../command/connection/connection-response';
@@ -12,7 +12,7 @@ export abstract class ConnectionBase {
 
   public readyState$ = new BehaviorSubject<ConnectionState>('disconnected');
 
-  public options: RealtimeDatabaseOptions;
+  public options: SapphireDbOptions;
   public bearer: string;
 
   public abstract send(object: CommandBase, storedCommand: boolean): Subscription;

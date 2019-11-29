@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {RealtimeDatabase, UserData, RoleData} from 'ng-realtime-database';
+import {SapphireDb, UserData, RoleData} from 'ng-sapphiredb';
 import * as faker from 'faker';
 import {Observable} from 'rxjs';
 
@@ -13,7 +13,7 @@ export class ManageComponent implements OnInit {
   users$: Observable<UserData[]>;
   roles$: Observable<RoleData[]>;
 
-  constructor(private db: RealtimeDatabase) { }
+  constructor(private db: SapphireDb) { }
 
   ngOnInit() {
     this.users$ = this.db.auth.info.getUsers();

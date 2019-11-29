@@ -1,5 +1,5 @@
 import {AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {ActionHelper, ActionResult, DefaultCollection, ExecuteResponseType, RealtimeDatabase, UserData} from 'ng-realtime-database';
+import {ActionHelper, ActionResult, DefaultCollection, ExecuteResponseType, SapphireDb, UserData} from 'ng-sapphiredb';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {User} from '../../model/user';
 import {concatMap, debounceTime, filter, map, shareReplay, switchMap, take, takeWhile} from 'rxjs/operators';
@@ -23,7 +23,7 @@ export class MainComponent implements OnInit {
 
   testSub: Subscription;
 
-  constructor(private db: RealtimeDatabase, private account: AccountService) {}
+  constructor(private db: SapphireDb, private account: AccountService) {}
 
   ngOnInit() {
     this.account.userData().subscribe((userData: UserData) => {

@@ -1,14 +1,13 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {RealtimeDatabase} from 'ng-realtime-database';
-import {UserData} from '../../../../projects/ng-realtime-database/src/lib/modules/auth/user-data';
+import {SapphireDb, UserData} from 'ng-sapphiredb';
 import {take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
-  constructor(private route: ActivatedRoute, private router: Router, private db: RealtimeDatabase) {}
+  constructor(private route: ActivatedRoute, private router: Router, private db: SapphireDb) {}
 
   userData() {
     return this.db.auth.getUserData();

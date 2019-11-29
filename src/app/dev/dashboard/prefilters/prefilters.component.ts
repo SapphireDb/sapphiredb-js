@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {DefaultCollection, RealtimeDatabase, ReducedCollection} from 'ng-realtime-database';
+import {DefaultCollection, SapphireDb, ReducedCollection} from 'ng-sapphiredb';
 import {User} from '../../model/user';
 import {Observable} from 'rxjs';
 
@@ -34,7 +34,7 @@ export class PrefiltersComponent implements OnInit {
   collectionCount: ReducedCollection<User, number>;
   countValues$: Observable<number>;
 
-  constructor(private db: RealtimeDatabase) { }
+  constructor(private db: SapphireDb) { }
 
   ngOnInit() {
     this.collection = this.db.collection<User>('users');

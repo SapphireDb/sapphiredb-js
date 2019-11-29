@@ -19,7 +19,7 @@ export class PollConnection extends ConnectionBase {
     if (this.readyState$.value === 'disconnected') {
       this.readyState$.next('connecting');
 
-      const baseConnectionString = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/realtimedatabase/poll`;
+      const baseConnectionString = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/sapphire/poll`;
       const connectionString = `${baseConnectionString}/init`;
 
       this.httpClient.get(connectionString, {
@@ -110,7 +110,7 @@ export class PollConnection extends ConnectionBase {
   }
 
   private makePost(command: CommandBase) {
-    const url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/realtimedatabase/api/${command.commandType}`;
+    const url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/sapphire/api/${command.commandType}`;
 
     this.httpClient.post(url, command, {
       headers: {
