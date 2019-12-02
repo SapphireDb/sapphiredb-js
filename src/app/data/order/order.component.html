@@ -20,7 +20,7 @@
       \tvalues$: Observable<Entry[]>;\n
       \tvalues2$: Observable<Entry[]>;\n\n
 
-      \tconstructor(private db: RealtimeDatabase) { }\n\n
+      \tconstructor(private db: SapphireDb) { }\n\n
 
       \tngOnInit() {\n
         \t\tthis.values$ = this.db.collection<Entry>('entries')\n

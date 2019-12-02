@@ -1,7 +1,7 @@
 <h1>Collection information</h1>
 
 <p>
-  Realtime database includes methods to get information about the collection.
+  SapphireDb includes methods to get information about the collection.
   This is useful if you dont know if the client instance is allowed to access the collection.
 </p>
 
@@ -14,7 +14,7 @@
     export class DemoComponent implements OnInit {\n
     \tinfo: AuthCollectionInfo;\n\n
 
-    \tconstructor(private db: RealtimeDatabase) { }\n\n
+    \tconstructor(private db: SapphireDb) { }\n\n
 
     \tngOnInit() {\n
     \t\tthis.info = this.db.collection('entries').authInfo;\n
@@ -26,7 +26,7 @@
 
 <h2>Check access</h2>
 
-<p>ng-realtime-database provides multiple methods to check if the user can access the collection</p>
+<p>ng-sapphiredb provides multiple methods to check if the user can access the collection</p>
 
 <app-doc [showContent]="false">
   <div lang>

@@ -1,7 +1,7 @@
 <h1>Authentication</h1>
 
 <p>
-  Realtime database comes with methods for authentication and role-based authorization.<br>
+  SapphireDb comes with methods for authentication and role-based authorization.<br>
   You can simply authenticate your client using the built in methods. It also comes with a user and role management.
 </p>
 
@@ -20,7 +20,7 @@
       \tpublic void ConfigureServices(IServiceCollection services)\n
       \t{\n
         \t\t//Register services\n
-        \t\tservices.AddRealtimeAuth<RealtimeAuthContext<IdentityUser>, IdentityUser>(new JwtOptions("secret key", "issuer")), cfg => ...);\n
+        \t\tservices.AddSapphireAuth<SapphireAuthContent<IdentityUser>, IdentityUser>(new JwtOptions("secret key", "issuer")), cfg => ...);\n
       \t}\n
     }
     ]]>
@@ -50,11 +50,11 @@
     \f:(typescript:app.module.ts)
     @NgModule({\n
       \timports: [\n
-        \t\tRealtimeDatabaseModule\n
+        \t\tSapphireDbModule\n
       \t],\n
       \tproviders: [\n
         \t\t{\n
-    \t\t\tprovide: REALTIME_DATABASE_OPTIONS,\n
+    \t\t\tprovide: SAPPHIRE_DB_OPTIONS,\n
     \t\t\tuseValue: {\n
             \t\t\t\tloginRedirect: 'dev/account/login',\n
             \t\t\t\tunauthorizedRedirect: 'dev/account/unauthorized',\n

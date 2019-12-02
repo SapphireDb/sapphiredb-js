@@ -1,6 +1,6 @@
 {
-  "name": "Realtime database - A self hosted realtime database",
-  "short_name": "Realtime database - A self hosted realtime database",
+  "name": "SapphireDb - A self hosted realtime database",
+  "short_name": "SapphireDb - A self hosted realtime database",
   "theme_color": "#0077a3",
   "background_color": "#fafafa",
   "display": "standalone",

@@ -1,6 +1,6 @@
 <h1>Server - Events</h1>
 
-<p>Realtime database introduces different event hooks for models that can used to manipulate the behavior of the model when created, updated or removed</p>
+<p>SapphireDb has different event hooks for models that can used to manipulate the behavior of the model when created, updated or removed</p>
 
 <h2>General</h2>
 
@@ -12,7 +12,7 @@
 <div class="remark success">
   Each event hook has three parameters. You can define a method name for every parameter.
   <ul>
-    <li><b>before</b>: The method will get executed before the model get's manipulated by realtime database</li>
+    <li><b>before</b>: The method will get executed before the model get's manipulated by SapphireDb</li>
     <li><b>beforeSave</b>: The method will get executed before the model get's stored in database</li>
     <li><b>after</b>: The method will get executed after the model was stored in database</li>
   </ul>
@@ -48,7 +48,7 @@
 <h2>Dependency Injection</h2>
 
 <div class="remark success">
-  You can use dependency injection for the method. Realtime database will provide you the current <code>HttpContext</code> and the instances found in the <code>DI-Container</code>.
+  You can use dependency injection for the method. SapphireDb will provide you the current <code>HttpContext</code> and the instances found in the <code>DI-Container</code>.
 </div>
 
 <app-doc [showContent]="false">

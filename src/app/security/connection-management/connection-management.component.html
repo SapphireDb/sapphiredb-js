@@ -13,7 +13,7 @@
     \f:(typescript:manage-connections.component.ts)
     connectionData$: Observable<ConnectionResponse>;\n\n
 
-    constructor(private db: RealtimeDatabase) { }\n\n
+    constructor(private db: SapphireDb) { }\n\n
 
     ngOnInit() {\n
       \tthis.connectionData$ = this.db.auth.getConnectionData();\n

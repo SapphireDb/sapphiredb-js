@@ -1,7 +1,7 @@
 <h1>Client setup - Authentication</h1>
 
 <p>
-  Realtime database comes with methods for authentication and role-based authorization.<br>
+  SapphireDb comes with methods for authentication and role-based authorization.<br>
   You can simply authenticate your client using the built in methods. It also comes with a user and role management.
 </p>
 
@@ -13,11 +13,11 @@
     \f:(typescript:app.module.ts)
     @NgModule({\n
       \timports: [\n
-        \t\tRealtimeDatabaseModule\n
+        \t\tSapphireDbModule\n
       \t],\n
       \tproviders: [\n
         \t\t{\n
-    \t\t\tprovide: REALTIME_DATABASE_OPTIONS,\n
+    \t\t\tprovide: SAPPHIRE_DB_OPTIONS,\n
     \t\t\tuseValue: {\n
             \t\t\t\tloginRedirect: 'dev/account/login',\n
             \t\t\t\tunauthorizedRedirect: 'dev/account/unauthorized',\n
@@ -50,7 +50,7 @@
 <h2>Auth guard</h2>
 
 <div class="remark success">
-  ng-realtime-database comes with an AuthGuard that can be used to check if the user is logged in and if the user is allowed to access specific routes.
+  ng-sapphiredb comes with an AuthGuard that can be used to check if the user is logged in and if the user is allowed to access specific routes.
 </div>
 
 <app-doc [showContent]="false">
@@ -58,8 +58,8 @@
     <![CDATA[
     \f:(typescript:example-routing.module.ts)
     const routes: Routes = [\n
-      \t{ path: '', component: MainComponent, canActivate: [ RealtimeAuthGuard ] }\n
-      \t{ path: '', component: AdminComponent, canActivate: [ RealtimeAuthGuard ], data: { roles: ['admin'] } }\n
+      \t{ path: '', component: MainComponent, canActivate: [ SapphireAuthGuard ] }\n
+      \t{ path: '', component: AdminComponent, canActivate: [ SapphireAuthGuard ], data: { roles: ['admin'] } }\n
     ];\n\n
 
     @NgModule({\n

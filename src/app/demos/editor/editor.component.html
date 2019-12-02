@@ -13,7 +13,7 @@
 
         \tdocument$: Observable<Document>;\n\n
 
-        \tconstructor(private db: RealtimeDatabase) { }\n\n
+        \tconstructor(private db: SapphireDb) { }\n\n
 
         \tngOnInit() {\n
           \t\tthis.collection = this.db.collection<Document>('documents', 'demo');\n\n

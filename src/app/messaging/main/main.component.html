@@ -1,15 +1,15 @@
 <h1>Messaging</h1>
 
 <p>
-  Because realtime database already creates a bidirectional connection it is very easy to use it for general communication
+  Because SapphireDb already creates a bidirectional connection it is very easy to use it for general communication
   between client and server.<br>
-  Realtime database includes a messaging system that can be easily used.
+  SapphireDb includes a messaging system that can be easily used.
 </p>
 
 <h2>Server</h2>
 
 <div class="remark info">
-  You can use the <code>RealtimeMessageSender</code> to publish messages to the client.
+  You can use the <code>SapphireMessageSender</code> to publish messages to the client.
 </div>
 
 <app-doc [showContent]="false">
@@ -18,9 +18,9 @@
   \f:(csharp:MessageActions.cs)
   public class MessageActions : ActionHandlerBase\n
   {\n
-    \tprivate readonly RealtimeMessageSender MessageSender;\n\n
+    \tprivate readonly SapphireMessageSender MessageSender;\n\n
 
-    \tpublic MessageActions(RealtimeMessageSender messageSender)\n
+    \tpublic MessageActions(SapphireMessageSender messageSender)\n
     \t{\n
       \t\tMessageSender = messageSender;\n
     \t}\n\n

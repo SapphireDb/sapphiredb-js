@@ -1,7 +1,7 @@
 <h1>Server setup - Authentication</h1>
 
 <p>
-  Realtime database comes with methods for authentication and role-based authorization.<br>
+  SapphireDb comes with methods for authentication and role-based authorization.<br>
   You can simply authenticate your client using the built in methods. It also comes with a user and role management.
 </p>
 
@@ -16,7 +16,7 @@
       \tpublic void ConfigureServices(IServiceCollection services)\n
       \t{\n
         \t\t//Register services\n
-        \t\tservices.AddRealtimeAuth<RealtimeAuthContext<IdentityUser>, IdentityUser>(new JwtOptions("secret key", "issuer")), cfg => ...);\n
+        \t\tservices.AddSapphireAuth<SapphireAuthContext<IdentityUser>, IdentityUser>(new JwtOptions("secret key", "issuer")), cfg => ...);\n
     \t}\n
     }
     ]]>
@@ -40,7 +40,7 @@
       \tpublic void ConfigureServices(IServiceCollection services)\n
       \t{\n
     \t\t//Register services\n
-    \t\tservices.AddRealtimeAuth<RealtimeAuthContext<IdentityUser>, IdentityUser>(new JwtOptions(Configuration.GetSection(nameof(JwtOptions)), cfg => ...);\n
+    \t\tservices.AddSapphireAuth<SapphireAuthContext<IdentityUser>, IdentityUser>(new JwtOptions(Configuration.GetSection(nameof(JwtOptions)), cfg => ...);\n
     \t}\n
     }
     ]]>
@@ -50,8 +50,8 @@
 <h2>Custom user object</h2>
 
 <p>
-  Realtime database uses the <code>IdentityUser</code> as user object.<br>
-  You can simply create a custom user object to include custom fields and information.<br>
+  SapphireDb uses the <code>IdentityUser</code> as user object.<br>
+  You can simply create a custom user object that derives from <code>IdentityUser</code> and include custom fields and information.<br>
   Make sure to replace the user type used in <code>Startup.cs</code>
 </p>
 
@@ -82,7 +82,7 @@
 
 <h2>Custom DbContext</h2>
 
-<p>If you want you can create your own auth-context to store custom data etc. Just derive it from <code>RealtimeAuthContext</code></p>
+<p>If you want you can create your own auth-context to store custom data etc. Just derive it from <code>SapphireAuthContext</code></p>
 
 <h2>Access user details</h2>
 

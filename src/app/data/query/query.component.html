@@ -1,6 +1,6 @@
 <h1>Query data</h1>
 
-<p>Creating a query is very simple. ng-realtime-database uses RxJs to provide the values of the collection.</p>
+<p>Creating a query is very simple. ng-sapphiredb uses RxJs to provide the values of the collection.</p>
 
 <p>
   You can simply query all data of a collection.<br>
@@ -16,7 +16,7 @@
   export class DemoComponent implements OnInit {\n
     \tvalues$: Observable<Entry[]>;\n\n
 
-    \tconstructor(private db: RealtimeDatabase) { }\n\n
+    \tconstructor(private db: SapphireDb) { }\n\n
 
     \tngOnInit() {\n
       \t\tthis.values$ = this.db.collection<Entry>('entries').values();\n
@@ -24,9 +24,9 @@
   }
 
   \f:(csharp:DemoContext.cs)
-  public class DemoContext : RealtimeDbContext\n
+  public class DemoContext : SapphireDbContext\n
   {\n
-    \tpublic DemoContext(DbContextOptions<DemoContext> options, RealtimeDatabaseNotifier notifier) : base(options, notifier)\n
+    \tpublic DemoContext(DbContextOptions<DemoContext> options, SapphireDatabaseNotifier notifier) : base(options, notifier)\n
     \t{\n
     \t}\n\n
 
@@ -55,7 +55,7 @@
     export class DemoComponent implements OnInit {\n
     \tvalues$: Observable<Entry[]>;\n\n
 
-    \tconstructor(private db: RealtimeDatabase) { }\n\n
+    \tconstructor(private db: SapphireDb) { }\n\n
 
     \tngOnInit() {\n
     \t\tthis.values$ = this.db.collection<Entry>('entries').snapshot();\n

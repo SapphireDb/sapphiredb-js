@@ -1,7 +1,7 @@
 <h1>Get started - Setup server</h1>
 
 <p>
-  Realtime database server runs on an Asp.Net Core application. First step is to setup the server to use Realtime database.<br>
+  SapphireDb-Server runs on an Asp.Net Core application. First step is to setup the server to use SapphireDb.<br>
   You need to have a working Asp.Net Core application and a configured DbContext.
 </p>
 
@@ -14,21 +14,21 @@
 
 <p>
   You can also install the extension using Nuget package manager. The project can be found here:
-  <a href="https://www.nuget.org/packages/RealtimeDatabase/" target="_blank">https://www.nuget.org/packages/RealtimeDatabase/</a>
+  <a href="https://www.nuget.org/packages/SapphireDb/" target="_blank">https://www.nuget.org/packages/SapphireDb/</a>
 </p>
 
 <h3>Configure DbContext</h3>
-<p>You now have to change your DbContext to derive from <code>RealtimeContext</code>. Also make sure to adjust the constructor parameters.</p>
+<p>You now have to change your DbContext to derive from <code>SapphireDbContext</code>. Also make sure to adjust the constructor parameters.</p>
 
 <app-doc [showContent]="false">
   <div lang>
     <![CDATA[
     \f:(csharp:MyDbContext.cs)
-    // Change DbContext to RealtimeDbContext\n
-    public class MyDbContext : RealtimeDbContext\n
+    // Change DbContext to SapphireDbContext\n
+    public class MyDbContext : SapphireDbContext\n
     {\n
-      \t//Add RealtimeDatabaseNotifier for DI\n
-      \tpublic RealtimeContext(DbContextOptions<RealtimeContext> options, RealtimeDatabaseNotifier notifier) : base(options, notifier)\n
+      \t//Add SapphireDatabaseNotifier for DI\n
+      \tpublic MyDbContext(DbContextOptions<MyDbContext> options, SapphireDatabaseNotifier notifier) : base(options, notifier)\n
       \t{\n\n
 
       \t}\n\n
@@ -42,7 +42,7 @@
 </app-doc>
 
 <h3>Register services and update pipeline</h3>
-<p>To use the realtime database you also have to make some changes in your <code>Startup.cs</code>-File.</p>
+<p>To use the SapphireDb you also have to make some changes in your <code>Startup.cs</code>-File.</p>
 
 <app-doc [showContent]="false">
   <div lang>
@@ -53,14 +53,14 @@
       \tpublic void ConfigureServices(IServiceCollection services)\n
       \t{\n
         \t\t//Register services\n
-        \t\tservices.AddRealtimeDatabase(...)\n
+        \t\tservices.AddSapphireDb(...)\n
           \t\t\t.AddContext<MyDbContext>(cfg => ...);\n
       \t}\n\n
 
       \tpublic void Configure(IApplicationBuilder app)\n
       \t{\n
         \t\t//Add Middleware\n
-        \t\tapp.UseRealtimeDatabase();\n
+        \t\tapp.UseSapphireDb();\n
       \t}\n
     }
     ]]>
@@ -69,5 +69,5 @@
 
 <h2>Done</h2>
 
-<p>Your realtime database server should now work.</p>
+<p>Your SapphireDb-server should now work.</p>
 <a routerLink="../angular">Continue with the setup of a client <span class="mif-arrow-right"></span></a>

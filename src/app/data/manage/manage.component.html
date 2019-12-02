@@ -1,6 +1,6 @@
 <h1>Manage data</h1>
 
-<p>Realtime database provides all methods you need to manage your data. You don't have to write Create, Update and Delete methods.</p>
+<p>SapphireDb provides all methods you need to manage your data. You don't have to write Create, Update and Delete methods.</p>
 
 <h2>Create data</h2>
 
@@ -14,7 +14,7 @@
       \tcollection: DefaultCollection<Entry>;\n
       \tvalues$: Observable<Entry[]>;\n\n
 
-      \tconstructor(private db: RealtimeDatabase) { }\n\n
+      \tconstructor(private db: SapphireDb) { }\n\n
 
       \tngOnInit() {\n
         \t\t// Use a collection object to easily access the methods of a collection\n
@@ -31,9 +31,9 @@
     }
 
     \f:(csharp:DemoContext.cs)
-    public class DemoContext : RealtimeDbContext\n
+    public class DemoContext : SapphireDbContext\n
     {\n
-    \tpublic DemoContext(DbContextOptions<DemoContext> options, RealtimeDatabaseNotifier notifier) : base(options, notifier)\n
+    \tpublic DemoContext(DbContextOptions<DemoContext> options, SapphireDatabaseNotifier notifier) : base(options, notifier)\n
     \t{\n
     \t}\n\n
 
@@ -65,7 +65,7 @@
     export class DemoComponent implements OnInit {\n
       \tcollection: DefaultCollection<Entry>;\n
 
-      \tconstructor(private db: RealtimeDatabase) { }\n\n
+      \tconstructor(private db: SapphireDb) { }\n\n
 
       \tngOnInit() {\n
         \t\tthis.collection = this.db.collection<Entry>('entries', 'demo');\n
@@ -94,7 +94,7 @@
     export class DemoComponent implements OnInit {\n
       \tcollection: DefaultCollection<Entry>;\n
 
-      \tconstructor(private db: RealtimeDatabase) { }\n\n
+      \tconstructor(private db: SapphireDb) { }\n\n
 
       \tngOnInit() {\n
         \t\tthis.collection = this.db.collection<Entry>('entries', 'demo');\n

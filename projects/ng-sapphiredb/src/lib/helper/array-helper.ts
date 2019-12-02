@@ -1,6 +1,6 @@
 import {IPrefilter} from '../collection/prefilter/iprefilter';
 
-Object.defineProperty(Array.prototype, '_realtime_', {
+Object.defineProperty(Array.prototype, '_sapphire_', {
   value: { sorting: [] },
   enumerable: false
 });
@@ -18,11 +18,11 @@ export class ArrayHelper {
   }
 
   static orderBy<T>(array: T[], valueSelector: (item: T) => any, descending: boolean): T[] {
-    if (!(<any>array)._realtime_) {
-      (<any>array)._realtime_ = {};
+    if (!(<any>array)._sapphire_) {
+      (<any>array)._sapphire_ = {};
     }
 
-    (<any>array)._realtime_.sorting = [{descending: descending, valueSelector: valueSelector}];
+    (<any>array)._sapphire_.sorting = [{descending: descending, valueSelector: valueSelector}];
 
     return array.sort((a, b) => {
       return ArrayHelper.orderCompareFunction(valueSelector, a, b, descending);
@@ -30,14 +30,14 @@ export class ArrayHelper {
   }
 
   static thenOrderBy<T>(array: T[], valueSelector: (item: T) => any, descending: boolean): T[] {
-    if ((<any>array)._realtime_.sorting == null || (<any>array)._realtime_.sorting .length === 0) {
+    if ((<any>array)._sapphire_.sorting == null || (<any>array)._sapphire_.sorting .length === 0) {
       return array;
     }
 
-    (<any>array)._realtime_.sorting.push({descending: descending, valueSelector: valueSelector});
+    (<any>array)._sapphire_.sorting.push({descending: descending, valueSelector: valueSelector});
 
     return array.sort((a, b) => {
-      for (const entry of (<any>array)._realtime_.sorting) {
+      for (const entry of (<any>array)._sapphire_.sorting) {
         const result = ArrayHelper.orderCompareFunction(entry.valueSelector, a, b, entry.descending);
 
         if (result !== 0) {

@@ -1,8 +1,8 @@
 <h1>Connection types</h1>
 
 <div class="remark success">
-  Realtime database supports different types of connection. This makes client implementations very easy.<br>
-  Realtime database can also support older browsers with the connections.
+  SapphireDb supports different types of connection. This makes client implementations very easy.<br>
+  SapphireDb also supports older browsers with the connections.
 </div>
 
 <h2>Available connection types</h2>
@@ -41,7 +41,7 @@
 <h2>Set connection type</h2>
 
 <div class="remark success">
-  ng-realtime-database automatically switches the connection type to one the client supports. You can also define it manually.
+  ng-sapphiredb automatically switches the connection type to one the client supports. You can also define it manually.
 </div>
 
 <app-doc [showContent]="false">
@@ -50,11 +50,11 @@
     \f:(typescript:app.module.ts)
     @NgModule({\n
       \timports: [\n
-        \t\tRealtimeDatabaseModule\n
+        \t\tSapphireDbModule\n
       \t],\n
       \tproviders: [\n
         \t\t{\n
-    \t\t\tprovide: REALTIME_DATABASE_OPTIONS,\n
+    \t\t\tprovide: SAPPHIRE_DB_OPTIONS,\n
     \t\t\tuseValue: {\n
             \t\t\t\tconnectionType: 'websocket' or 'sse' or 'poll'\n
           \t\t\t}\n
