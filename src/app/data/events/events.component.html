@@ -48,7 +48,7 @@
 <h2>Dependency Injection</h2>
 
 <div class="remark success">
-  You can use dependency injection for the method. SapphireDb will provide you the current <code>HttpContext</code> and the instances found in the <code>DI-Container</code>.
+  You can use dependency injection for the method. SapphireDb will provide you a <code>HttpInformation</code>-object with information about the request and the instances found in the <code>DI-Container</code>.
 </div>
 
 <app-doc [showContent]="false">
@@ -62,7 +62,7 @@
 
       \tpublic string Message { get; set; }\n\n
 
-      \tpublic void OnCreate(DemoDb db, HttpContext context)\n
+      \tpublic void OnCreate(DemoDb db, HttpInformation information)\n
       \t{\n
     \t\tCreatedOn = DateTime.UtcNow;\n
     \t}\n

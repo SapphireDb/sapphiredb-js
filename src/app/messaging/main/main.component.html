@@ -32,7 +32,7 @@
 
     \tpublic void SendToAdmin(string message)\n
     \t{\n
-      \t\tMessageSender.Send(c => c.HttpContext.User.IsInRole("admin"), message);\n
+      \t\tMessageSender.Send(c => c.HttpInformation.User.IsInRole("admin"), message);\n
     \t}\n\n
 
     \tpublic void PublishToTopic(string message)\n

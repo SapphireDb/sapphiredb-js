@@ -12,7 +12,7 @@
 <h2>Example</h2>
 
 <div class="remark success">
-  You can use dependency injection for the method. SapphireDb will provide you the current <code>HttpContext</code> and the instances found in the <code>DI-Container</code>.
+  You can use dependency injection for the method. SapphireDb will provide you a <code>HttpInformation</code>-object with information about the request and the instances found in the <code>DI-Container</code>.
 </div>
 
 <app-doc [showContent]="false">
@@ -22,7 +22,7 @@
     [QueryFunction("QueryFunction")]\n
     public class Message\n
     {\n
-      \tpublic static Func<Message, bool> QueryFunction(HttpContext context)\n
+      \tpublic static Func<Message, bool> QueryFunction(HttpInformation context)\n
       \t{\n
         \t\tstring userId = context.User.Claims.FirstOrDefault(cl => cl.Type == "Id")?.Value;\n\n
 

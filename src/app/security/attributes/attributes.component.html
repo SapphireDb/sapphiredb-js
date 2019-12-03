@@ -67,8 +67,7 @@
 </div>
 
 <div class="remark success">
-  You can use dependency injection for the method. SapphireDb will provide you the current <code>HttpContext</code>
-  and the instances found in the <code>DI-Container</code>.
+  You can use dependency injection for the method. SapphireDb will provide you a <code>HttpInformation</code>-object with information about the request and the instances found in the <code>DI-Container</code>.
 </div>
 
 <app-doc [showContent]="false">
@@ -78,7 +77,7 @@
     [QueryAuth("CheckAuth")]\n
     public class DemoEntry\n
     {\n
-      \tpublic bool CheckAuth(HttpContext context)\n
+      \tpublic bool CheckAuth(HttpInformation context)\n
       \t{\n
     \t\treturn context.User.Identity.IsAuthenticated;\n
     \t}\n\n
