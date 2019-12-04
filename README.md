@@ -23,14 +23,14 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 ## Advantages
 
 - :wrench: Dead simple configuration
-- Blazing fast development
-- Modern technologies
-- Self hosted
-- easy CRUD operations
-- Authentication/Authorization included
-- Database support
-- Actions
-- NLB support
+- :stars: Blazing fast development
+- :satellite: Modern technologies
+- :computer: Self hosted
+- :floppy_disk: Easy CRUD operations
+- :key: Authentication/Authorization included
+- :heavy_check_mark: Database support
+- :electric_plug: Actions
+- :globe_with_meridians: NLB support
 
 ## Installation
 
