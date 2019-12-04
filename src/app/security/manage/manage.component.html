@@ -34,7 +34,7 @@
         \t\tfirstName: '...',\n
         \t\tlastName: '...'\n
       \t}\n
-    ).subscribe();\n\n
+    );\n\n
 
     this.db.auth.info.updateUser(\n
       \tuserId\n
@@ -47,7 +47,7 @@
           \t\tfirstName: '...',\n
           \t\tlastName: '...'\n
         \t}\n
-    ).subscribe();
+    );
     ]]>
   </div>
 </app-doc>
@@ -58,8 +58,8 @@
   <div lang>
     <![CDATA[
     \f:(typescript:auth.component.ts)
-    this.db.auth.info.createRole('name').subscribe();\n
-    this.db.auth.info.updateRole(roleId, 'name').subscribe();
+    this.db.auth.info.createRole('name');\n
+    this.db.auth.info.updateRole(roleId, 'name');
     ]]>
   </div>
 </app-doc>
@@ -70,8 +70,8 @@
   <div lang>
     <![CDATA[
     \f:(typescript:auth.component.ts)
-    this.db.auth.info.deleteUser(userId).subscribe();\n
-    this.db.auth.info.deleteRole(roleId).subscribe();
+    this.db.auth.info.deleteUser(userId);\n
+    this.db.auth.info.deleteRole(roleId);
     ]]>
   </div>
 </app-doc>

@@ -23,12 +23,12 @@ export class ManageComponent implements OnInit {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
       this.collection.add({
         content: v
-      }).subscribe();
+      });
     });
   }
 
   deleteValue(value: any) {
-    this.collection.remove(value).subscribe();
+    this.collection.remove(value);
   }
 
   updateValue(value: any) {
@@ -36,7 +36,7 @@ export class ManageComponent implements OnInit {
       this.collection.update({
         ...value,
         content: v
-      }).subscribe();
+      });
     });
   }
 }

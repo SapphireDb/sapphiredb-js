@@ -1,0 +1,39 @@
+<h1>Changes</h1>
+
+<p>You can observe the changes of a collection by calling the method <code>.changes()</code></p>
+
+<app-doc>
+  <p class="text-muted text-bold">Changes</p>
+  <p *ngFor="let change of changes$ | async">
+    <ng-container *ngIf="change.responseType === 'LoadResponse'">
+      Created: {{ change.newObject | json }}
+    </ng-container>
+    <ng-container *ngIf="change.responseType === 'UnloadResponse'">
+      Removed: {{ change.primaryValues | json }}
+    </ng-container>
+    <ng-container *ngIf="change.responseType === 'ChangeResponse'">
+      Updated: {{ change.value | json }}
+    </ng-container>
+  </p>
+
+  <p class="text-muted text-bold">Values</p>
+  {{ values$ | async | json }}<br>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+      \tchanges$: Observable<any[]>;\n\n
+
+      \tconstructor(private db: SapphireDb) { }\n\n
+
+      \tngOnInit() {\n
+        \t\tthis.changes$ = this.db.collection('entries', 'demo').changes().pipe(\n
+          \t\t\tfilter(v => v.responseType !== 'QueryResponse'),\n
+          \t\t\tscan((arr, v) => [...arr, v], [])\n
+        \t\t);\n
+      \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>

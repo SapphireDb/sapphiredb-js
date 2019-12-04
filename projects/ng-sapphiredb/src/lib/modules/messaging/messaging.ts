@@ -43,8 +43,8 @@ export class Messaging {
    * Send data to other clients
    * @param data The data to send
    */
-  public send(data: any): Observable<ResponseBase> {
-    return this.connectionManagerService.sendCommand(new MessageCommand(data), false, false);
+  public send(data: any): void {
+    this.connectionManagerService.sendCommand(new MessageCommand(data), false, true);
   }
 
   /**
@@ -52,7 +52,7 @@ export class Messaging {
    * @param topic The topic for publishing
    * @param data The data to publish
    */
-  public publish(topic: string, data: any): Observable<ResponseBase> {
-    return this.connectionManagerService.sendCommand(new PublishCommand(topic, data), false, false);
+  public publish(topic: string, data: any): void {
+    this.connectionManagerService.sendCommand(new PublishCommand(topic, data), false, true);
   }
 }

@@ -60,7 +60,7 @@ export class EditorComponent implements OnInit {
     this.collection.update({
       ...document,
       content: content
-    }).subscribe();
+    });
   }
 
 }

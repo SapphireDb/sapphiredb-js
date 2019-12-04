@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
 import {InfoResponse} from '../../command/info/info-response';
 import {InfoCommand} from '../../command/info/info-command';
 import {filter, take} from 'rxjs/operators';
@@ -13,7 +13,7 @@ export class CollectionInformationService {
 
   public getCollectionInformation(collectionName: string, contextName: string) {
     if (!this.collectionInformation[`${contextName}:${collectionName}`]) {
-      const subject$ = new BehaviorSubject<InfoResponse>(null);
+      const subject$ = new ReplaySubject<InfoResponse>(null);
       this.collectionInformation[`${contextName}:${collectionName}`] = subject$;
       this.connectionManagerService.sendCommand(new InfoCommand(collectionName, contextName)).subscribe((info: InfoResponse) => {
         subject$.next(info);
@@ -21,7 +21,6 @@ export class CollectionInformationService {
     }
 
     return this.collectionInformation[`${contextName}:${collectionName}`].pipe(
-      filter(v => !!v),
       take(1)
     );
   }

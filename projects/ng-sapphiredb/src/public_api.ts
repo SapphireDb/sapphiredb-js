@@ -34,3 +34,9 @@ export * from './lib/command/create-role/create-role-response';
 export * from './lib/command/update-role/update-role-response';
 export * from './lib/command/delete-role/delete-role-response';
 export * from './lib/command/query-connections/query-connections-response';
+
+export * from './lib/command/query/query-response';
+export * from './lib/command/subscribe/change-response';
+export * from './lib/command/subscribe/load-response';
+export * from './lib/command/subscribe/unload-response';
+

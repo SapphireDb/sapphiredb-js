@@ -1,4 +1,4 @@
-import {Observable, pipe} from 'rxjs';
+import {Observable, pipe, Subject} from 'rxjs';
 import {CreateCommand} from '../command/create/create-command';
 import {CreateResponse} from '../command/create/create-response';
 import {CommandResult} from '../models/command-result';
@@ -6,7 +6,7 @@ import {DeleteResponse} from '../command/delete/delete-response';
 import {UpdateCommand} from '../command/update/update-command';
 import {UpdateResponse} from '../command/update/update-response';
 import {DeleteCommand} from '../command/delete/delete-command';
-import {finalize, map, share, switchMap} from 'rxjs/operators';
+import {finalize, map, share, shareReplay, switchMap, take} from 'rxjs/operators';
 import {InfoResponse} from '../command/info/info-response';
 import {AuthCollectionInfo} from '../modules/auth/auth-collection-info';
 import {QueryCommand} from '../command/query/query-command';
@@ -67,6 +67,22 @@ export class CollectionBase<T, Y> {
   }
 
   /**
+   * Get all changes of a collection
+   */
+  public changes(): Observable<QueryResponse | ChangeResponse | UnloadResponse | LoadResponse> {
+    const subscribeCommand = new SubscribeCommand(this.collectionName, this.contextName, this.prefilters);
+    return this.connectionManagerService.sendCommand(subscribeCommand, true)
+      .pipe(
+        map((response) => <QueryResponse | ChangeResponse | UnloadResponse | LoadResponse>response),
+        finalize(() => {
+          this.connectionManagerService.sendCommand(
+            new UnsubscribeCommand(this.collectionName, this.contextName, subscribeCommand.referenceId), false, true);
+        }),
+        share()
+      );
+  }
+
+  /**
    * Add a value to the collection
    * @param value The object to add to the collection
    */
@@ -89,7 +105,9 @@ export class CollectionBase<T, Y> {
    * @param value The object to remove from the collection
    */
   public remove(value: T): Observable<CommandResult<T>> {
-    return this.collectionInformation.pipe(
+    const subject = new Subject<CommandResult<T>>();
+
+    this.collectionInformation.pipe(
       switchMap((info: InfoResponse) => {
         const primaryValues = {};
         info.primaryKeys.forEach(pk => {
@@ -100,7 +118,13 @@ export class CollectionBase<T, Y> {
         return this.connectionManagerService.sendCommand(deleteCommand).pipe(map((response: DeleteResponse) => {
           return new CommandResult<T>(response.error, response.validationResults);
         }));
-    }));
+      }),
+      take(1)
+    ).subscribe((response) => {
+      subject.next(response);
+    });
+
+    return subject;
   }
 
   private createCommandResult$(observable$: Observable<CreateResponse|UpdateResponse>): Observable<CommandResult<T>> {

@@ -26,7 +26,7 @@
         \t\t// Use the method .add to add a new object\n
         \t\tthis.collection.add({\n
           \t\t\tcontent: 'test value'\n
-        \t\t}).subscribe();\n
+        \t\t});\n
       \t}\n
     }
 
@@ -72,7 +72,7 @@
       \t}\n\n
 
       \tdeleteValue(value: Entry) {\n
-        \t\tthis.collection.remove(value).subscribe();\n
+        \t\tthis.collection.remove(value);\n
       \t}\n
     }
     ]]>
@@ -104,7 +104,7 @@
         \t\tthis.collection.update({\n
           \t\t\t...value,\n
           \t\t\tcontent: v\n
-        \t\t}).subscribe();\n
+        \t\t});\n
       \t}\n
     }
 
@@ -123,6 +123,10 @@
 
 <div class="remark info">
   Make sure to include at least the primary keys in the object when calling update or delete.
+</div>
+
+<div class="remark success">
+  You should use the spread-syntax used in the example. This ensures that all data are included in the model.
 </div>
 
 <a routerLink="../prefilter">Continue with prefilters <span class="mif-arrow-right"></span></a>

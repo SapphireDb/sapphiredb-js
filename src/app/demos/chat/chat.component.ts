@@ -53,7 +53,7 @@ export class ChatComponent implements OnInit {
         from: this.from,
         to: this.to,
         content: this.message
-      }).subscribe();
+      });
 
       this.message = '';
     }

@@ -11,6 +11,7 @@ import {CountComponent} from './count/count.component';
 import {EventsComponent} from './events/events.component';
 import {InfoComponent} from './info/info.component';
 import {QueryFunctionComponent} from './query-function/query-function.component';
+import {ChangesComponent} from './changes/changes.component';
 
 
 const routes: Routes = [
@@ -23,6 +24,7 @@ const routes: Routes = [
   { path: 'select', component: SelectComponent },
   { path: 'count', component: CountComponent },
   { path: 'info', component: InfoComponent },
+  { path: 'changes', component: ChangesComponent },
   { path: 'events', component: EventsComponent },
   { path: 'query-function', component: QueryFunctionComponent },
   { path: '', redirectTo: 'query', pathMatch: 'full' }

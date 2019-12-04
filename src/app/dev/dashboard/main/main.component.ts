@@ -154,8 +154,8 @@ export class MainComponent implements OnInit {
 
   send() {
     this.db.execute('message', 'SendToAdmin', 'Das ist ei ntest').subscribe(console.warn);
-    this.db.messaging.send({data: this.message}).subscribe();
-    this.db.messaging.publish('test', this.message).subscribe();
+    this.db.messaging.send({data: this.message});
+    this.db.messaging.publish('test', this.message);
   }
 
   executeTest() {

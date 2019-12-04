@@ -29,7 +29,7 @@ export class OrderComponent implements OnInit {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
       this.db.collection('entries', 'demo').add({
         content: v
-      }).subscribe();
+      });
     });
   }
 }
