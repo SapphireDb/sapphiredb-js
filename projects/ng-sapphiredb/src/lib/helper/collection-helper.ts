@@ -8,10 +8,12 @@ import {SelectPrefilter} from '../collection/prefilter/select-prefilter';
 import {CountPrefilter} from '../collection/prefilter/count-prefilter';
 import {IPrefilter} from '../collection/prefilter/iprefilter';
 import {concatMap, map, switchMap, take} from 'rxjs/operators';
+import {FirstPrefilter} from '../collection/prefilter/first-prefilter';
+import {LastPrefilter} from '../collection/prefilter/last-prefilter';
 
 // @dynamic
 export class CollectionHelper {
-  static afterQueryPrefilters = [SelectPrefilter, CountPrefilter];
+  static afterQueryPrefilters = [SelectPrefilter, CountPrefilter, FirstPrefilter, LastPrefilter];
 
   static unloadItem<T>(collectionData$: ReplaySubject<T[]>, info$: Observable<InfoResponse>, unloadResponse: UnloadResponse) {
     info$.pipe(
@@ -51,9 +53,7 @@ export class CollectionHelper {
       switchMap((info) => collectionData$.pipe(map(values => [info, values]))),
       take(1)
     ).subscribe(([info, values]: [InfoResponse, T[]]) => {
-      if (changeResponse.state === ChangeState.Added) {
-        collectionData$.next(values.concat([changeResponse.value]));
-      } else if (changeResponse.state === ChangeState.Modified) {
+      if (changeResponse.state === ChangeState.Modified) {
         const index = values.findIndex(
           FilterFunctions.comparePrimaryKeysFunction(info.primaryKeys, changeResponse.value));
 
@@ -61,15 +61,12 @@ export class CollectionHelper {
           values[index] = changeResponse.value;
           collectionData$.next(values);
         }
-      } else if (changeResponse.state === ChangeState.Deleted) {
-        const index = values.findIndex(
-          FilterFunctions.comparePrimaryKeysFunction(info.primaryKeys, changeResponse.value));
-
-        if (index !== -1) {
-          values.splice(index, 1);
-          collectionData$.next(values);
-        }
       }
     });
+  }
+
+  static getPrefiltersWithoutAfterQueryPrefilters(prefilters: IPrefilter<any, any>[]) {
+    return prefilters.filter(
+      p => CollectionHelper.afterQueryPrefilters.findIndex(f => p instanceof f) === -1);
   }
 }

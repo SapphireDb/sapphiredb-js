@@ -5,10 +5,11 @@ import { DemosRoutingModule } from './demos-routing.module';
 import {SharedModule} from '../shared.module';
 import { ChatComponent } from './chat/chat.component';
 import { EditorComponent } from './editor/editor.component';
+import { PixelsComponent } from './pixels/pixels.component';
 
 
 @NgModule({
-  declarations: [ChatComponent, EditorComponent],
+  declarations: [ChatComponent, EditorComponent, PixelsComponent],
   imports: [
     SharedModule,
     DemosRoutingModule

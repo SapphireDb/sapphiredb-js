@@ -166,9 +166,9 @@ export class CollectionBase<T, Y> {
         collectionValue.socketSubscription.unsubscribe();
       }),
       map((array: T[]) => {
-        // for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(prefilters)) {
-        //   array = prefilter.execute(array);
-        // }
+        for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(this.prefilters)) {
+          array = prefilter.execute(array);
+        }
 
         return array;
       }),
