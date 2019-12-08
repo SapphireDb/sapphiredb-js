@@ -48,15 +48,25 @@ imports: [
 ]
 ```
 
+## Browser compatibility
+
+| Browser              | Websocket          | SSE                | Polling            |
+|----------------------|--------------------|--------------------|--------------------|
+| Chrome               | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| Firefox              | :heavy_check_mark: | :x:                | :heavy_check_mark: |
+| Opera                | :heavy_check_mark: | :x:                | :heavy_check_mark: |
+| Edge                 | :heavy_check_mark: | :x:                | :heavy_check_mark: |
+| Internet Explorer 11 | :heavy_check_mark: | :x:                | :heavy_check_mark: |
+
 ## Documentation
 
 Check out the documentation for more details: [Documentation](https://sapphire-db.com/)
 
 ## Implementations
 
-[SapphireDb - Server](https://github.com/morrisjdev/SapphireDb)
+[SapphireDb - Server for Asp.Net Core](https://github.com/morrisjdev/SapphireDb)
 
-[ng-sapphiredb - Angular Client](https://github.com/morrisjdev/ng-sapphiredb)
+[ng-sapphiredb - Angular client](https://github.com/morrisjdev/ng-sapphiredb)
 
 ## Author
 
