@@ -27,8 +27,25 @@ export class ManageComponent implements OnInit {
     });
   }
 
+  addValues() {
+    this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
+      this.collection.add(...[
+        {
+          content: '1' + v
+        },
+        {
+          content: '2' + v
+        }
+      ]);
+    });
+  }
+
   deleteValue(value: any) {
     this.collection.remove(value);
+  }
+
+  deleteValues(values: any[]) {
+    this.collection.remove(...values);
   }
 
   updateValue(value: any) {
@@ -37,6 +54,17 @@ export class ManageComponent implements OnInit {
         ...value,
         content: v
       });
+    });
+  }
+
+  updateValues(values: any[]) {
+    this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
+      this.collection.update(...values.map((value, i) => {
+        return {
+          ...value,
+          content: `${i}${v}`
+        };
+      }));
     });
   }
 }

@@ -4,8 +4,6 @@ import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {Lists} from 'ng-metro4';
 
-const size = 10;
-
 interface Pixel {
   id?: string;
   color: string;
@@ -20,6 +18,9 @@ interface Pixel {
 })
 export class PixelsComponent implements OnInit {
 
+  size = 10;
+  showLabels = false;
+
   private collection: DefaultCollection<Pixel>;
   public pixels$: Observable<Pixel[]>;
 
@@ -29,15 +30,19 @@ export class PixelsComponent implements OnInit {
 
     this.pixels$.pipe(take(1)).subscribe((pixels) => {
       if (pixels.length === 0) {
-        for (let x = 0; x < size; x++) {
-          for (let y = 0; y < size; y++) {
-            this.collection.add({
+        const values: Pixel[] = [];
+
+        for (let x = 0; x < this.size; x++) {
+          for (let y = 0; y < this.size; y++) {
+            values.push({
               color: 'darkBlue',
               x: x,
               y: y
             });
           }
         }
+
+        this.collection.add(...values);
       }
     });
   }
@@ -56,6 +61,21 @@ export class PixelsComponent implements OnInit {
       color: allColors[colorIndex]
     });
     return false;
+  }
+
+  reset(pixels: Pixel[]) {
+    const updateValues: Pixel[] = pixels.map((pixel) => {
+      return {
+        ...pixel,
+        color: 'darkBlue'
+      };
+    });
+
+    this.collection.update(...updateValues);
+  }
+
+  delete(pixels: Pixel[]) {
+    this.collection.remove(...pixels);
   }
 
   ngOnInit() {

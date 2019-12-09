@@ -1,4 +1,4 @@
-import {Observable, pipe, Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {CreateCommand} from '../command/create/create-command';
 import {CreateResponse} from '../command/create/create-response';
 import {CommandResult} from '../models/command-result';
@@ -6,7 +6,7 @@ import {DeleteResponse} from '../command/delete/delete-response';
 import {UpdateCommand} from '../command/update/update-command';
 import {UpdateResponse} from '../command/update/update-response';
 import {DeleteCommand} from '../command/delete/delete-command';
-import {finalize, map, share, shareReplay, switchMap, take} from 'rxjs/operators';
+import {finalize, map, share, switchMap, take} from 'rxjs/operators';
 import {InfoResponse} from '../command/info/info-response';
 import {AuthCollectionInfo} from '../modules/auth/auth-collection-info';
 import {QueryCommand} from '../command/query/query-command';
@@ -21,6 +21,9 @@ import {SubscribeCommand} from '../command/subscribe/subscribe-command';
 import {ChangeResponse} from '../command/subscribe/change-response';
 import {UnloadResponse} from '../command/subscribe/unload-response';
 import {LoadResponse} from '../command/subscribe/load-response';
+import {CreateRangeCommand} from '../command/create-range/create-range-command';
+import {UpdateRangeCommand} from '../command/update-range/update-range-command';
+import {DeleteRangeCommand} from '../command/delete-range/delete-range-command';
 
 export class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
@@ -84,37 +87,57 @@ export class CollectionBase<T, Y> {
 
   /**
    * Add a value to the collection
-   * @param value The object to add to the collection
+   * @param values The object(s) to add to the collection
    */
-  public add(value: T): Observable<CommandResult<T>> {
-    return this.createCommandResult$(
-      <any>this.connectionManagerService.sendCommand(new CreateCommand(this.collectionName, this.contextName, value)));
+  public add(...values: T[]): Observable<CommandResult<T>> {
+    if (values.length === 1) {
+      return this.createCommandResult$(
+        <any>this.connectionManagerService.sendCommand(new CreateCommand(this.collectionName, this.contextName, values[0])));
+    } else {
+      return this.createCommandResult$(
+        <any>this.connectionManagerService.sendCommand(new CreateRangeCommand(this.collectionName, this.contextName, values)));
+    }
   }
 
   /**
    * Update a value of the collection
-   * @param value The object to update in the collection
+   * @param values The object(s) to update in the collection
    */
-  public update(value: T): Observable<CommandResult<T>> {
-    return this.createCommandResult$(
-      <any>this.connectionManagerService.sendCommand(new UpdateCommand(this.collectionName, this.contextName, value)));
+  public update(...values: T[]): Observable<CommandResult<T>> {
+    if (values.length === 1) {
+      return this.createCommandResult$(
+        <any>this.connectionManagerService.sendCommand(new UpdateCommand(this.collectionName, this.contextName, values[0])));
+    } else {
+      return this.createCommandResult$(
+        <any>this.connectionManagerService.sendCommand(new UpdateRangeCommand(this.collectionName, this.contextName, values)));
+    }
   }
 
   /**
    * Remove a value from the collection
-   * @param value The object to remove from the collection
+   * @param values The object(s) to remove from the collection
    */
-  public remove(value: T): Observable<CommandResult<T>> {
+  public remove(...values: T[]): Observable<CommandResult<T>> {
     const subject = new Subject<CommandResult<T>>();
 
     this.collectionInformation.pipe(
       switchMap((info: InfoResponse) => {
-        const primaryValues = {};
-        info.primaryKeys.forEach(pk => {
-          primaryValues[pk] = value[pk];
+        const primaryKeyList = values.map((value) => {
+          const primaryValues = {};
+          info.primaryKeys.forEach(pk => {
+            primaryValues[pk] = value[pk];
+          });
+          return primaryValues;
         });
 
-        const deleteCommand = new DeleteCommand(this.collectionName, this.contextName, primaryValues);
+        let deleteCommand;
+
+        if (primaryKeyList.length === 1) {
+          deleteCommand = new DeleteCommand(this.collectionName, this.contextName, primaryKeyList[0]);
+        } else {
+          deleteCommand = new DeleteRangeCommand(this.collectionName, this.contextName, primaryKeyList);
+        }
+
         return this.connectionManagerService.sendCommand(deleteCommand).pipe(map((response: DeleteResponse) => {
           return new CommandResult<T>(response.error, response.validationResults);
         }));

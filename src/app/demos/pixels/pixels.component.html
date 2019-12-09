@@ -117,12 +117,19 @@
   </app-doc>
 </m4-panel>
 
-<div class="pixels">
-  <div class="pixel"
-       [ngClass]="'bg-' + pixel.color"
-       (contextmenu)="changeColor(pixel, -1)"
-       (click)="changeColor(pixel, 1)"
-       *ngFor="let pixel of pixels$ | async">
-    x: {{ pixel.x }}, y: {{ pixel.y }}
+<ng-container *m4Let="pixels$ | async; let pixels">
+  <div class="pixels">
+    <div class="pixel"
+         [ngClass]="'bg-' + pixel.color"
+         (contextmenu)="changeColor(pixel, -1)"
+         (click)="changeColor(pixel, 1)"
+         *ngFor="let pixel of pixels">
+      <ng-container *ngIf="showLabels">
+        x: {{ pixel.x }}, y: {{ pixel.y }}
+      </ng-container>
+    </div>
   </div>
-</div>
+
+  <button m4-button (click)="reset(pixels)">Reset</button>
+  <m4-checkbox caption="Show labels" [(ngModel)]="showLabels"></m4-checkbox>
+</ng-container>
