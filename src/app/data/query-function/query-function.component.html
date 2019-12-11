@@ -5,7 +5,7 @@
   You could add the <code>[QueryAuth]</code> attribute to the model-class. This will lead to one problem. The values first
   will be queried from the database and then the check is made for every value.<br>
   To improve performance you can also use <code>[QueryFunction]</code>. This attribute has to reference a static function in
-  your model, that returns a boolean lambda function. This function is then used in the query and executed in the database
+  your model, that returns a boolean lambda expression. This expression is then used in the query and executed in the database
   directly.
 </p>
 
@@ -22,7 +22,7 @@
     [QueryFunction("QueryFunction")]\n
     public class Message\n
     {\n
-      \tpublic static Func<Message, bool> QueryFunction(HttpInformation context)\n
+      \tpublic static Expression<Func<Message, bool>> QueryFunction(HttpInformation context)\n
       \t{\n
         \t\tstring userId = context.User.Claims.FirstOrDefault(cl => cl.Type == "Id")?.Value;\n\n
 
