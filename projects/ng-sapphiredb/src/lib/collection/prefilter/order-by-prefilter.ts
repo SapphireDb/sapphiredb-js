@@ -3,28 +3,19 @@ import {ArrayHelper} from '../../helper/array-helper';
 
 export class OrderByPrefilter<T> implements IPrefilter<T, T[]> {
   prefilterType = 'OrderByPrefilter';
-  selectFunction: (x: T, contextData?: any[]) => any;
-  selectFunctionString: string;
+  property: keyof T;
   descending: boolean;
-  contextData: any[];
 
-  constructor(selectFunction: (x: T, contextData?: any[]) => any, descending: boolean = false, contextData?: any[]) {
-    this.selectFunction = selectFunction;
-    this.selectFunctionString = selectFunction.toString();
+  constructor(property: keyof T, descending: boolean = false) {
+    this.property = property;
     this.descending = descending;
-
-    if (contextData) {
-      this.contextData = contextData.map(v => {
-        return JSON.parse(JSON.stringify(v));
-      });
-    }
   }
 
   public execute(values: T[]) {
-    return ArrayHelper.orderBy(values, x => this.selectFunction(x, this.contextData), this.descending);
+    return ArrayHelper.orderBy(values, x => x[this.property], this.descending);
   }
 
   public hash() {
-    return `${this.prefilterType},${this.selectFunctionString},${this.descending},${JSON.stringify(this.contextData)}`;
+    return `${this.prefilterType},${this.property},${this.descending}}`;
   }
 }

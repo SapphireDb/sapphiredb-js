@@ -5,11 +5,11 @@ import {OrderByPrefilter} from './order-by-prefilter';
 export class ThenOrderByPrefilter<T> extends OrderByPrefilter<T> {
   prefilterType = 'ThenOrderByPrefilter';
 
-  constructor(selectFunction: (x: T, contextData?: any[]) => any, descending: boolean = false, contextData?: any[]) {
-    super(selectFunction, descending, contextData);
+  constructor(property: keyof T, descending: boolean = false) {
+    super(property, descending);
   }
 
   public execute(values: T[]) {
-    return ArrayHelper.thenOrderBy(values, x => this.selectFunction(x, this.contextData), this.descending);
+    return ArrayHelper.thenOrderBy(values, x => x[this.property], this.descending);
   }
 }

@@ -17,11 +17,11 @@ export class OrderComponent implements OnInit {
 
   ngOnInit() {
     this.values$ = this.db.collection<any>('entries', 'demo')
-      .orderBy(v => v.content, false)
+      .orderBy('content', false)
       .values();
 
     this.values2$ = this.db.collection<any>('entries', 'demo')
-      .orderBy(v => v.content, true)
+      .orderBy('content', true)
       .values();
   }
 

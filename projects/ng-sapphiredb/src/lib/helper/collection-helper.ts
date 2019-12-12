@@ -1,7 +1,5 @@
-import {UnloadResponse} from '../command/subscribe/unload-response';
 import {InfoResponse} from '../command/info/info-response';
 import {Observable, ReplaySubject} from 'rxjs';
-import {LoadResponse} from '../command/subscribe/load-response';
 import {ChangeResponse, ChangeState} from '../command/subscribe/change-response';
 import {FilterFunctions} from './filter-functions';
 import {SelectPrefilter} from '../collection/prefilter/select-prefilter';
@@ -15,37 +13,9 @@ import {LastPrefilter} from '../collection/prefilter/last-prefilter';
 export class CollectionHelper {
   static afterQueryPrefilters = [SelectPrefilter, CountPrefilter, FirstPrefilter, LastPrefilter];
 
-  static unloadItem<T>(collectionData$: ReplaySubject<T[]>, info$: Observable<InfoResponse>, unloadResponse: UnloadResponse) {
-    info$.pipe(
-      switchMap((info) => collectionData$.pipe(map(values => [info, values]))),
-      take(1)
-    ).subscribe(([info, values]: [InfoResponse, T[]]) => {
-      const primaryKeys = info.primaryKeys;
-
-      const index = values.findIndex(c => {
-        let isCorrectElement = true;
-
-        for (let i = 0; i < primaryKeys.length; i++) {
-          if (c[primaryKeys[i]] !== unloadResponse.primaryValues[i]) {
-            isCorrectElement = false;
-            break;
-          }
-        }
-
-        return isCorrectElement;
-      });
-
-      if (index !== -1) {
-        values.splice(index, 1);
-        collectionData$.next(values);
-      }
-    });
-  }
-
-  static loadItem<T>(collectionData$: ReplaySubject<T[]>, loadResponse: LoadResponse) {
-    collectionData$.pipe(take(1)).subscribe((values: T[]) => {
-      collectionData$.next(values.concat([loadResponse.newObject]));
-    });
+  static getPrefiltersWithoutAfterQueryPrefilters(prefilters: IPrefilter<any, any>[]) {
+    return prefilters.filter(
+      p => CollectionHelper.afterQueryPrefilters.findIndex(f => p instanceof f) === -1);
   }
 
   static updateCollection<T>(collectionData$: ReplaySubject<T[]>, info$: Observable<InfoResponse>, changeResponse: ChangeResponse) {
@@ -85,10 +55,5 @@ export class CollectionHelper {
         }
       }
     });
-  }
-
-  static getPrefiltersWithoutAfterQueryPrefilters(prefilters: IPrefilter<any, any>[]) {
-    return prefilters.filter(
-      p => CollectionHelper.afterQueryPrefilters.findIndex(f => p instanceof f) === -1);
   }
 }

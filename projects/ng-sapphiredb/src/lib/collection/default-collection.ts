@@ -53,14 +53,12 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
 
   /**
    * Apply ordering to the collection
-   * @param selector A selector to select value to order by
+   * @param property The name of the property to order by
    * @param descending Order the selection in descending order
-   * @param contextData Optional data that are used in the selector
    */
-  public orderBy<Y extends any[]>(selector: (value: T, contextData?: Y) => any,
-                                  descending: boolean = false, ...contextData: Y): OrderedCollection<T> {
+  public orderBy<Y extends any[]>(property: keyof T, descending: boolean = false): OrderedCollection<T> {
     return <any>this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters,
-      new OrderByPrefilter(selector, descending, contextData));
+      new OrderByPrefilter(property, descending));
   }
 
   /**

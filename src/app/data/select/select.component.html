@@ -9,6 +9,12 @@
   It is not possible to update selected values directly because information like primary keys get lost.
 </p>
 
+<div class="remark warning">
+  Note that the usage of the prefilter types <code>Take</code>, <code>Skip</code>, <code>Select</code> and
+  <code>Count</code> will require the collection data to always get queried from the database after every change. Keep that in mind when
+  creating performance critical tasks.
+</div>
+
 <app-doc>
   {{ values$ | async | json }}<br>
   <button m4-button (click)="addValue()">Add value</button>

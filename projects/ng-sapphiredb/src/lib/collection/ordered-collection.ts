@@ -16,13 +16,11 @@ export class OrderedCollection<T> extends DefaultCollection<T> {
 
   /**
    * Apply additional ordering to the collection without effecting previous order
-   * @param selector A selector to select value to order by
+   * @param property The name of the property to order by
    * @param descending Order the selection in descending order
-   * @param contextData Optional data that are used in the selector
    */
-  public thenOrderBy<Y extends any[]>(selector: (value: T, contextData?: Y) => any,
-                                      descending: boolean = false, ...contextData: Y): OrderedCollection<T> {
+  public thenOrderBy<Y extends any[]>(property: keyof T, descending: boolean = false): OrderedCollection<T> {
     return <any>this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters,
-      new ThenOrderByPrefilter(selector, descending, contextData));
+      new ThenOrderByPrefilter(property, descending));
   }
 }

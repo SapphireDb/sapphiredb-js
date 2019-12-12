@@ -19,8 +19,6 @@ import {CollectionHelper} from '../helper/collection-helper';
 import {ConnectionManagerService} from '../connection/services/connection-manager.service';
 import {SubscribeCommand} from '../command/subscribe/subscribe-command';
 import {ChangeResponse} from '../command/subscribe/change-response';
-import {UnloadResponse} from '../command/subscribe/unload-response';
-import {LoadResponse} from '../command/subscribe/load-response';
 import {CreateRangeCommand} from '../command/create-range/create-range-command';
 import {UpdateRangeCommand} from '../command/update-range/update-range-command';
 import {DeleteRangeCommand} from '../command/delete-range/delete-range-command';
@@ -49,11 +47,11 @@ export class CollectionBase<T, Y> {
 
     return <Observable<Y>>this.connectionManagerService.sendCommand(queryCommand).pipe(
       map((response: QueryResponse) => {
-        const array = response.result;
+        let array = response.result;
 
-        // for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(this.prefilters)) {
-        //   array = prefilter.execute(array);
-        // }
+        for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(this.prefilters)) {
+          array = prefilter.execute(array);
+        }
 
         return array;
       })
@@ -72,11 +70,11 @@ export class CollectionBase<T, Y> {
   /**
    * Get all changes of a collection
    */
-  public changes(): Observable<QueryResponse | ChangeResponse | UnloadResponse | LoadResponse> {
+  public changes(): Observable<QueryResponse | ChangeResponse> {
     const subscribeCommand = new SubscribeCommand(this.collectionName, this.contextName, this.prefilters);
     return this.connectionManagerService.sendCommand(subscribeCommand, true)
       .pipe(
-        map((response) => <QueryResponse | ChangeResponse | UnloadResponse | LoadResponse>response),
+        map((response) => <QueryResponse | ChangeResponse>response),
         finalize(() => {
           this.connectionManagerService.sendCommand(
             new UnsubscribeCommand(this.collectionName, this.contextName, subscribeCommand.referenceId), false, true);
@@ -164,15 +162,11 @@ export class CollectionBase<T, Y> {
     const collectionValue = new CollectionValue<T>(subscribeCommand.referenceId);
 
     const wsSubscription = this.connectionManagerService.sendCommand(subscribeCommand, true)
-      .subscribe((response: (QueryResponse | ChangeResponse | UnloadResponse | LoadResponse)) => {
+      .subscribe((response: (QueryResponse | ChangeResponse)) => {
         if (response.responseType === 'QueryResponse') {
           collectionValue.subject.next((<QueryResponse>response).result);
         } else if (response.responseType === 'ChangeResponse') {
           CollectionHelper.updateCollection<T>(collectionValue.subject, collectionInformation, <ChangeResponse>response);
-        } else if (response.responseType === 'UnloadResponse') {
-          CollectionHelper.unloadItem<T>(collectionValue.subject, collectionInformation, <UnloadResponse>response);
-        } else if (response.responseType === 'LoadResponse') {
-          CollectionHelper.loadItem<T>(collectionValue.subject, <LoadResponse>response);
         }
       });
 

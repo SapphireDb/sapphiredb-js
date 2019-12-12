@@ -37,6 +37,3 @@ export * from './lib/command/query-connections/query-connections-response';
 
 export * from './lib/command/query/query-response';
 export * from './lib/command/subscribe/change-response';
-export * from './lib/command/subscribe/load-response';
-export * from './lib/command/subscribe/unload-response';
-
