@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs';
 import {InfoResponse} from '../command/info/info-response';
-import {WherePrefilter} from './prefilter/where-prefilter';
+import {ConditionBuilder, ConditionStep, WherePrefilter} from './prefilter/where-prefilter';
 import {SkipPrefilter} from './prefilter/skip-prefilter';
 import {TakePrefilter} from './prefilter/take-prefilter';
 import {OrderByPrefilter} from './prefilter/order-by-prefilter';
@@ -43,12 +43,11 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
 
   /**
    * Filter the data to query
-   * @param filter A function that returns true if the data should get queried
-   * @param contextData Optional data that are used in the filter function
+   * @param conditionBuilder The builder to create the condition for the filter statement
    */
-  public where<Y extends any[]>(filter: (value: T, contextData?: Y) => boolean, ...contextData: Y): DefaultCollection<T> {
+  public where<Y extends any[]>(conditionBuilder: (builder: ConditionBuilder<T>) => ConditionBuilder<T>|ConditionStep<T>): DefaultCollection<T> {
     return <any>this.collectionManagerService.getCollection(
-      this.collectionName, this.contextName, this.prefilters, new WherePrefilter(filter, contextData));
+      this.collectionName, this.contextName, this.prefilters, new WherePrefilter(conditionBuilder));
   }
 
   /**

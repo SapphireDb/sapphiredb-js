@@ -13,15 +13,29 @@ export class WhereComponent implements OnInit {
   values$: Observable<any>;
   values2$: Observable<any>;
 
-  constructor(private db: SapphireDb, private dialogService: DialogService) { }
+  constructor(private db: SapphireDb, private dialogService: DialogService) {
+    // let t = new ConditionBuilder()
+    //   .condition('from', '==', 1).and().condition('to', '==', 2).or().condition('test', '==', null).group()
+    //   .or()
+    //   .condition('from', '==', 2).and().condition('to', '==', 1).or().condition('test', '<=', null).group()
+    //   .and()
+    //   .condition('from', '==', 4).or().condition('to', '==', 4).group()
+    //   .and()
+    //   .condition('a', '==', 'b');
+    // console.log(t);
+  }
+
 
   ngOnInit() {
     this.values$ = this.db.collection<any>('entries', 'demo')
-      .where(v => v.content.startsWith('testValue'))
+      // .where(v => v.content.startsWith('testValue'))
       .values();
 
     this.values2$ = this.db.collection<any>('entries', 'demo')
-      .where((v, [x, x2]) => v.content === x || v.content === x2, 'testValue', 'testValue2')
+      .where(builder => builder
+          .condition('content', '==', 'testValue')
+          .or()
+          .condition('content', '==', 'testValue2'))
       .values();
   }
 

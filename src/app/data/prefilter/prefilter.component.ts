@@ -16,7 +16,7 @@ export class PrefilterComponent implements OnInit {
 
   ngOnInit() {
     this.values$ = this.db.collection<any>('entries', 'demo')
-      .where(v => v.content.startsWith('testValue'))
+      // .where(v => v.content.startsWith('testValue'))
       .values();
   }
 

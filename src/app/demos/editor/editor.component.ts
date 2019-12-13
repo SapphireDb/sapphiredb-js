@@ -33,7 +33,7 @@ export class EditorComponent implements OnInit {
       filter(v => !!v),
       switchMap((name: string) => {
         const document$: Observable<Document> = this.collection
-          .where((d, [documentName]) => d.name === documentName, name)
+          // .where((d, [documentName]) => d.name === documentName, name)
           .first()
           .values();
 

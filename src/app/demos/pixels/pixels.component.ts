@@ -26,7 +26,7 @@ export class PixelsComponent implements OnInit {
 
   constructor(private db: SapphireDb) {
     this.collection = this.db.collection<Pixel>('pixels', 'demo');
-    this.pixels$ = this.collection.orderBy(p => p.x).thenOrderBy(p => p.y).values();
+    this.pixels$ = this.collection.orderBy('x').thenOrderBy('y').values();
 
     this.pixels$.pipe(take(1)).subscribe((pixels) => {
       if (pixels.length === 0) {

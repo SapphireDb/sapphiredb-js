@@ -46,15 +46,7 @@ export class CollectionBase<T, Y> {
     const queryCommand = new QueryCommand(this.collectionName, this.contextName, this.prefilters);
 
     return <Observable<Y>>this.connectionManagerService.sendCommand(queryCommand).pipe(
-      map((response: QueryResponse) => {
-        let array = response.result;
-
-        for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(this.prefilters)) {
-          array = prefilter.execute(array);
-        }
-
-        return array;
-      })
+      map((response: QueryResponse) => response.result)
     );
   }
 

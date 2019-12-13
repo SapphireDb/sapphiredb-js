@@ -44,8 +44,8 @@ export class PrefiltersComponent implements OnInit {
     //   this.collectionValues$.subscribe(console.log);
     // }, 1000);
 
-    this.collectionWhere = this.collection.where(u => u.username !== 'test123');
-    this.whereValues$ = this.collectionWhere.values();
+    // this.collectionWhere = this.collection.where(u => u.username !== 'test123');
+    // this.whereValues$ = this.collectionWhere.values();
 
     this.collectionSkip = this.collection.skip(2);
     this.skipValues$ = this.collectionSkip.values();
@@ -53,10 +53,10 @@ export class PrefiltersComponent implements OnInit {
     this.collectionTake = this.collection.take(3);
     this.takeValues$ = this.collectionTake.values();
 
-    this.collectionOrder = this.collection.orderBy(v => v.id, true);
+    this.collectionOrder = this.collection.orderBy('id', true);
     this.orderValues$ = this.collectionOrder.values();
 
-    this.collectionOrder2 = this.collection.orderBy(v => v.username).thenOrderBy(v => v.id, true);
+    this.collectionOrder2 = this.collection.orderBy('username').thenOrderBy('id', true);
     this.order2Values$ = this.collectionOrder2.values();
 
     this.collectionSelect = this.collection.select(u => u.username);

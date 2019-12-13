@@ -22,9 +22,9 @@ export class MainComponent implements OnInit {
 
   constructor(private db: SapphireDb) {
     this.messageCollection = this.db.collection<Message>('messages');
-    this.messages$ = this.db.auth.getUserData().pipe(switchMap(u => {
-      return this.messageCollection.where((x, [user]) => x.userId ===  user.id || x.toId === user.id, u).values();
-    }));
+    // this.messages$ = this.db.auth.getUserData().pipe(switchMap(u => {
+      // return this.messageCollection.where((x, [user]) => x.userId ===  user.id || x.toId === user.id, u).values();
+    // }));
 
     this.users$ = combineLatest([this.db.auth.info.getUsers(), this.db.auth.getUserData()]).pipe(map(([users, user]: [UserData[], UserData]) => {
       return users.filter(u => u.id !== user.id);

@@ -72,7 +72,7 @@ export class MainComponent implements OnInit {
     // }, 1000);
 
     this.db.collection<Log>('logs')
-      .orderBy(x => x.id, true)
+      .orderBy('id', true)
       .take(1)
       .values()
       .pipe(
