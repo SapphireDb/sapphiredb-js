@@ -28,7 +28,7 @@ export class WhereComponent implements OnInit {
 
   ngOnInit() {
     this.values$ = this.db.collection<any>('entries', 'demo')
-      // .where(v => v.content.startsWith('testValue'))
+      .where(builder => builder.condition('content', 'StartsWith', 'testV'))
       .values();
 
     this.values2$ = this.db.collection<any>('entries', 'demo')

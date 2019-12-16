@@ -1,5 +1,7 @@
 import {IPrefilter} from './iprefilter';
 
+export type CompareOperationType = '=='|'Contains'|'StartsWith'|'EndsWith';
+
 export class WherePrefilter<T> implements IPrefilter<T, T[]> {
   prefilterType = 'WherePrefilter';
   conditions: any[];
@@ -21,7 +23,7 @@ export class WherePrefilter<T> implements IPrefilter<T, T[]> {
 export class ConditionBuilder<T> {
   public conditions = [];
 
-  condition(property: keyof T, compare: '=='|'<=', value: any): ConditionStep<T> {
+  condition(property: keyof T, compare: CompareOperationType, value: any): ConditionStep<T> {
     this.conditions.push([property, compare, value]);
     return new ConditionStep<T>(this);
   }
