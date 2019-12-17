@@ -5,7 +5,7 @@
 </p>
 
 <p>
-  In this example the content is selected directly.<br>
+  In this example the content is selected on server side so that no overhead of unused data is created.<br>
   It is not possible to update selected values directly because information like primary keys get lost.
 </p>
 
@@ -27,16 +27,12 @@
 
       \tngOnInit() {\n
     \t\tthis.values$ = this.db.collection<Entry>('entries')\n
-    \t\t\t.select(v => v.content.toUpperCase())\n
+    \t\t\t.select('content')\n
     \t\t\t.values();\n
     \t}\n
     }
     ]]>
   </div>
 </app-doc>
-
-<div class="remark info">
-  Just like all other prefilters with js-method as selector you can pass additional parameters.
-</div>
 
 <a routerLink="../count">Continue with count prefilter <span class="mif-arrow-right"></span></a>

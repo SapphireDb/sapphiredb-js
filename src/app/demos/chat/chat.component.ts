@@ -41,7 +41,7 @@ export class ChatComponent implements OnInit {
         }
 
         return this.messageCollection
-          // .where((m, [valueFrom, valueTo]) => (m.from === valueFrom || m.to === valueFrom) && (m.to === valueTo || m.from === valueTo), from, to)
+          .where([[['from', '==', from], 'and', ['to', '==', to]], 'or', [['from', '==', to], 'and', ['to', '==', from]]])
           .values();
       })
     );

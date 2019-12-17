@@ -16,7 +16,7 @@ export class SelectComponent implements OnInit {
 
   ngOnInit() {
     this.values$ = this.db.collection<any>('entries', 'demo')
-      .select('content')
+      .select<string>('content')
       .values();
   }
 

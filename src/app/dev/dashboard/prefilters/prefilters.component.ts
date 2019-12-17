@@ -59,7 +59,7 @@ export class PrefiltersComponent implements OnInit {
     this.collectionOrder2 = this.collection.orderBy('username').thenOrderBy('id', true);
     this.order2Values$ = this.collectionOrder2.values();
 
-    this.collectionSelect = this.collection.select(u => u.username);
+    this.collectionSelect = this.collection.select('username');
     this.selectValues$ = this.collectionSelect.values();
 
     this.collectionCount = this.collection.count();
