@@ -13,29 +13,19 @@ export class WhereComponent implements OnInit {
   values$: Observable<any>;
   values2$: Observable<any>;
 
-  constructor(private db: SapphireDb, private dialogService: DialogService) {
-    // let t = new ConditionBuilder()
-    //   .condition('from', '==', 1).and().condition('to', '==', 2).or().condition('test', '==', null).group()
-    //   .or()
-    //   .condition('from', '==', 2).and().condition('to', '==', 1).or().condition('test', '<=', null).group()
-    //   .and()
-    //   .condition('from', '==', 4).or().condition('to', '==', 4).group()
-    //   .and()
-    //   .condition('a', '==', 'b');
-    // console.log(t);
-  }
-
+  constructor(private db: SapphireDb, private dialogService: DialogService) { }
 
   ngOnInit() {
     this.values$ = this.db.collection<any>('entries', 'demo')
-      .where(builder => builder.condition('content', 'StartsWith', 'testV'))
+      .where(['content', 'StartsWith', 'testV'])
       .values();
 
     this.values2$ = this.db.collection<any>('entries', 'demo')
-      .where(builder => builder
-          .condition('content', '==', 'testValue')
-          .or()
-          .condition('content', '==', 'testValue2'))
+      .where([
+        [['content', 'StartsWith', 'test'], 'and', ['content', 'EndsWith', 'V']],
+        'or',
+        [['content', 'StartsWith', 'var'], 'and', ['content', 'EndsWith', '2']]
+      ])
       .values();
   }
 

@@ -23,7 +23,7 @@
 
     \tngOnInit() {\n
     \t\tthis.values$ = this.db.collection<Entry>('entries')}\n
-      \t\t\t.where(v => v.content.startsWith('testValue'))\n
+      \t\t\t.where(['content', 'StartsWith', 'testValue'])\n
       \t\t\t.values();\n
     \t}\n
     }

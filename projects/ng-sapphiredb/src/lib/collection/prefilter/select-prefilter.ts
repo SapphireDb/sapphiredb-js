@@ -2,26 +2,17 @@ import {IPrefilter} from './iprefilter';
 
 export class SelectPrefilter<T> implements IPrefilter<T, any[]> {
   prefilterType = 'SelectPrefilter';
-  selectFunction: (x: T, contextData?: any[]) => any;
-  selectFunctionString: string;
-  contextData: any[];
+  properties: (keyof T)[];
 
-  constructor(selectFunction: (x: T, contextData?: any[]) => any, contextData?: any[]) {
-    this.selectFunction = selectFunction;
-    this.selectFunctionString = selectFunction.toString();
-
-    if (contextData) {
-      this.contextData = contextData.map(v => {
-        return JSON.parse(JSON.stringify(v));
-      });
-    }
+  constructor(properties: (keyof T)[]) {
+    this.properties = properties;
   }
 
   public execute(values: T[]) {
-    return values.map(x => this.selectFunction(x, this.contextData));
+    return values;
   }
 
   public hash() {
-    return `${this.prefilterType},${this.selectFunctionString},${JSON.stringify(this.contextData)}`;
+    return `${this.prefilterType},${JSON.stringify(this.properties)}`;
   }
 }

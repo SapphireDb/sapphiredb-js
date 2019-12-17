@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs';
 import {InfoResponse} from '../command/info/info-response';
-import {ConditionBuilder, ConditionStep, WherePrefilter} from './prefilter/where-prefilter';
+import {WherePrefilter} from './prefilter/where-prefilter';
 import {SkipPrefilter} from './prefilter/skip-prefilter';
 import {TakePrefilter} from './prefilter/take-prefilter';
 import {OrderByPrefilter} from './prefilter/order-by-prefilter';
@@ -13,6 +13,7 @@ import {OrderedCollection} from './ordered-collection';
 import {ConnectionManagerService} from '../connection/services/connection-manager.service';
 import {FirstPrefilter} from './prefilter/first-prefilter';
 import {LastPrefilter} from './prefilter/last-prefilter';
+import {ConditionType} from '../helper/condition-types';
 
 export class DefaultCollection<T> extends CollectionBase<T, T[]> {
   constructor(collectionName: string,
@@ -43,11 +44,11 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
 
   /**
    * Filter the data to query
-   * @param conditionBuilder The builder to create the condition for the filter statement
+   * @param conditions The array of conditions for the filter operation
    */
-  public where<Y extends any[]>(conditionBuilder: (builder: ConditionBuilder<T>) => ConditionBuilder<T>|ConditionStep<T>): DefaultCollection<T> {
+  public where(conditions: ConditionType<T>): DefaultCollection<T> {
     return <any>this.collectionManagerService.getCollection(
-      this.collectionName, this.contextName, this.prefilters, new WherePrefilter(conditionBuilder));
+      this.collectionName, this.contextName, this.prefilters, new WherePrefilter(conditions));
   }
 
   /**
@@ -55,19 +56,18 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param property The name of the property to order by
    * @param descending Order the selection in descending order
    */
-  public orderBy<Y extends any[]>(property: keyof T, descending: boolean = false): OrderedCollection<T> {
+  public orderBy(property: keyof T, descending: boolean = false): OrderedCollection<T> {
     return <any>this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters,
       new OrderByPrefilter(property, descending));
   }
 
   /**
-   * Only query specfic data defined by selector
-   * @param selector A selector to select value to order by
-   * @param contextData Optional data that are used in the selector
+   * Only query specific data defined by selector
+   * @param properties The properties of the model to select
    */
-  public select<Y extends any[], Z>(selector: (value: T, contextData?: Y) => Z, ...contextData: Y): ReducedCollection<T, Z[]> {
+  public select<Z>(...properties: (keyof T)[]): ReducedCollection<T, Z[]> {
     return this.collectionManagerService.getCollection(
-      this.collectionName, this.contextName, this.prefilters, new SelectPrefilter(selector, contextData));
+      this.collectionName, this.contextName, this.prefilters, new SelectPrefilter(properties));
   }
 
   /**

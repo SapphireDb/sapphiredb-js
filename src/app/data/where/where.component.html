@@ -2,7 +2,7 @@
 
 <p>
   You can use the <code>where</code>-prefilter to filter the data the server returns.<br>
-  The extension method expects a javascript function that returns a boolean if the value should get queried.
+  The syntax is a bit tricky because the query has to get converted to an sql expression to increase performance.
 </p>
 
 <h2>Basic query</h2>
@@ -24,7 +24,7 @@
 
     \tngOnInit() {\n
     \t\tthis.values$ = this.db.collection('entries')}\n
-      \t\t\t.where(v => v.content.startsWith('testValue'))\n
+      \t\t\t.where(['content', 'StartsWith', 'testValue'])\n
       \t\t\t.values();\n
     \t}\n
     }
@@ -32,15 +32,30 @@
   </div>
 </app-doc>
 
-<div class="remark success">
-  You can use normal javascript to write your query.
-</div>
-
-<h2>Parameters</h2>
+<h2>Syntax</h2>
 
 <p>
-  If you need to pass parameters to the query can just append them in the <code>.where()</code> method call<br>
-  You can than use them as parameters in your function.
+  If you want to define your queries using an array use this syntax.<br><br>
+
+  A basic condition is a tuple of three elements: <code>[ key, operation, compare value ]</code><br>
+  Example: You want to check a single field to equal your value: <code>['field', '==', 'value']</code><br><br>
+
+  To combine multiple condition tuples you can wrap them in another tuple of three or more elements: <code>[condition1, 'and/or', condition2]</code><br>
+  Example: You want to check if the field value equals 'value' or 'value2': <code>[['field', '==', 'value'], 'or', ['field', '==', 'value']]</code><br><br>
+
+  With this syntax you can create most of the filter expressions.<br><br>
+
+  Allowed operations: <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>Contains</code>, <code>StartsWith</code> and <code>EndsWith</code>
+</p>
+
+<h2>Complex query</h2>
+
+<p>
+  This example shows how to combine different conditions using or/and. This allows you to create complex conditions.<br>
+  In this example all values are queried that <br><br>
+  start with <code>test</code> and end with <code>V</code><br>
+  or<br>
+  start with <code>var</code> and end with <code>2</code>;
 </p>
 
 <app-doc>
@@ -56,7 +71,11 @@
 
     \tngOnInit() {\n
     \t\tthis.values$ = this.db.collection<Entry>('entries')\n
-    \t\t\t.where((v, [x, x2]) => v.content === x || v.content === x2, 'testValue', 'testValue2')\n
+    \t\t\t.where([\n
+      \t\t\t\t[['content', 'StartsWith', 'test'], 'and', ['content', 'EndsWith', 'V']],\n
+      \t\t\t\t'or',\n
+      \t\t\t\t[['content', 'StartsWith', 'var'], 'and', ['content', 'EndsWith', '2']]\n
+    \t\t\t])\n
     \t\t\t.values();\n
     \t}\n
     }

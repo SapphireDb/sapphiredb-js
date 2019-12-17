@@ -8,11 +8,13 @@ export * from './lib/sapphire-db.module';
 export * from './lib/modules/auth/sapphire-auth.guard';
 
 export * from './lib/helper/action-helper';
+export * from './lib/helper/condition-types';
 
 export * from './lib/collection/collection-base';
 export * from './lib/collection/default-collection';
 export * from './lib/collection/ordered-collection';
 export * from './lib/collection/reduced-collection';
+
 export * from './lib/modules/auth/auth-collection-info';
 export * from './lib/modules/auth/auth';
 export * from './lib/modules/auth/auth-info';

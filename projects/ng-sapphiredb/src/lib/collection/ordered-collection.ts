@@ -19,7 +19,7 @@ export class OrderedCollection<T> extends DefaultCollection<T> {
    * @param property The name of the property to order by
    * @param descending Order the selection in descending order
    */
-  public thenOrderBy<Y extends any[]>(property: keyof T, descending: boolean = false): OrderedCollection<T> {
+  public thenOrderBy(property: keyof T, descending: boolean = false): OrderedCollection<T> {
     return <any>this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters,
       new ThenOrderByPrefilter(property, descending));
   }
