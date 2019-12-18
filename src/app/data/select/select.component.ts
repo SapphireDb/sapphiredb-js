@@ -11,12 +11,17 @@ import {SapphireDb} from 'ng-sapphiredb';
 export class SelectComponent implements OnInit {
 
   values$: Observable<any>;
+  values2$: Observable<any>;
 
   constructor(private db: SapphireDb, private dialogService: DialogService) { }
 
   ngOnInit() {
     this.values$ = this.db.collection<any>('entries', 'demo')
       .select<string>('content')
+      .values();
+
+    this.values2$ = this.db.collection<any>('entries', 'demo')
+      .select<string>('content', 'id')
       .values();
   }
 

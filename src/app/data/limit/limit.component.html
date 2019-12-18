@@ -3,7 +3,9 @@
 <p>
   You can use the <code>take</code> and <code>skip</code> prefilters to control the queried data<br>
   With <code>skip</code> you omit the given count of values.<br>
-  With <code>take</code> you limit the queried data.
+  With <code>take</code> you limit the queried data.<br>
+  With <code>first</code> you can query only the first element.<br>
+  With <code>last</code> you can query only the last element.
 </p>
 
 <div class="remark warning">
@@ -62,5 +64,42 @@
     ]]>
   </div>
 </app-doc>
+
+<h2>First/Last</h2>
+
+<p>
+  In this example the first and last value is selected.
+</p>
+
+<app-doc>
+  First: {{ valueFirst$ | async | json }}<br>
+  Last: {{ valueLast$ | async | json }}<br>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+      \tvalueFirst$: Observable<Entry>;\n
+      \tvalueLast$: Observable<Entry>;\n
+
+      \tconstructor(private db: SapphireDb) { }\n\n
+
+      \tngOnInit() {\n
+    \t\tthis.valueFirst$ = this.db.collection<Entry>('entries')\n
+    \t\t\t.first()\n
+    \t\t\t.values();\n\n
+
+    \t\tthis.valueLast$ = this.db.collection<Entry>('entries')\n
+      \t\t\t.last()\n
+      \t\t\t.values();\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<div class="remark warning">
+  Note that the operation <code>last</code> cannot be performed on database side and will be evaluated in your backend application. Be careful when using it.
+</div>
 
 <a routerLink="../select">Continue with select prefilter <span class="mif-arrow-right"></span></a>

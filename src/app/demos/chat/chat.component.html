@@ -35,7 +35,7 @@
 
               \t\t\t\t// The actual logic for message loading\n
               \t\t\t\treturn this.messageCollection\n
-                \t\t\t\t\t.where((m, [valueFrom, valueTo]) => (m.from === valueFrom || m.to === valueFrom) && (m.to === valueTo || m.from === valueTo), from, to)\n
+                \t\t\t\t\t.where([[['from', '==', from], 'and', ['to', '==', to]], 'or', [['from', '==', to], 'and', ['to', '==', from]]])\n
                 \t\t\t\t\t.values();\n
             \t\t\t})\n
           \t\t);\n

@@ -23,15 +23,15 @@
             \t\t\tfilter(v => !!v),\n
             \t\t\tswitchMap((name: string) => {\n
               \t\t\t\tconst documents$: Observable<Document[]> = this.collection\n
-                \t\t\t\t\t.where((d, [documentName]) => d.name === documentName, name)\n
-                \t\t\t\t\t.take(1)\n
+                \t\t\t\t\t.where(['name', '==', name])\n
                 \t\t\t\t\t.values();\n\n
 
               \t\t\t\treturn documents$.pipe(\n
-                \t\t\t\t\tskip(1),\n
                 \t\t\t\t\tswitchMap((documents: Document[]) => {\n
-                  \t\t\t\t\t\tif (documents.length === 1) {\n
-                    \t\t\t\t\t\t\treturn of(documents[0]);\n
+                  \t\t\t\t\t\tconst document = documents[0];\n\n
+
+                  \t\t\t\t\t\tif (!!document) {\n
+                    \t\t\t\t\t\t\treturn of(document);\n
                   \t\t\t\t\t\t}\n\n
 
                   \t\t\t\t\t\treturn this.collection.add({\n

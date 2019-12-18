@@ -2,7 +2,7 @@
 
 <p>
   You can use the <code>orderBy</code>-prefilter to change the ordering of the data the server returns.<br>
-  The extension method expects a javascript function that returns the object that should used for sorting.
+  Pass the property name you want to sort by.
 </p>
 
 <p>
@@ -24,11 +24,11 @@
 
       \tngOnInit() {\n
         \t\tthis.values$ = this.db.collection<Entry>('entries')\n
-          \t\t\t.orderBy(v => v.content, false)\n
+          \t\t\t.orderBy('content', false)\n
           \t\t\t.values();\n\n
 
         \t\tthis.values2$ = this.db.collection<Entry>('entries')\n
-          \t\t\t.orderBy(v => v.content, true)\n
+          \t\t\t.orderBy('content', true)\n
           \t\t\t.values();\n
       \t}\n
     }
@@ -43,11 +43,5 @@
 <div class="remark info">
   If you want to sort by more than one object use <code>thenOrderBy</code> for following sorting statements.
 </div>
-
-<h2>Parameters</h2>
-
-<p>
-  The <code>orderBy</code> and <code>thanOrderBy</code> methods allow parameters just like the <code>where</code>-Prefilter
-</p>
 
 <a routerLink="../limit">Continue with limit prefilters <span class="mif-arrow-right"></span></a>

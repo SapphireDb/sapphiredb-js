@@ -18,30 +18,13 @@
 <h2>Query auth attribute</h2>
 
 <div class="remark info">
-  The <code>[QueryAuth]</code>-attribute can be used on model classes or single fields.<br>
-  If used on a class, the user get's an exception when trying to query the collection without the authorization.<br>
-  If used on a field, the authorization rules are only applied to the field. All other fields are not affected by the attribute. If the user is not authorized by the defined rule, the field is just ommited.
+  The <code>[QueryAuth]</code>-attribute can only be used on single fields.<br>
+  The authorization rules are applied to the annotated field. All other fields are not affected by the attribute. If the user is not authorized by the defined rule, the field value will not get send to the client.
 </div>
 
-<h3>Example - Class authorization</h3>
-
-<p>To query models of the collection the user needs to be authenticated. If not, the user will get an exception.</p>
-
-<app-doc [showContent]="false">
-  <div lang>
-    <![CDATA[
-    \f:(csharp:DemoEntry.cs)
-    [QueryAuth]\n
-    public class DemoEntry\n
-    {\n
-      \t[Key]\n
-      \tpublic int Id { get; set; }\n\n
-
-      \tpublic string Content { get; set; }\n
-    }
-    ]]>
-  </div>
-</app-doc>
+<div class="remark success">
+  If you want to control if a user can query a complete model use the <a routerLink="../../data/query-function">Query function</a> instead. It can be executed on database side and performs better.
+</div>
 
 <h3>Example - Field authorization</h3>
 

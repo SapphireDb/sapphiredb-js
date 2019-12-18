@@ -9,6 +9,11 @@
   It is not possible to update selected values directly because information like primary keys get lost.
 </p>
 
+<p>
+  You can pass all parameters to the select function. The query will return you a two dimensional array of all object values.<br>
+  If only one parameter is the array will be flat.
+</p>
+
 <div class="remark warning">
   Note that the usage of the prefilter types <code>Take</code>, <code>Skip</code>, <code>Select</code>, <code>Count</code>, <code>First</code> and <code>Last</code>
   will require the collection data to always get queried from the database on every change. Keep that in mind when creating performance critical tasks.
@@ -28,6 +33,27 @@
       \tngOnInit() {\n
     \t\tthis.values$ = this.db.collection<Entry>('entries')\n
     \t\t\t.select('content')\n
+    \t\t\t.values();\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<app-doc>
+  {{ values2$ | async | json }}<br>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+      \tvalues$: Observable<string[]>;\n
+
+      \tconstructor(private db: SapphireDb) { }\n\n
+
+      \tngOnInit() {\n
+    \t\tthis.values$ = this.db.collection<Entry>('entries')\n
+    \t\t\t.select('content', 'id')\n
     \t\t\t.values();\n
     \t}\n
     }
