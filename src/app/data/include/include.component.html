@@ -1,0 +1,132 @@
+<h1>Include/Join</h1>
+
+<p>
+  If you are using relations in you database you sometimes want to resolve them on server side and get the complete object to the client.<br>
+  You can control that by using the <code>include</code> operation (It works like the include operation of EF Core). It will perform a join operation on database side.
+</p>
+
+<h2>Example</h2>
+
+<p>
+  This example consists of two models: A user object with entries and the entries with a reference to the user.
+</p>
+
+<h3>Display users with entries</h3>
+
+<app-doc>
+  <div class="mt-2 border bd-blue" *ngFor="let value of values$ | async">
+    Name: {{ value.name }}, Id: {{ value.id }}<br>
+    <div class="m-2 border bd-green">
+      Entries: <br>
+      <div class="m-2 border bd-red" *ngFor="let entry of value.entries">
+        {{ entry.content }}
+      </div>
+    </div>
+    <div class="text-right-sm p-2">
+      <button m4-button class="mr-1" (click)="updateUser(value)">Update user</button>
+      <button m4-button (click)="deleteUser(value)">Delete user</button>
+    </div>
+  </div>
+
+  <div class="text-right-sm mt-2">
+    <button m4-button (click)="createWithEntry()">Add user</button>
+  </div>
+
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+    \tcollection: DefaultCollection<any>;
+    \tvalues$: Observable<User[]>;\n\n
+
+    \tconstructor(private db: SapphireDb) { }\n\n
+
+    \tngOnInit() {\n
+    \t\tthis.collection = this.db.collection('Users').include('Entries');\n
+    \t\tthis.values$ = this.collection.values();\n
+    \t}\n\n
+
+      \tcreateWithEntry() {\n
+    \t\tthis.collection.add({\n
+    \t\t\tname: 'Example username',\n
+    \t\t\tentries: [\n
+            \t\t\t\t{\n
+    \t\t\t\t\tcontent: 'Example content'\n
+    \t\t\t\t}\n
+    \t\t\t]\n
+        \t\t});\n
+    \t}\n\n
+
+    \tdeleteUser(value: any) {\n
+    \t\tthis.collection.remove(value);\n
+    \t}\n\n
+
+    \tupdateUser(value: any) {\n
+    \t\tthis.collection.update({\n
+    \t\t\t...value,\n
+    \t\t\tname: 'Updated username',\n
+    \t\t\tentries: [\n
+            \t\t\t\t{\n
+    \t\t\t\t\tcontent: 'New entry'\n
+    \t\t\t\t}\n
+    \t\t\t]\n
+        \t\t});\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<h3>Display entries with user</h3>
+
+<app-doc>
+  <div class="mt-2 border bd-blue" *ngFor="let entry of valuesEntries$ | async">
+    Id: {{ entry.id }}, Content: {{ entry.content }}<br>
+    <div class="m-2 border bd-green">
+      User: {{ entry.user.name }}
+    </div>
+    <div class="text-right-sm p-2">
+      <button m4-button class="mr-1" (click)="updateEntry(entry)">Update entry</button>
+      <button m4-button (click)="deleteEntry(entry)">Delete entry</button>
+    </div>
+  </div>
+
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+    \tcollection: DefaultCollection<any>;
+    \tvalues$: Observable<Entry[]>;\n\n
+
+    \tconstructor(private db: SapphireDb) { }\n\n
+
+    \tngOnInit() {\n
+    \t\tthis.collection = this.db.collection('Entries').include('User');\n
+    \t\tthis.values$ = this.collection.values();\n
+    \t}\n\n
+
+    \tupdateEntry(value: any) {\n
+    \t\tthis.collectionEntries.update({\n
+    \t\t\t...value,\n
+    \t\t\tcontent: 'Updated entry content'\n
+      \t\t});\n
+    \t}\n\n
+
+    \tdeleteEntry(value: any) {\n
+    \t\tthis.collectionEntries.remove(value);\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<div class="remark info">
+  You have to take note of some special things related to include operations:<br>
+  <ul>
+    <li>The related object is loaded without checking for authorization. All related values and fields will get loaded.</li>
+    <li>It is possible to create/update new objects when putting them in the navigation property</li>
+    <li>To update an object in the relation you have to make the navigation property <code>[Updatable]</code></li>
+    <li>The user can create/update a related object without check of authorization for that model when the user is allowed to create the main object</li>
+    <li>When anything in the database changes that is related to the loaded data, the complete query gets executed again. That can have a negative impact on performance.</li>
+  </ul>
+</div>

@@ -14,10 +14,11 @@ import { InfoComponent } from './info/info.component';
 import { EventsComponent } from './events/events.component';
 import { QueryFunctionComponent } from './query-function/query-function.component';
 import { ChangesComponent } from './changes/changes.component';
+import { IncludeComponent } from './include/include.component';
 
 
 @NgModule({
-  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent, InfoComponent, EventsComponent, QueryFunctionComponent, ChangesComponent],
+  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent, InfoComponent, EventsComponent, QueryFunctionComponent, ChangesComponent, IncludeComponent],
   imports: [
     SharedModule,
     DataRoutingModule

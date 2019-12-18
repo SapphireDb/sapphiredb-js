@@ -12,6 +12,7 @@ import {EventsComponent} from './events/events.component';
 import {InfoComponent} from './info/info.component';
 import {QueryFunctionComponent} from './query-function/query-function.component';
 import {ChangesComponent} from './changes/changes.component';
+import {IncludeComponent} from './include/include.component';
 
 
 const routes: Routes = [
@@ -27,6 +28,7 @@ const routes: Routes = [
   { path: 'changes', component: ChangesComponent },
   { path: 'events', component: EventsComponent },
   { path: 'query-function', component: QueryFunctionComponent },
+  { path: 'include', component: IncludeComponent },
   { path: '', redirectTo: 'query', pathMatch: 'full' }
 ];
 

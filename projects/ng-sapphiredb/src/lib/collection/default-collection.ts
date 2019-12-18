@@ -14,6 +14,7 @@ import {ConnectionManagerService} from '../connection/services/connection-manage
 import {FirstPrefilter} from './prefilter/first-prefilter';
 import {LastPrefilter} from './prefilter/last-prefilter';
 import {ConditionType} from '../helper/condition-types';
+import {IncludePrefilter} from './prefilter/include-prefilter';
 
 export class DefaultCollection<T> extends CollectionBase<T, T[]> {
   constructor(collectionName: string,
@@ -68,6 +69,14 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
   public select<Z>(...properties: (keyof T)[]): ReducedCollection<T, Z[]> {
     return this.collectionManagerService.getCollection(
       this.collectionName, this.contextName, this.prefilters, new SelectPrefilter(properties));
+  }
+
+  /**
+   * Specify the navigation properties to explicitly load from database
+   * @param include The navigation property string (use EF Core Syntax)
+   */
+  public include(include: string): DefaultCollection<T> {
+    return <any>this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters, new IncludePrefilter(include));
   }
 
   /**
