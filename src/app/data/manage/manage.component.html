@@ -59,11 +59,18 @@
     \t[Key]\n
     \tpublic int Id { get; set; }\n\n
 
-    \tpublic string Content { get; set; }\n
+    \tpublic string Content { get; set; }\n\n
+
+    \t[NonCreatable]\n
+    \tpublic string NonCreatableField { get; set; }\n
     }
     ]]>
   </div>
 </app-doc>
+
+<div class="remark info">
+  You can also exclude some fields and make them <code>[NonCreatable]</code> using the attribute. This is useful when using includes for example.
+</div>
 
 <h2>Delete data</h2>
 

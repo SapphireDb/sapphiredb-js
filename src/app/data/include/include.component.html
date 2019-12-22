@@ -13,8 +13,16 @@
 
 <h3>Display users with entries</h3>
 
+<p>
+  This basic example shows how to query data with its navigation properties included
+</p>
+
+<div class="remark info">
+  Note that the complete referenced object is loaded when using a join operation. No check for auth will be made. The result contains the complete object.
+</div>
+
 <app-doc>
-  <div class="mt-2 border bd-blue" *ngFor="let value of values$ | async">
+  <div class="mt-2 border bd-blue" *ngFor="let value of users$ | async">
     Name: {{ value.name }}, Id: {{ value.id }}<br>
     <div class="m-2 border bd-green">
       Entries: <br>
@@ -23,55 +31,128 @@
       </div>
     </div>
     <div class="text-right-sm p-2">
-      <button m4-button class="mr-1" (click)="updateUser(value)">Update user</button>
+      <button m4-button class="mr-1" (click)="createEntryForUser(value)">Create entry</button>
+      <button m4-button class="mr-1" (click)="updateUser(value)">Update username</button>
       <button m4-button (click)="deleteUser(value)">Delete user</button>
     </div>
   </div>
 
   <div class="text-right-sm mt-2">
-    <button m4-button (click)="createWithEntry()">Add user</button>
+    <button m4-button (click)="createUser()">Add user</button>
   </div>
 
   <div lang>
     <![CDATA[
     \f:(typescript:demo.component.ts)
     export class DemoComponent implements OnInit {\n
-    \tcollection: DefaultCollection<any>;
-    \tvalues$: Observable<User[]>;\n\n
+      \tprivate userCollection: DefaultCollection<User>;\n
+      \tpublic users$: Observable<User[]>;\n\n
 
-    \tconstructor(private db: SapphireDb) { }\n\n
+      \tconstructor(private db: SapphireDb) {\n
+        \t\tthis.userCollection = this.db.collection('Users').include('entries');\n
+        \t\tthis.users$ = this.userCollection.values();\n
+      \t}\n
+    }
 
-    \tngOnInit() {\n
-    \t\tthis.collection = this.db.collection('Users').include('Entries');\n
-    \t\tthis.values$ = this.collection.values();\n
-    \t}\n\n
+    \f:(csharp:User.cs)
+    public class User\n
+    {\n
+      \t[Key]\n
+      \tpublic Guid Id { get; set; }\n\n
 
-      \tcreateWithEntry() {\n
-    \t\tthis.collection.add({\n
-    \t\t\tname: 'Example username',\n
-    \t\t\tentries: [\n
-            \t\t\t\t{\n
-    \t\t\t\t\tcontent: 'Example content'\n
-    \t\t\t\t}\n
-    \t\t\t]\n
-        \t\t});\n
-    \t}\n\n
+      \tpublic List<Entry> Entries { get; set; }\n\n
 
-    \tdeleteUser(value: any) {\n
-    \t\tthis.collection.remove(value);\n
-    \t}\n\n
+      \tpublic string Name { get; set; }\n
+    }
 
-    \tupdateUser(value: any) {\n
-    \t\tthis.collection.update({\n
-    \t\t\t...value,\n
-    \t\t\tname: 'Updated username',\n
-    \t\t\tentries: [\n
-            \t\t\t\t{\n
-    \t\t\t\t\tcontent: 'New entry'\n
-    \t\t\t\t}\n
-    \t\t\t]\n
-        \t\t});\n
+    \f:(csharp:Entry.cs)
+    public class Entry\n
+    {\n
+      \t[Key]\n
+      \tpublic Guid Id { get; set; }\n\n
+
+      \t[ForeignKey("User")]\n
+      \tpublic Guid UserId { get; set; }\n\n
+
+      \tpublic User User { get; set; }\n\n
+
+      \tpublic string Content { get; set; }\n
+    }
+
+    \f:(csharp:DatabaseContext.cs)
+    public class DemoContext : SapphireDbContext\n
+    {\n
+      \tpublic DemoContext(DbContextOptions<DemoContext> options, SapphireDatabaseNotifier notifier) : base(options, notifier) {}\n\n
+
+      \tpublic DbSet<User> Users { get; set; }\n
+      \tpublic DbSet<UserEntry> UserEntries { get; set; }\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<h3>Create/Update user entries</h3>
+
+<p>
+  You can also update/create entries that are loaded by including them in the normal update operations.
+</p>
+
+<div class="remark info">
+  Creating/Updating objects through the navigation property is not always recommended because the operation ignores all specified auth rules.<br>
+  If you want to disable the possibility to edit the values using this way remove the <code>[Updatable]</code>-attribute from the navigation property and add the attribute <code>[NonCreatable]</code> to it.
+</div>
+
+<app-doc>
+  <div class="mt-2 border bd-blue" *ngFor="let value of users$ | async">
+    Name: {{ value.name }}, Id: {{ value.id }}<br>
+    <div class="m-2 border bd-green">
+      Entries: <br>
+      <div class="m-2 border bd-red" *ngFor="let entry of value.entries">
+        {{ entry.content }}
+      </div>
+    </div>
+    <div class="text-right-sm p-2">
+      <button m4-button class="mr-1" (click)="updateEntriesThroughUser(value)">Update entries through user</button>
+    </div>
+  </div>
+
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+    \tprivate userCollection: DefaultCollection<User>;\n
+    \tpublic users$: Observable<User[]>;\n\n
+
+    \tconstructor(private db: SapphireDb) {\n
+    \t\tthis.userCollection = this.db.collection('Users').include('entries');\n
+    \t\tthis.users$ = this.userCollection.values();\n
     \t}\n
+    }
+
+    \f:(csharp:User.cs)
+    public class User\n
+    {\n
+      \t[Key]\n
+      \tpublic Guid Id { get; set; }\n\n
+
+      \t// Update and creation of entries is possible\n
+      \t[Updatable]\n
+      \tpublic List<Entry> Entries { get; set; }\n\n
+
+      \tpublic string Name { get; set; }\n
+    }
+
+    \f:(csharp:UserDisabled.cs)
+    public class User\n
+    {\n
+      \t[Key]\n
+      \tpublic Guid Id { get; set; }\n\n
+
+      \t// No update or creation of entries is possible\n
+      \t[NonCreatable]\n
+      \tpublic List<Entry> Entries { get; set; }\n\n
+
+      \tpublic string Name { get; set; }\n
     }
     ]]>
   </div>
@@ -80,7 +161,7 @@
 <h3>Display entries with user</h3>
 
 <app-doc>
-  <div class="mt-2 border bd-blue" *ngFor="let entry of valuesEntries$ | async">
+  <div class="mt-2 border bd-blue" *ngFor="let entry of entries$ | async">
     Id: {{ entry.id }}, Content: {{ entry.content }}<br>
     <div class="m-2 border bd-green">
       User: {{ entry.user.name }}
@@ -95,25 +176,14 @@
     <![CDATA[
     \f:(typescript:demo.component.ts)
     export class DemoComponent implements OnInit {\n
-    \tcollection: DefaultCollection<any>;
+    \tcollection: DefaultCollection<Entry>;
     \tvalues$: Observable<Entry[]>;\n\n
 
     \tconstructor(private db: SapphireDb) { }\n\n
 
     \tngOnInit() {\n
-    \t\tthis.collection = this.db.collection('Entries').include('User');\n
+    \t\tthis.collection = this.db.collection('Entries').include('user');\n
     \t\tthis.values$ = this.collection.values();\n
-    \t}\n\n
-
-    \tupdateEntry(value: any) {\n
-    \t\tthis.collectionEntries.update({\n
-    \t\t\t...value,\n
-    \t\t\tcontent: 'Updated entry content'\n
-      \t\t});\n
-    \t}\n\n
-
-    \tdeleteEntry(value: any) {\n
-    \t\tthis.collectionEntries.remove(value);\n
     \t}\n
     }
     ]]>
@@ -121,12 +191,12 @@
 </app-doc>
 
 <div class="remark info">
-  You have to take note of some special things related to include operations:<br>
+  You have to take note of the special behavior when using include operations:<br>
   <ul>
-    <li>The related object is loaded without checking for authorization. All related values and fields will get loaded.</li>
+    <li>The related objects are loaded without checking for authorization. All related values and fields will get loaded.</li>
     <li>It is possible to create/update new objects when putting them in the navigation property</li>
-    <li>To update an object in the relation you have to make the navigation property <code>[Updatable]</code></li>
-    <li>The user can create/update a related object without check of authorization for that model when the user is allowed to create the main object</li>
+    <li>You can control the behavior of updating/creating navigation properties by using the attributes <code>[Updatable]</code> and <code>[NonCreatable]</code></li>
+    <li>It is recommended to mark all navigation properties with <code>[NonCreatable]</code>. This will force you to create/update objects using the methods on the specific collections.</li>
     <li>When anything in the database changes that is related to the loaded data, the complete query gets executed again. That can have a negative impact on performance.</li>
   </ul>
 </div>

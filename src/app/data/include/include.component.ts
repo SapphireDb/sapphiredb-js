@@ -10,60 +10,77 @@ import {Observable} from 'rxjs';
 })
 export class IncludeComponent implements OnInit {
 
-  private collection: DefaultCollection<any>;
-  private collectionEntries: DefaultCollection<any>;
+  private userCollection: DefaultCollection<any>;
+  private userCollectionExplicit: DefaultCollection<any>;
 
-  public values$: Observable<any[]>;
-  public valuesEntries$: Observable<any[]>;
+  private entryCollection: DefaultCollection<any>;
+  private entryCollectionExplicit: DefaultCollection<any>;
+
+  public users$: Observable<any[]>;
+  public entries$: Observable<any[]>;
 
   constructor(private db: SapphireDb) {
-    this.collection = this.db.collection('Users', 'Demo').include('Entries');
-    this.values$ = this.collection.values();
+    this.userCollection = this.db.collection('Users', 'Demo').include('entries');
+    this.userCollectionExplicit = this.db.collection('UsersExplicit', 'Demo').include('entries');
+    this.users$ = this.userCollection.values();
 
-    this.collectionEntries = this.db.collection('UserEntries', 'Demo').include('User');
-    this.valuesEntries$ = this.collectionEntries.values();
+    this.entryCollection = this.db.collection('UserEntries', 'Demo').include('user');
+    this.entryCollectionExplicit = this.db.collection('UserEntriesExplicit', 'Demo').include('user');
+    this.entries$ = this.entryCollection.values();
   }
 
   ngOnInit() {
   }
 
-  createWithEntry() {
-    this.collection.add({
-      name: 'Example username',
-      entries: [
-        {
-          content: 'Example content'
-        }
-      ]
+  createUser() {
+    this.userCollection.add({
+      name: 'Example username'
+    });
+  }
+
+  createEntryForUser(user: any) {
+    this.entryCollection.add({
+      userId: user.id,
+      content: 'Entry content'
     });
   }
 
   deleteUser(value: any) {
-    this.collection.remove(value);
+    this.userCollection.remove(value);
     return false;
   }
 
   updateUser(value: any) {
-    this.collection.update({
+    this.userCollection.update({
       ...value,
-      name: 'Updated username',
+      name: 'Updated username'
+    });
+  }
+
+  updateEntriesThroughUser(user: any) {
+    this.userCollection.update({
+      ...user,
       entries: [
+        ...user.entries.map(e => {
+          e.content = 'Updated through user';
+          return e;
+        }),
         {
-          content: 'New entry'
+          content: 'New entry created through user'
         }
       ]
     });
   }
 
   updateEntry(value: any) {
-    this.collectionEntries.update({
+    this.entryCollection.update({
       ...value,
       content: 'Updated entry content'
     });
   }
 
   deleteEntry(value: any) {
-    this.collectionEntries.remove(value);
+    this.entryCollection.remove(value);
     return false;
   }
 }
