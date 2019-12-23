@@ -9,23 +9,17 @@ import {Observable} from 'rxjs';
   styleUrls: ['./include.component.less']
 })
 export class IncludeComponent implements OnInit {
-
   private userCollection: DefaultCollection<any>;
-  private userCollectionExplicit: DefaultCollection<any>;
-
   private entryCollection: DefaultCollection<any>;
-  private entryCollectionExplicit: DefaultCollection<any>;
 
   public users$: Observable<any[]>;
   public entries$: Observable<any[]>;
 
   constructor(private db: SapphireDb) {
     this.userCollection = this.db.collection('Users', 'Demo').include('entries');
-    this.userCollectionExplicit = this.db.collection('UsersExplicit', 'Demo').include('entries');
     this.users$ = this.userCollection.values();
 
     this.entryCollection = this.db.collection('UserEntries', 'Demo').include('user');
-    this.entryCollectionExplicit = this.db.collection('UserEntriesExplicit', 'Demo').include('user');
     this.entries$ = this.entryCollection.values();
   }
 
