@@ -5,6 +5,7 @@ import {CollectionInformationService} from './collection/services/collection-inf
 import {CollectionManagerService} from './collection/services/collection-manager.service';
 import {SapphireAuthGuard} from './modules/auth/sapphire-auth.guard';
 import {ConnectionManagerService} from './connection/services/connection-manager.service';
+import {HttpClientModule} from '@angular/common/http';
 
 const defaultOptions: SapphireDbOptions = {
   serverBaseUrl: `${location.hostname}:${location.port}`,
@@ -12,7 +13,9 @@ const defaultOptions: SapphireDbOptions = {
 };
 
 @NgModule({
-  imports: [],
+  imports: [
+    HttpClientModule,
+  ],
   declarations: [],
   providers: [
     SapphireDb,
@@ -21,6 +24,9 @@ const defaultOptions: SapphireDbOptions = {
     CollectionManagerService,
     { provide: SAPPHIRE_DB_OPTIONS, useValue: defaultOptions },
     SapphireAuthGuard
+  ],
+  exports: [
+    HttpClientModule
   ]
 })
 export class SapphireDbModule {}

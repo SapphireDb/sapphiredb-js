@@ -11,15 +11,14 @@ import csharp from 'highlight.js/lib/languages/cs';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import { SapphireDbModule, SapphireDbOptions, SAPPHIRE_DB_OPTIONS } from 'ng-sapphiredb';
+import {SAPPHIRE_DB_OPTIONS, SapphireDbModule, SapphireDbOptions} from 'ng-sapphiredb';
 import {ReactiveFormsModule} from '@angular/forms';
-import {HttpClientModule} from '@angular/common/http';
 import {environment} from '../environments/environment';
 import {HighlightModule} from 'ngx-highlightjs';
 import {SharedModule} from './shared.module';
 import {LegalDisclosureComponent} from './shared/legal-disclosure/legal-disclosure.component';
 import {PrivacyComponent} from './shared/privacy/privacy.component';
-import { ServiceWorkerModule } from '@angular/service-worker';
+import {ServiceWorkerModule} from '@angular/service-worker';
 
 export function hljsLanguages() {
   return [
@@ -53,7 +52,6 @@ export function createRealtimeOptions(): SapphireDbOptions {
   imports: [
     BrowserModule,
     ReactiveFormsModule,
-    HttpClientModule,
     SapphireDbModule,
     HighlightModule.forRoot({
       languages: hljsLanguages
