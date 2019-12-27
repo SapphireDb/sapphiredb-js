@@ -75,8 +75,8 @@ export class WebsocketConnection extends ConnectionBase {
       url += `key=${this.options.apiKey}&secret=${this.options.apiSecret}&`;
     }
 
-    if (this.bearer) {
-      url += `bearer=${this.bearer}`;
+    if (this.authToken) {
+      url += `bearer=${this.authToken}`;
     }
 
     return url;

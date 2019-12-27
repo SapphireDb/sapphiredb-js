@@ -44,7 +44,7 @@ export class SseConnection extends ConnectionBase {
 
       this.eventSource.onerror = (error) => {
         this.ngZone.run(() => {
-          this.bearer = null;
+          this.authToken = null;
           this.readyState$.next('disconnected');
 
           setTimeout(() => {
@@ -78,7 +78,7 @@ export class SseConnection extends ConnectionBase {
         key: this.options.apiKey ? this.options.apiKey : '',
         secret: this.options.apiSecret ? this.options.apiSecret : '',
         connectionId: this.connectionData.connectionId,
-        Authorization: `Bearer ${this.bearer}`
+        Authorization: `Bearer ${this.authToken}`
       }
     }).subscribe((response: ResponseBase) => {
       if (!!response) {
@@ -114,8 +114,8 @@ export class SseConnection extends ConnectionBase {
       url += `key=${this.options.apiKey}&secret=${this.options.apiSecret}&`;
     }
 
-    if (this.bearer) {
-      url += `bearer=${this.bearer}`;
+    if (this.authToken) {
+      url += `bearer=${this.authToken}`;
     }
 
     return url;

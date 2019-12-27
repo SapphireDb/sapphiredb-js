@@ -13,7 +13,7 @@ export abstract class ConnectionBase {
   public readyState$ = new BehaviorSubject<ConnectionState>('disconnected');
 
   public options: SapphireDbOptions;
-  public bearer: string;
+  public authToken: string;
 
   public abstract send(object: CommandBase, storedCommand: boolean): Subscription;
   public abstract dataUpdated(): void;

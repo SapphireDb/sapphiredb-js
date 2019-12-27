@@ -105,7 +105,7 @@ export class ConnectionManagerService {
 
       this.status$ = this.connection.readyState$;
 
-      this.connection.bearer = this.bearer;
+      this.connection.authToken = this.bearer;
       this.connection.options = this.options;
       this.connection.dataUpdated();
     }
@@ -210,7 +210,7 @@ export class ConnectionManagerService {
       localStorage.removeItem(LocalstoragePaths.bearerPath);
     }
 
-    this.connection.bearer = this.bearer;
+    this.connection.authToken = this.bearer;
     this.connection.options = this.options;
 
     this.connection.dataUpdated();

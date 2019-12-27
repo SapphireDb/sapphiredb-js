@@ -26,7 +26,7 @@ export class PollConnection extends ConnectionBase {
         headers: {
           key: this.options.apiKey ? this.options.apiKey : '',
           secret: this.options.apiSecret ? this.options.apiSecret : '',
-          Authorization: `Bearer ${this.bearer}`
+          Authorization: `Bearer ${this.authToken}`
         }
       }).subscribe((response: ConnectionResponse) => {
         setTimeout(() => {
@@ -38,7 +38,7 @@ export class PollConnection extends ConnectionBase {
         }, 500);
       }, (error) => {
         if (error.status === 401) {
-          this.bearer = null;
+          this.authToken = null;
         }
 
         this.readyState$.next('disconnected');
@@ -68,7 +68,7 @@ export class PollConnection extends ConnectionBase {
             key: this.options.apiKey ? this.options.apiKey : '',
             secret: this.options.apiSecret ? this.options.apiSecret : '',
             connectionId: this.connectionData.connectionId,
-            Authorization: `Bearer ${this.bearer}`
+            Authorization: `Bearer ${this.authToken}`
           }
         });
 
@@ -85,7 +85,7 @@ export class PollConnection extends ConnectionBase {
       responses.forEach(response => this.messageHandler(response));
     }, (error) => {
       if (error.status === 404) {
-        this.bearer = null;
+        this.authToken = null;
       }
 
       this.readyState$.next('disconnected');
@@ -117,7 +117,7 @@ export class PollConnection extends ConnectionBase {
         key: this.options.apiKey ? this.options.apiKey : '',
         secret: this.options.apiSecret ? this.options.apiSecret : '',
         connectionId: this.connectionData.connectionId,
-        Authorization: `Bearer ${this.bearer}`
+        Authorization: `Bearer ${this.authToken}`
       }
     }).subscribe((response: ResponseBase) => {
       if (!!response) {

@@ -1,4 +1,4 @@
 export class LocalstoragePaths {
   static authPath = 'SapphireDb.auth';
-  static bearerPath = 'SapphireDb.bearer';
+  static bearerPath = 'SapphireDb.authToken';
 }
