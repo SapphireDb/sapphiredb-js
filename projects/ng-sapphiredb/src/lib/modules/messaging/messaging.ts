@@ -6,7 +6,6 @@ import {UnsubscribeMessageCommand} from '../../command/unsubscribe-message/unsub
 import {PublishCommand} from '../../command/publish/publish-command';
 import {MessageResponse} from '../../command/message/message-response';
 import {MessageCommand} from '../../command/message/message-command';
-import {ResponseBase} from '../../command/response-base';
 import {ConnectionManagerService} from '../../connection/services/connection-manager.service';
 
 export class Messaging {

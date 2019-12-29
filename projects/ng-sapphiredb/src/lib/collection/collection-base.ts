@@ -8,7 +8,6 @@ import {UpdateResponse} from '../command/update/update-response';
 import {DeleteCommand} from '../command/delete/delete-command';
 import {finalize, map, share, switchMap, take} from 'rxjs/operators';
 import {InfoResponse} from '../command/info/info-response';
-import {AuthCollectionInfo} from '../modules/auth/auth-collection-info';
 import {QueryCommand} from '../command/query/query-command';
 import {QueryResponse} from '../command/query/query-response';
 import {CollectionValue} from './collection-value';
@@ -26,18 +25,11 @@ import {DeleteRangeCommand} from '../command/delete-range/delete-range-command';
 export class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
 
-  /**
-   * Information about Authentication and Authorization of the collection
-   */
-  public authInfo: AuthCollectionInfo;
-
   constructor(public collectionName: string,
               public contextName: string,
               protected connectionManagerService: ConnectionManagerService,
               protected collectionInformation: Observable<InfoResponse>,
-              protected collectionManagerService: CollectionManagerService) {
-    this.authInfo = new AuthCollectionInfo(this.collectionInformation);
-  }
+              protected collectionManagerService: CollectionManagerService) {}
 
   /**
    * Get a snapshot of the values of the collection

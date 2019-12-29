@@ -12,17 +12,18 @@ export class AuthGuard implements CanActivate {
   }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    return this.account.loggedIn().pipe(map((loggedIn: boolean) => {
-      if (!loggedIn) {
-        this.router.navigate(['/account/login'], {
-          queryParams: {
-            return: state.url
-          }
-        });
-      }
-
-      return loggedIn;
-    }));
+    return this.account.loggedIn();
+    // return this.account.loggedIn().pipe(map((loggedIn: boolean) => {
+    //   if (!loggedIn) {
+    //     this.router.navigate(['/account/login'], {
+    //       queryParams: {
+    //         return: state.url
+    //       }
+    //     });
+    //   }
+    //
+    //   return loggedIn;
+    // }));
 
   }
 }

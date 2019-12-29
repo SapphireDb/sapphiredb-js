@@ -76,7 +76,7 @@ export class WebsocketConnection extends ConnectionBase {
     }
 
     if (this.authToken) {
-      url += `bearer=${this.authToken}`;
+      url += `authorization=${this.authToken}`;
     }
 
     return url;

@@ -16,20 +16,20 @@ export class ConnectionsComponent implements OnInit {
   constructor(private db: SapphireDb) { }
 
   ngOnInit() {
-    this.connectionData$ = this.db.auth.getConnectionData();
-    this.queryConnections$();
+    // this.connectionData$ = this.db.auth.getConnectionData();
+    // this.queryConnections$();
   }
 
   queryConnections$() {
-    this.connections$ = combineLatest([this.connectionData$, this.db.auth.getConnections()])
-      .pipe(map(([connectionData, connections]: [ConnectionResponse, RealtimeConnection[]]) => {
-        return connections.filter(c => c.id !== connectionData.connectionId);
-    }));
+    // this.connections$ = combineLatest([this.connectionData$, this.db.auth.getConnections()])
+    //   .pipe(map(([connectionData, connections]: [ConnectionResponse, RealtimeConnection[]]) => {
+    //     return connections.filter(c => c.id !== connectionData.connectionId);
+    // }));
   }
 
   closeConnection(connection: RealtimeConnection) {
-    this.db.auth.closeConnection(connection.id, true).subscribe(() => {
-      this.queryConnections$();
-    });
+    // this.db.auth.closeConnection(connection.id, true).subscribe(() => {
+    //   this.queryConnections$();
+    // });
   }
 }

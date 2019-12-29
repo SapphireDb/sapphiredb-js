@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {AccountService} from '../../services/account.service';
-import {SapphireDb, UserData, ActionResult} from 'ng-sapphiredb';
+import {SapphireDb, ActionResult} from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AppUser} from '../../model/app-user';

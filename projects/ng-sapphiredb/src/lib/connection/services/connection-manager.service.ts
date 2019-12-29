@@ -6,13 +6,9 @@ import {CommandBase} from '../../command/command-base';
 import {CommandReferences} from '../../models/command-references';
 import {UnsubscribeCommand} from '../../command/unsubscribe/unsubscribe-command';
 import {UnsubscribeMessageCommand} from '../../command/unsubscribe-message/unsubscribe-message-command';
-import {UnsubscribeUsersCommand} from '../../command/unsubscribe-users/unsubscribe-users-command';
-import {UnsubscribeRolesCommand} from '../../command/unsubscribe-roles/unsubscribe-roles-command';
 import {SubscribeCommand} from '../../command/subscribe/subscribe-command';
 import {SubscribeMessageCommand} from '../../command/subscribe-message/subscribe-message-command';
-import {SubscribeUsersCommand} from '../../command/subscribe-users/subscribe-users-command';
-import {SubscribeRolesCommand} from '../../command/subscribe-roles/subscribe-roles-command';
-import {BehaviorSubject, Observable, of, ReplaySubject, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
 import {ResponseBase} from '../../command/response-base';
 import {finalize} from 'rxjs/operators';
 import {GuidHelper} from '../../helper/guid-helper';
@@ -25,12 +21,12 @@ import {ConnectionState} from '../../models/types';
 import {PollConnection} from '../poll-connection';
 
 interface SubscribeCommandInfo extends CommandBase {
-  sendWithBearer: boolean;
+  sendWithAuthToken: boolean;
 }
 
 @Injectable()
 export class ConnectionManagerService {
-  private bearer: string;
+  private authToken: string;
 
   private connection: ConnectionBase;
 
@@ -46,14 +42,7 @@ export class ConnectionManagerService {
               private httpClient: HttpClient,
               private ngZone: NgZone) {
     this.connectionData$ = new BehaviorSubject<ConnectionResponse>(null);
-
-    const authData = localStorage.getItem(LocalstoragePaths.authPath);
-
-    if (authData) {
-      this.bearer = JSON.parse(authData).authToken;
-    } else {
-      this.bearer = localStorage.getItem(LocalstoragePaths.bearerPath);
-    }
+    this.authToken = localStorage.getItem(LocalstoragePaths.authTokenPath);
 
     if (this.options.serverBaseUrl == null) {
       this.options.serverBaseUrl = window.location.host;
@@ -89,7 +78,8 @@ export class ConnectionManagerService {
     if (this.connection) {
       this.connection.openHandler = () => {
         this.storedCommandStorage.forEach(cmd => {
-          if (!cmd.sendWithBearer || !!this.bearer) {
+          if (!cmd.sendWithAuthToken || !!this.authToken) {
+            delete cmd.sendWithAuthToken;
             this.connection.send(cmd, true);
           }
         });
@@ -105,23 +95,21 @@ export class ConnectionManagerService {
 
       this.status$ = this.connection.readyState$;
 
-      this.connection.authToken = this.bearer;
+      this.connection.authToken = this.authToken;
       this.connection.options = this.options;
       this.connection.dataUpdated();
     }
   }
 
   private storeSubscribeCommands(command: CommandBase): boolean {
-    if (command instanceof UnsubscribeCommand || command instanceof UnsubscribeMessageCommand
-      || command instanceof UnsubscribeUsersCommand || command instanceof UnsubscribeRolesCommand) {
+    if (command instanceof UnsubscribeCommand || command instanceof UnsubscribeMessageCommand) {
       this.storedCommandStorage = this.storedCommandStorage.filter(cs => cs.referenceId !== command.referenceId);
       return true;
-    } else if (command instanceof SubscribeCommand || command instanceof SubscribeMessageCommand
-      || command instanceof SubscribeUsersCommand || command instanceof SubscribeRolesCommand) {
+    } else if (command instanceof SubscribeCommand || command instanceof SubscribeMessageCommand) {
       if (this.storedCommandStorage.findIndex(c => c.referenceId === command.referenceId) === -1) {
         this.storedCommandStorage.push({
           ...command,
-          sendWithBearer: !!this.bearer
+          sendWithAuthToken: !!this.authToken
         });
         return true;
       }
@@ -198,19 +186,17 @@ export class ConnectionManagerService {
     }
   }
 
-  public setBearer(bearer?: string) {
+  public setAuthToken(authToken?: string) {
     this.connectionData$.next(null);
-    this.bearer = bearer;
+    this.authToken = authToken;
 
-    if (bearer) {
-      if (!localStorage.getItem(LocalstoragePaths.authPath)) {
-        localStorage.setItem(LocalstoragePaths.bearerPath, bearer);
-      }
+    if (authToken) {
+      localStorage.setItem(LocalstoragePaths.authTokenPath, authToken);
     } else {
-      localStorage.removeItem(LocalstoragePaths.bearerPath);
+      localStorage.removeItem(LocalstoragePaths.authTokenPath);
     }
 
-    this.connection.authToken = this.bearer;
+    this.connection.authToken = this.authToken;
     this.connection.options = this.options;
 
     this.connection.dataUpdated();

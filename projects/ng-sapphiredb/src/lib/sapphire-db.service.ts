@@ -6,25 +6,18 @@ import {ExecuteResponse, ExecuteResponseType} from './command/execute/execute-re
 import {Observable, of} from 'rxjs';
 import {ActionResult} from './modules/action/action-result';
 import {Messaging} from './modules/messaging/messaging';
-import {Auth} from './modules/auth/auth';
 import {DefaultCollection} from './collection/default-collection';
 import {ConnectionManagerService} from './connection/services/connection-manager.service';
 
 @Injectable()
 export class SapphireDb {
   /**
-   * Realtime messaging API
+   * Sapphire messaging API
    */
   public messaging: Messaging;
 
-  /**
-   * Realtime Auth
-   */
-  public auth: Auth;
-
   constructor(private collectionManager: CollectionManagerService, private connectionManagerService: ConnectionManagerService) {
     this.messaging = new Messaging(this.connectionManagerService);
-    this.auth = new Auth(this.connectionManagerService);
   }
 
   /**
@@ -38,10 +31,10 @@ export class SapphireDb {
 
   /**
    * Reconnect to the connectionManagerService with authentication
-   * @param bearer The JWT Token to use for authentication/authorization, if empty removes the JWT Token
+   * @param authToken The token to use for authentication/authorization, if empty removes the JWT Token
    */
-  public setBearer(bearer?: string): void {
-    this.connectionManagerService.setBearer(bearer);
+  public setAuthToken(authToken?: string): void {
+    this.connectionManagerService.setAuthToken(authToken);
   }
 
   /**

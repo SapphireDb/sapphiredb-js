@@ -1,5 +1,5 @@
 import {AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {ActionHelper, ActionResult, DefaultCollection, ExecuteResponseType, SapphireDb, UserData} from 'ng-sapphiredb';
+import {ActionHelper, ActionResult, DefaultCollection, ExecuteResponseType, SapphireDb} from 'ng-sapphiredb';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {User} from '../../model/user';
 import {concatMap, debounceTime, filter, map, shareReplay, switchMap, take, takeWhile} from 'rxjs/operators';
@@ -26,33 +26,33 @@ export class MainComponent implements OnInit {
   constructor(private db: SapphireDb, private account: AccountService) {}
 
   ngOnInit() {
-    this.account.userData().subscribe((userData: UserData) => {
-      const roles = userData ? userData.roles : [];
-      const collection: DefaultCollection<any> = this.db.collection('users');
-
-      combineLatest(
-        collection.authInfo.queryAuth(),
-        collection.authInfo.canQuery(roles),
-        collection.authInfo.createAuth(),
-        collection.authInfo.canCreate(roles),
-        collection.authInfo.updateAuth(),
-        collection.authInfo.canUpdate(roles),
-        collection.authInfo.removeAuth(),
-        collection.authInfo.canRemove(roles),
-        collection.authInfo.queryPropertyAuth('firstName'),
-        collection.authInfo.canQueryProperty('firstName', roles),
-        collection.authInfo.updatePropertyAuth('firstName'),
-        collection.authInfo.canUpdateProperty('firstName', roles)
-      ).subscribe(([q, cq, c, cc, u, cu, r, cr, p, cp, up, ucp]:
-                     [boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean]) => {
-        console.warn(`Query: Authentication: ${q}, Can query: ${cq}`);
-        console.warn(`Query Property FirstName: Authentication: ${p}, Can query: ${cp}`);
-        console.warn(`Create: Authentication: ${c}, Can create: ${cc}`);
-        console.warn(`Update: Authentication: ${u}, Can update: ${cu}`);
-        console.warn(`Update Property FirstName: Authentication: ${up}, Can update: ${ucp}`);
-        console.warn(`Remove: Authentication: ${r}, Can remove: ${cr}`);
-      });
-    });
+    // this.account.userData().subscribe((userData: UserData) => {
+    //   const roles = userData ? userData.roles : [];
+    //   const collection: DefaultCollection<any> = this.db.collection('users');
+    //
+    //   combineLatest(
+    //     collection.authInfo.queryAuth(),
+    //     collection.authInfo.canQuery(roles),
+    //     collection.authInfo.createAuth(),
+    //     collection.authInfo.canCreate(roles),
+    //     collection.authInfo.updateAuth(),
+    //     collection.authInfo.canUpdate(roles),
+    //     collection.authInfo.removeAuth(),
+    //     collection.authInfo.canRemove(roles),
+    //     collection.authInfo.queryPropertyAuth('firstName'),
+    //     collection.authInfo.canQueryProperty('firstName', roles),
+    //     collection.authInfo.updatePropertyAuth('firstName'),
+    //     collection.authInfo.canUpdateProperty('firstName', roles)
+    //   ).subscribe(([q, cq, c, cc, u, cu, r, cr, p, cp, up, ucp]:
+    //                  [boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean]) => {
+    //     console.warn(`Query: Authentication: ${q}, Can query: ${cq}`);
+    //     console.warn(`Query Property FirstName: Authentication: ${p}, Can query: ${cp}`);
+    //     console.warn(`Create: Authentication: ${c}, Can create: ${cc}`);
+    //     console.warn(`Update: Authentication: ${u}, Can update: ${cu}`);
+    //     console.warn(`Update Property FirstName: Authentication: ${up}, Can update: ${ucp}`);
+    //     console.warn(`Remove: Authentication: ${r}, Can remove: ${cr}`);
+    //   });
+    // });
 
     this.db.execute('example', 'GenerateRandomNumber')
     // .subscribe((v: ActionResult<number, string>) => console.log(v));

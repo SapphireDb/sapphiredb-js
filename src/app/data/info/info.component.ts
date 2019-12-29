@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthCollectionInfo, SapphireDb} from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-info',
