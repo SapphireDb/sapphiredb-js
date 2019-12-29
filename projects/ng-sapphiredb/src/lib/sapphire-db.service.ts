@@ -30,14 +30,6 @@ export class SapphireDb {
   }
 
   /**
-   * Reconnect to the connectionManagerService with authentication
-   * @param authToken The token to use for authentication/authorization, if empty removes the JWT Token
-   */
-  public setAuthToken(authToken?: string): void {
-    this.connectionManagerService.setAuthToken(authToken);
-  }
-
-  /**
    * Execute an action on the server
    * @param handlerName The name of the handler
    * @param actionName The name of the action
@@ -64,6 +56,14 @@ export class SapphireDb {
    */
   public getStatus$(): Observable<string> {
     return this.connectionManagerService.status$.asObservable();
+  }
+
+  /**
+   * Reconnect to the connectionManagerService with authentication
+   * @param authToken The token to use for authentication/authorization, if empty removes the JWT Token
+   */
+  public setAuthToken(authToken?: string): void {
+    this.connectionManagerService.setAuthToken(authToken);
   }
 
   /**

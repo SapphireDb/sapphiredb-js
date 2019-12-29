@@ -7,9 +7,6 @@ export interface SapphireDbOptions {
   apiKey?: string;
   apiSecret?: string;
   pollingTime?: number;
-
-  loginRedirect?: string;
-  unauthorizedRedirect?: string;
 }
 
 export const SAPPHIRE_DB_OPTIONS = new InjectionToken<SapphireDbOptions>('sapphire-db.options');
