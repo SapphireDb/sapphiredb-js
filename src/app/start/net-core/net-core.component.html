@@ -67,6 +67,26 @@
   </div>
 </app-doc>
 
+<h3>(Optional) Enable CORS</h3>
+<p>If you are using a client application that has a different origin than the server application you have to enable CORS</p>
+
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:Startup.cs)
+    public class Startup\n
+    {\n
+      \tpublic void Configure(IApplicationBuilder app)\n
+      \t{\n
+    \t\t//Add Middleware\n
+    \t\tapp.UseCors(cfg => cfg.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
 <h2>Done</h2>
 
 <p>Your SapphireDb-server should now work.</p>

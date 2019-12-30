@@ -1,6 +1,5 @@
 import {Inject, Injectable, NgZone} from '@angular/core';
 import {SAPPHIRE_DB_OPTIONS, SapphireDbOptions} from '../../models/sapphire-db-options';
-import {LocalstoragePaths} from '../../helper/localstorage-paths';
 import {ConnectionBase} from '../connection-base';
 import {CommandBase} from '../../command/command-base';
 import {CommandReferences} from '../../models/command-references';
@@ -42,7 +41,6 @@ export class ConnectionManagerService {
               private httpClient: HttpClient,
               private ngZone: NgZone) {
     this.connectionData$ = new BehaviorSubject<ConnectionResponse>(null);
-    this.authToken = localStorage.getItem(LocalstoragePaths.authTokenPath);
 
     if (this.options.serverBaseUrl == null) {
       this.options.serverBaseUrl = window.location.host;
@@ -189,15 +187,7 @@ export class ConnectionManagerService {
   public setAuthToken(authToken?: string) {
     this.connectionData$.next(null);
     this.authToken = authToken;
-
-    if (authToken) {
-      localStorage.setItem(LocalstoragePaths.authTokenPath, authToken);
-    } else {
-      localStorage.removeItem(LocalstoragePaths.authTokenPath);
-    }
-
     this.connection.authToken = this.authToken;
-    this.connection.options = this.options;
 
     this.connection.dataUpdated();
   }

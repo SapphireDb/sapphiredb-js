@@ -1,25 +1,21 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import {AuthenticationComponent} from './authentication/authentication.component';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 import {NetCoreComponent} from './net-core/net-core.component';
-import {AngularComponent} from './angular/angular.component';
-import {ManageComponent} from './manage/manage.component';
-import {AuthorizationComponent} from './authorization/authorization.component';
-import {ModelAttributesComponent} from './model-attributes/model-attributes.component';
-import {AttributesComponent} from './attributes/attributes.component';
-import {ActionAttributesComponent} from './action-attributes/action-attributes.component';
-import {ConnectionManagementComponent} from './connection-management/connection-management.component';
+import {GeneralComponent} from './general/general.component';
+import {QueryAuthComponent} from './query-auth/query-auth.component';
+import {UpdateAuthComponent} from './update-auth/update-auth.component';
+import {CreateAuthComponent} from './create-auth/create-auth.component';
+import {RemoveAuthComponent} from './remove-auth/remove-auth.component';
+import {ExecuteComponent} from './execute/execute.component';
 
 const routes: Routes = [
-  { path: 'authentication', component: AuthenticationComponent },
+  { path: 'general', component: GeneralComponent },
   { path: 'net-core', component: NetCoreComponent },
-  { path: 'angular', component: AngularComponent },
-  { path: 'manage', component: ManageComponent },
-  { path: 'authorization', component: AuthorizationComponent },
-  { path: 'attributes', component: AttributesComponent },
-  { path: 'model-attributes', component: ModelAttributesComponent },
-  { path: 'action-attributes', component: ActionAttributesComponent },
-  { path: 'connection-management', component: ConnectionManagementComponent },
+  { path: 'query-auth', component: QueryAuthComponent },
+  { path: 'update-auth', component: UpdateAuthComponent },
+  { path: 'create-auth', component: CreateAuthComponent },
+  { path: 'remove-auth', component: RemoveAuthComponent },
+  { path: 'action-auth', component: ExecuteComponent },
   { path: '', pathMatch: 'full', redirectTo: 'authentication' }
 ];
 

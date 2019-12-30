@@ -17,6 +17,8 @@ export class CollectionInformationService {
       this.collectionInformation[`${contextName}:${collectionName}`] = subject$;
       this.connectionManagerService.sendCommand(new InfoCommand(collectionName, contextName)).subscribe((info: InfoResponse) => {
         subject$.next(info);
+      }, (error) => {
+        subject$.error(error);
       });
     }
 

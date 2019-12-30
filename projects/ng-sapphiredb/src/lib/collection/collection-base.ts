@@ -152,6 +152,8 @@ export class CollectionBase<T, Y> {
         } else if (response.responseType === 'ChangeResponse') {
           CollectionHelper.updateCollection<T>(collectionValue.subject, collectionInformation, <ChangeResponse>response);
         }
+      }, (error) => {
+        collectionValue.subject.error(error);
       });
 
     collectionValue.setSubscription(wsSubscription);

@@ -66,6 +66,29 @@
   You have to set all other settings from code directly.
 </div>
 
+<h3>Strict mode</h3>
+<p>
+  The settings contain configuration for authentication.
+  The default configuration is very weak and allows every user to do everything. It is highly recommended to define custom options for critical parts.
+  You can enable the strict mode of the options to run on a higher security level.
+</p>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:Startup.cs)
+    public class Startup\n
+    {\n
+      \tpublic void ConfigureServices(IServiceCollection services)\n
+      \t{\n
+    \t\t//Register services\n
+    \t\tservices.AddSapphireDb(new SapphireDatabaseOptions(true));\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
 <h2>Available options</h2>
 
 <h3>ApiConfigurations</h3>

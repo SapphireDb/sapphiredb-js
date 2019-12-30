@@ -1,0 +1,45 @@
+<h1>General - Authentication/Authorization</h1>
+
+<p>
+  SapphireDb has mechanisms to identity users and to control what the user is allowed to do.<br>
+  Make sure to setup the server before trying to use this options: <a routerLink="../net-core">Server setup</a>
+</p>
+
+<h2>Attributes</h2>
+
+<div class="remark success">
+  SapphireDb includes auth attributes that can be used to control which user can do what.
+</div>
+
+<div class="remark info">
+  Every auth-attribute can be used in three ways.
+  <ol class="decimal">
+    <li><b>Without attributes</b>: Authentication required</li>
+    <li>
+      <b>Policies</b>: A comma separated string of policy-names. All policies have to succeed. Check out
+      <a href="https://docs.microsoft.com/de-de/aspnet/core/security/authorization/policies?view=aspnetcore-3.1" target="_blank">Policies</a>
+      for more details
+    </li>
+    <li><b>Function name</b>: You can optionally pass the name of a function in the class that has to return a boolean. The function will get executed to check if the user is allowed for the action.</li>
+  </ol>
+</div>
+
+<h3>Model attributes</h3>
+
+<div class="remark success">
+  The model attributes can be used on model classes to control which user can do what.
+  Available model attributes: <code>[QueryAuth]</code>, <code>[CreateAuth]</code>, <code>[UpdateAuth]</code> and <code>[RemoveAuth]</code>.
+</div>
+
+<h3>Action attribute</h3>
+
+<div class="remark success">
+  The <code>[ActionAuth]</code>-attribute can be used on action handler classes or actions to control which user can do what.
+</div>
+
+<h2>Server options</h2>
+
+<p>
+  You can also control the permissions for some actions using the server side configuration.
+  Check out this section for more details: <a routerLink="../../configuration/main">Server - Configuration</a>
+</p>

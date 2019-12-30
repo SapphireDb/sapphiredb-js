@@ -1,11 +1,15 @@
 <h1>Server setup - Authentication</h1>
 
 <p>
-  SapphireDb comes with methods for authentication and role-based authorization.<br>
-  You can simply authenticate your client using the built in methods. It also comes with a user and role management.
+  SapphireDb allows to control permissions for specific operations with different mechanisms.
 </p>
 
-<h2>Simple setup</h2>
+<h2>Setup</h2>
+
+<p>
+  You have to configure your application to use identity or some other way of authentication. SapphireDb relies on the auth-mechanisms if Identity.
+  After you have configured Identity you have to do a small adjustment to make SapphireDb work with that.
+</p>
 
 <app-doc [showContent]="false">
   <div lang>
@@ -15,74 +19,43 @@
     {\n
       \tpublic void ConfigureServices(IServiceCollection services)\n
       \t{\n
-        \t\t//Register services\n
-        \t\tservices.AddSapphireAuth<SapphireAuthContext<IdentityUser>, IdentityUser>(new JwtOptions("secret key", "issuer")), cfg => ...);\n
+        \t\tservices.AddAuthentication(cfg =>\n
+        \t\t{\n
+          \t\t\tcfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;\n
+          \t\t\tcfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;\n
+        \t\t}).AddJwtBearer(cfg =>\n
+        \t\t{\n
+          \t\t\tcfg.TokenValidationParameters = jwtOptions.TokenValidationParameters;\n
+          \t\t\tcfg.Events = new JwtBearerEvents()\n
+          \t\t\t{\n
+            \t\t\t\tOnAuthenticationFailed = ctx =>\n
+            \t\t\t\t{\n
+              \t\t\t\t\tctx.Response.StatusCode = StatusCodes.Status401Unauthorized;\n
+              \t\t\t\t\treturn Task.CompletedTask;\n
+            \t\t\t\t},\n
+            \t\t\t\tOnMessageReceived = ctx =>\n
+            \t\t\t\t{\n
+              \t\t\t\t\t//Read the authentication token from query because js-websocket cannot send token as header\n
+              \t\t\t\t\tstring authorizationToken = ctx.Request.Query["authorization"];\n
+              \t\t\t\t\tif (!string.IsNullOrEmpty(authorizationToken))\n
+              \t\t\t\t\t{\n
+                \t\t\t\t\t\tctx.Token = authorizationToken;\n
+              \t\t\t\t\t}\n\n
+
+              \t\t\t\t\treturn Task.CompletedTask;\n
+            \t\t\t\t}\n
+        \t\t\t};\n
+      \t\t});\n
+    \t}\n\n
+
+    \tpublic void Configure(IApplicationBuilder app, IWebHostEnvironment env)\n
+    \t{\n
+      \t\tapp.UseAuthentication();\n
     \t}\n
     }
     ]]>
   </div>
 </app-doc>
-
-<h2>JWT Options</h2>
-
-<p>
-  The JWT Options are used to generate the jwt-token for client authentication.<br>
-  You can either directly create an object with the options or use data from a configuration file.
-</p>
-
-<h4>Example: Load configuration from appsettings</h4>
-<app-doc [showContent]="false">
-  <div lang>
-    <![CDATA[
-    \f:(csharp:Startup.cs)
-    public class Startup\n
-    {\n
-      \tpublic void ConfigureServices(IServiceCollection services)\n
-      \t{\n
-    \t\t//Register services\n
-    \t\tservices.AddSapphireAuth<SapphireAuthContext<IdentityUser>, IdentityUser>(new JwtOptions(Configuration.GetSection(nameof(JwtOptions)), cfg => ...);\n
-    \t}\n
-    }
-    ]]>
-  </div>
-</app-doc>
-
-<h2>Custom user object</h2>
-
-<p>
-  SapphireDb uses the <code>IdentityUser</code> as user object.<br>
-  You can simply create a custom user object that derives from <code>IdentityUser</code> and include custom fields and information.<br>
-  Make sure to replace the user type used in <code>Startup.cs</code>
-</p>
-
-<app-doc [showContent]="false">
-  <div lang>
-    <![CDATA[
-    \f:(csharp:CustomAppUser.cs)
-    public class AppUser : IdentityUser\n
-    {\n
-      \t[AuthUserInformation]\n
-      \t[AuthClaimInformation]\n
-      \tpublic string FirstName { get; set; }\n\n
-
-      \t[AuthUserInformation]\n
-      \tpublic string LastName { get; set; }\n
-    }
-    ]]>
-  </div>
-</app-doc>
-
-<div class="remark success">
-  The attribute <code>[AuthUserInformation]</code> is used to mark the field to be included in the user information.<br>
-  That means, that the client receives it in the returned object when calling the login method with valid credentials.<br><br>
-
-  The attribute <code>[AuthClaimInformation]</code> is used to include the information in the bearer.<br>
-  This is useful to identify a user by it's given claims on server side.
-</div>
-
-<h2>Custom DbContext</h2>
-
-<p>If you want you can create your own auth-context to store custom data etc. Just derive it from <code>SapphireAuthContext</code></p>
 
 <h2>Access user details</h2>
 

@@ -1,23 +1,27 @@
 import {NgModule} from '@angular/core';
 
 import {SecurityRoutingModule} from './security-routing.module';
-import {AuthenticationComponent} from './authentication/authentication.component';
 import {SharedModule} from '../shared.module';
 import { NetCoreComponent } from './net-core/net-core.component';
-import { AngularComponent } from './angular/angular.component';
-import { ManageComponent } from './manage/manage.component';
-import { AuthorizationComponent } from './authorization/authorization.component';
-import { ModelAttributesComponent } from './model-attributes/model-attributes.component';
-import { AttributesComponent } from './attributes/attributes.component';
-import { ActionAttributesComponent } from './action-attributes/action-attributes.component';
-import { ConnectionManagementComponent } from './connection-management/connection-management.component';
+
+import { GeneralComponent } from './general/general.component';
+import { QueryAuthComponent } from './query-auth/query-auth.component';
+import { CurrentUserComponent } from './current-user/current-user.component';
+import {UserStateService} from './user-state.service';
+import { UpdateAuthComponent } from './update-auth/update-auth.component';
+import { CreateAuthComponent } from './create-auth/create-auth.component';
+import { RemoveAuthComponent } from './remove-auth/remove-auth.component';
+import { ExecuteComponent } from './execute/execute.component';
 
 
 @NgModule({
-  declarations: [AuthenticationComponent, NetCoreComponent, AngularComponent, ManageComponent, AuthorizationComponent, ModelAttributesComponent, AttributesComponent, ActionAttributesComponent, ConnectionManagementComponent],
+  declarations: [NetCoreComponent, GeneralComponent, QueryAuthComponent, CurrentUserComponent, UpdateAuthComponent, CreateAuthComponent, RemoveAuthComponent, ExecuteComponent],
   imports: [
     SharedModule,
     SecurityRoutingModule
+  ],
+  providers: [
+    UserStateService
   ]
 })
 export class SecurityModule { }

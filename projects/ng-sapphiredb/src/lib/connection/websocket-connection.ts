@@ -63,6 +63,8 @@ export class WebsocketConnection extends ConnectionBase {
       this.socket.close();
     }
 
+    this.readyState$.next('disconnected');
+
     setTimeout(() => {
       this.connect$();
     }, 10);
