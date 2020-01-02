@@ -19,7 +19,7 @@
 
       \tngOnInit() {\n
         \t\t// Use a collection object to easily access the methods of a collection\n
-        \t\tthis.collection = this.db.collection<Entry>('entries', 'demo');\n
+        \t\tthis.collection = this.db.collection<Entry>('demo.entries');\n
         \t\tthis.values$ = this.collection.values();\n
       \t}\n\n
 
@@ -129,7 +129,7 @@
       \tconstructor(private db: SapphireDb) { }\n\n
 
       \tngOnInit() {\n
-        \t\tthis.collection = this.db.collection<Entry>('entries', 'demo');\n
+        \t\tthis.collection = this.db.collection<Entry>('demo.entries');\n
       \t}\n\n
 
       \tupdateValue(value: Entry) {\n

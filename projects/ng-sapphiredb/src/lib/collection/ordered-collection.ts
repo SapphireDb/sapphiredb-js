@@ -4,14 +4,17 @@ import {ThenOrderByPrefilter} from './prefilter/then-order-by-prefilter';
 import {CollectionManagerService} from './services/collection-manager.service';
 import {DefaultCollection} from './default-collection';
 import {ConnectionManagerService} from '../connection/services/connection-manager.service';
+import {ClassType} from '../models/types';
+import {SapphireClassTransformer} from '../helper/sapphire-class-transformer';
 
 export class OrderedCollection<T> extends DefaultCollection<T> {
   constructor(collectionName: string,
-              contextName: string,
               connectionManagerService: ConnectionManagerService,
               collectionInformation: Observable<InfoResponse>,
-              collectionManagerService: CollectionManagerService) {
-    super(collectionName, contextName, connectionManagerService, collectionInformation, collectionManagerService);
+              collectionManagerService: CollectionManagerService,
+              classType: ClassType<T>,
+              classTransformer: SapphireClassTransformer) {
+    super(collectionName, connectionManagerService, collectionInformation, collectionManagerService, classType, classTransformer);
   }
 
   /**
@@ -20,7 +23,7 @@ export class OrderedCollection<T> extends DefaultCollection<T> {
    * @param descending Order the selection in descending order
    */
   public thenOrderBy(property: keyof T, descending: boolean = false): OrderedCollection<T> {
-    return <any>this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters,
+    return <any>this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters,
       new ThenOrderByPrefilter(property, descending));
   }
 }

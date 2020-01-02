@@ -16,10 +16,10 @@ export class IncludeComponent implements OnInit {
   public entries$: Observable<any[]>;
 
   constructor(private db: SapphireDb) {
-    this.userCollection = this.db.collection('Users', 'Demo').include('entries');
+    this.userCollection = this.db.collection('Demo.Users').include('entries');
     this.users$ = this.userCollection.values();
 
-    this.entryCollection = this.db.collection('UserEntries', 'Demo').include('user');
+    this.entryCollection = this.db.collection('Demo.UserEntries').include('user');
     this.entries$ = this.entryCollection.values();
   }
 

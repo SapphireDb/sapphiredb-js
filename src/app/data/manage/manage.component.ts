@@ -15,7 +15,7 @@ export class ManageComponent implements OnInit {
   constructor(private db: SapphireDb, private dialogService: DialogService) { }
 
   ngOnInit() {
-    this.collection = this.db.collection('entries', 'demo');
+    this.collection = this.db.collection('demo.entries');
     this.values$ = this.collection.values();
   }
 

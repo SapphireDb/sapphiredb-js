@@ -17,9 +17,9 @@ export class ChangesComponent implements OnInit {
   constructor(private db: SapphireDb, private dialogService: DialogService) { }
 
   ngOnInit() {
-    this.values$ = this.db.collection('entries', 'demo').values();
+    this.values$ = this.db.collection('demo.entries').values();
 
-    this.changes$ = this.db.collection('entries', 'demo').changes().pipe(
+    this.changes$ = this.db.collection('demo.entries').changes().pipe(
       filter(v => v.responseType !== 'QueryResponse'),
       scan((arr, v) => [...arr, v].Reverse().Take(10).Reverse(), [])
     );
@@ -27,7 +27,7 @@ export class ChangesComponent implements OnInit {
 
   addValue() {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
-      this.db.collection('entries', 'demo').add({
+      this.db.collection('demo.entries').add({
         content: v
       });
     });

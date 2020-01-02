@@ -16,7 +16,7 @@
         \tconstructor(private db: SapphireDb) { }\n\n
 
         \tngOnInit() {\n
-          \t\tthis.collection = this.db.collection<Document>('documents', 'demo');\n\n
+          \t\tthis.collection = this.db.collection<Document>('demo.documents');\n\n
 
           \t\tthis.document$ = this.name$.pipe(\n
             \t\t\tdebounceTime(200),\n

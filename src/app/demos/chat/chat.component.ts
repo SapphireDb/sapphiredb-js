@@ -31,7 +31,7 @@ export class ChatComponent implements OnInit {
   constructor(private db: SapphireDb) { }
 
   ngOnInit() {
-    this.messageCollection = this.db.collection<Message>('messages', 'demo');
+    this.messageCollection = this.db.collection<Message>('demo.messages');
 
     this.messages$ = combineLatest([this.from$, this.to$]).pipe(
       debounceTime(200),

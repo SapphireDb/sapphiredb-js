@@ -8,6 +8,7 @@ import {ActionResult} from './modules/action/action-result';
 import {Messaging} from './modules/messaging/messaging';
 import {DefaultCollection} from './collection/default-collection';
 import {ConnectionManagerService} from './connection/services/connection-manager.service';
+import {ClassType} from './models/types';
 
 @Injectable()
 export class SapphireDb {
@@ -23,10 +24,10 @@ export class SapphireDb {
   /**
    * Get the named collection
    * @param collectionName The name of the collection
-   * @param contextName If using multiple DbContexts you can pass this to get the right context
+   * @param classType The class of the model (optional parameter and only used when using a class transformer)
    */
-  public collection<T>(collectionName: string, contextName: string = 'default'): DefaultCollection<T> {
-    return <any>this.collectionManager.getCollection(collectionName, contextName, []);
+  public collection<T>(collectionName: string, classType: ClassType<T> = null): DefaultCollection<T> {
+    return <any>this.collectionManager.getCollection(collectionName, [], null, classType);
   }
 
   /**

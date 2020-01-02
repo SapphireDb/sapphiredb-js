@@ -16,11 +16,11 @@ export class WhereComponent implements OnInit {
   constructor(private db: SapphireDb, private dialogService: DialogService) { }
 
   ngOnInit() {
-    this.values$ = this.db.collection<any>('entries', 'demo')
+    this.values$ = this.db.collection<any>('demo.entries')
       .where(['content', 'StartsWith', 'testV'])
       .values();
 
-    this.values2$ = this.db.collection<any>('entries', 'demo')
+    this.values2$ = this.db.collection<any>('demo.entries')
       .where([
         [['content', 'StartsWith', 'test'], 'and', ['content', 'EndsWith', 'V']],
         'or',
@@ -31,7 +31,7 @@ export class WhereComponent implements OnInit {
 
   addValue() {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
-      this.db.collection('entries', 'demo').add({
+      this.db.collection('demo.entries').add({
         content: v
       });
     });

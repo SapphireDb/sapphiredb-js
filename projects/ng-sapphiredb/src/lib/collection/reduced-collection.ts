@@ -6,10 +6,9 @@ import {ConnectionManagerService} from '../connection/services/connection-manage
 
 export class ReducedCollection<T, Y> extends CollectionBase<T, Y> {
   constructor(collectionName: string,
-              contextName: string,
               connectionManagerService: ConnectionManagerService,
               collectionInformation: Observable<InfoResponse>,
               collectionManagerService: CollectionManagerService) {
-    super(collectionName, contextName, connectionManagerService, collectionInformation, collectionManagerService);
+    super(collectionName, connectionManagerService, collectionInformation, collectionManagerService, null, null);
   }
 }

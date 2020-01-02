@@ -95,7 +95,7 @@ export class MainComponent implements OnInit {
 
     this.db.messaging.messages().subscribe(console.warn);
 
-    this.db.collection('tests', 'second').values().subscribe(v => console.table(v));
+    this.db.collection('second.tests').values().subscribe(v => console.table(v));
   }
 
   createUser() {
@@ -163,6 +163,6 @@ export class MainComponent implements OnInit {
   }
 
   createTestSecond() {
-    this.db.collection('tests', 'second').add({content: 'das ist ein Test Eintrag'});
+    this.db.collection('second.tests').add({content: 'das ist ein Test Eintrag'});
   }
 }

@@ -16,18 +16,18 @@ export class SelectComponent implements OnInit {
   constructor(private db: SapphireDb, private dialogService: DialogService) { }
 
   ngOnInit() {
-    this.values$ = this.db.collection<any>('entries', 'demo')
+    this.values$ = this.db.collection<any>('demo.entries')
       .select<string>('content')
       .values();
 
-    this.values2$ = this.db.collection<any>('entries', 'demo')
+    this.values2$ = this.db.collection<any>('demo.entries')
       .select<string>('content', 'id')
       .values();
   }
 
   addValue() {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
-      this.db.collection('entries', 'demo').add({
+      this.db.collection('demo.entries').add({
         content: v
       });
     });

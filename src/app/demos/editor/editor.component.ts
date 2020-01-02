@@ -26,7 +26,7 @@ export class EditorComponent implements OnInit {
   constructor(private db: SapphireDb) { }
 
   ngOnInit() {
-    this.collection = this.db.collection<Document>('documents', 'demo');
+    this.collection = this.db.collection<Document>('demo.documents');
 
     this.document$ = this.name$.pipe(
       debounceTime(200),

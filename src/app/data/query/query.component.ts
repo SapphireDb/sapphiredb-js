@@ -16,13 +16,13 @@ export class QueryComponent implements OnInit {
   constructor(private db: SapphireDb, private dialogService: DialogService) { }
 
   ngOnInit() {
-    this.values$ = this.db.collection('entries', 'demo').values();
-    this.valuesSnapshot$ = this.db.collection('entries', 'demo').snapshot();
+    this.values$ = this.db.collection('demo.entries').values();
+    this.valuesSnapshot$ = this.db.collection('demo.entries').snapshot();
   }
 
   addValue() {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
-      this.db.collection('entries', 'demo').add({
+      this.db.collection('demo.entries').add({
         content: v
       });
     });

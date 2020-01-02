@@ -3,6 +3,12 @@
 <p>Creating a query is very simple. ng-sapphiredb uses RxJs to provide the values of the collection.</p>
 
 <p>
+  You first have to create a collection object using the method <code>SapphireDb.collection()</code>.<br>
+  As a first parameter you have to pass the name of the collection defined in your DbContext.<br>
+  If you are using a custom context name you can access the collection by prefixing it with the name separated with a dot: <code>default.entries</code> for example<br>
+</p>
+
+<p>
   You can simply query all data of a collection.<br>
   Using the method <code>.values()</code> will create a subscription on the server and the server will notify the client if something has changed.
 </p>

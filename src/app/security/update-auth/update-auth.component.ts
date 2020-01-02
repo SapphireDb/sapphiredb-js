@@ -63,7 +63,7 @@ export class UpdateAuthComponent implements OnInit {
   private getCollection$(name: string): Observable<DefaultCollection<any>> {
     return this.userState.currentUser$.pipe(
       map(() => {
-        return this.db.collection(name, 'AuthDemo');
+        return this.db.collection(`AuthDemo.${name}`);
       }),
       shareReplay()
     );

@@ -21,15 +21,25 @@ import {ChangeResponse} from '../command/subscribe/change-response';
 import {CreateRangeCommand} from '../command/create-range/create-range-command';
 import {UpdateRangeCommand} from '../command/update-range/update-range-command';
 import {DeleteRangeCommand} from '../command/delete-range/delete-range-command';
+import {ClassType} from '../models/types';
+import {SapphireClassTransformer} from '../helper/sapphire-class-transformer';
 
 export class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
+  public collectionName: string;
+  public contextName: string;
 
-  constructor(public collectionName: string,
-              public contextName: string,
+  constructor(collectionNameRaw: string,
               protected connectionManagerService: ConnectionManagerService,
               protected collectionInformation: Observable<InfoResponse>,
-              protected collectionManagerService: CollectionManagerService) {}
+              protected collectionManagerService: CollectionManagerService,
+              protected classType: ClassType<T>,
+              protected classTransformer: SapphireClassTransformer) {
+    const collectionNameParts: string[] = collectionNameRaw.split('.');
+
+    this.collectionName = collectionNameParts.length === 1 ? collectionNameParts[0] : collectionNameParts[1];
+    this.contextName = collectionNameParts.length === 2 ? collectionNameParts[0] : 'default';
+  }
 
   /**
    * Get a snapshot of the values of the collection
@@ -38,7 +48,13 @@ export class CollectionBase<T, Y> {
     const queryCommand = new QueryCommand(this.collectionName, this.contextName, this.prefilters);
 
     return <Observable<Y>>this.connectionManagerService.sendCommand(queryCommand).pipe(
-      map((response: QueryResponse) => response.result)
+      map((response: QueryResponse) => {
+        if (this.classType && this.classTransformer) {
+          return <Y><any>this.classTransformer.plainToClass(response.result, this.classType);
+        }
+
+        return response.result;
+      })
     );
   }
 
@@ -48,7 +64,16 @@ export class CollectionBase<T, Y> {
   public values(): Observable<Y> {
     const collectionValue = this.createValuesSubscription(this.collectionName, this.contextName,
       this.collectionInformation, this.prefilters);
-    return this.createCollectionObservable$(collectionValue);
+    return this.createCollectionObservable$(collectionValue).pipe(
+      map((values: Y) => {
+        if (this.classType && this.classTransformer) {
+          return <Y><any>this.classTransformer.plainToClass(values, this.classType);
+        }
+
+        return values;
+      }),
+      share()
+    );
   }
 
   /**
@@ -72,6 +97,10 @@ export class CollectionBase<T, Y> {
    * @param values The object(s) to add to the collection
    */
   public add(...values: T[]): Observable<CommandResult<T>> {
+    if (this.classType && this.classTransformer) {
+      values = this.classTransformer.classToPlain(values);
+    }
+
     if (values.length === 1) {
       return this.createCommandResult$(
         <any>this.connectionManagerService.sendCommand(new CreateCommand(this.collectionName, this.contextName, values[0])));
@@ -86,6 +115,10 @@ export class CollectionBase<T, Y> {
    * @param values The object(s) to update in the collection
    */
   public update(...values: T[]): Observable<CommandResult<T>> {
+    if (this.classType && this.classTransformer) {
+      values = this.classTransformer.classToPlain(values);
+    }
+
     if (values.length === 1) {
       return this.createCommandResult$(
         <any>this.connectionManagerService.sendCommand(new UpdateCommand(this.collectionName, this.contextName, values[0])));
@@ -100,6 +133,10 @@ export class CollectionBase<T, Y> {
    * @param values The object(s) to remove from the collection
    */
   public remove(...values: T[]): Observable<CommandResult<T>> {
+    if (this.classType && this.classTransformer) {
+      values = this.classTransformer.classToPlain(values);
+    }
+
     const subject = new Subject<CommandResult<T>>();
 
     this.collectionInformation.pipe(
@@ -174,8 +211,7 @@ export class CollectionBase<T, Y> {
         }
 
         return array;
-      }),
-      share()
+      })
     );
   }
 }

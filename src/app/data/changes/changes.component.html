@@ -5,13 +5,13 @@
 <app-doc>
   <p class="text-muted text-bold">Changes</p>
   <p *ngFor="let change of changes$ | async">
-    <ng-container *ngIf="change.responseType === 'LoadResponse'">
-      Created: {{ change.newObject | json }}
+    <ng-container *ngIf="change.state === 0">
+      Created: {{ change.value | json }}
     </ng-container>
-    <ng-container *ngIf="change.responseType === 'UnloadResponse'">
-      Removed: {{ change.primaryValues | json }}
+    <ng-container *ngIf="change.state === 1">
+      Removed: {{ change.value | json }}
     </ng-container>
-    <ng-container *ngIf="change.responseType === 'ChangeResponse'">
+    <ng-container *ngIf="change.state === 2">
       Updated: {{ change.value | json }}
     </ng-container>
   </p>
@@ -28,7 +28,7 @@
       \tconstructor(private db: SapphireDb) { }\n\n
 
       \tngOnInit() {\n
-        \t\tthis.changes$ = this.db.collection('entries', 'demo').changes().pipe(\n
+        \t\tthis.changes$ = this.db.collection('demo.entries').changes().pipe(\n
           \t\t\tfilter(v => v.responseType !== 'QueryResponse'),\n
           \t\t\tscan((arr, v) => [...arr, v], [])\n
         \t\t);\n

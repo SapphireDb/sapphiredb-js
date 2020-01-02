@@ -11,7 +11,7 @@ import csharp from 'highlight.js/lib/languages/cs';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {SAPPHIRE_DB_OPTIONS, SapphireDbModule, SapphireDbOptions} from 'ng-sapphiredb';
+import {SAPPHIRE_DB_OPTIONS, SapphireDbModule, SapphireDbOptions, SapphireClassTransformer, ClassType} from 'ng-sapphiredb';
 import {ReactiveFormsModule} from '@angular/forms';
 import {environment} from '../environments/environment';
 import {HighlightModule} from 'ngx-highlightjs';
@@ -19,6 +19,7 @@ import {SharedModule} from './shared.module';
 import {LegalDisclosureComponent} from './shared/legal-disclosure/legal-disclosure.component';
 import {PrivacyComponent} from './shared/privacy/privacy.component';
 import {ServiceWorkerModule} from '@angular/service-worker';
+import {classToPlain, plainToClass} from 'class-transformer';
 
 export function hljsLanguages() {
   return [
@@ -41,6 +42,16 @@ export function createRealtimeOptions(): SapphireDbOptions {
   };
 }
 
+export class CustomClassTransformer extends SapphireClassTransformer {
+  classToPlain<T>(value: T[] | T): any {
+    return classToPlain(value);
+  }
+
+  plainToClass<T>(value: any, classType: ClassType<T>): T[] | T {
+    return plainToClass(classType, value);
+  }
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -59,7 +70,8 @@ export function createRealtimeOptions(): SapphireDbOptions {
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
-    { provide: SAPPHIRE_DB_OPTIONS, useFactory: createRealtimeOptions }
+    { provide: SAPPHIRE_DB_OPTIONS, useFactory: createRealtimeOptions },
+    { provide: SapphireClassTransformer, useClass: CustomClassTransformer }
   ],
   bootstrap: [AppComponent]
 })

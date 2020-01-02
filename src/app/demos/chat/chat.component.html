@@ -21,7 +21,7 @@
 
         \tngOnInit() {\n
           \t\t// Get the collection\n
-          \t\tthis.messageCollection = this.db.collection<Message>('messages', 'demo');\n\n
+          \t\tthis.messageCollection = this.db.collection<Message>('demo.messages');\n\n
 
           \t\t// Creates an observable that changes the loaded messages when from or to change\n
           \t\tthis.messages$ = combineLatest([this.from$, this.to$]).pipe(\n

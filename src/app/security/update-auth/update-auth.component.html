@@ -86,11 +86,11 @@
         \tconstructor(private db: SapphireDb) {}\n\n
 
         \tngOnInit() {\n
-      \t\tthis.values$ = this.db.collection('UpdateExamples', 'AuthDemo').values();\n
+      \t\tthis.values$ = this.db.collection('AuthDemo.UpdateExamples').values();\n
       \t}\n\n
 
         \tupdate(collection$: Observable<DefaultCollection<any>>, value: any) {\n
-          \t\tthis.db.collection('UpdateExamples', 'AuthDemo').update({\n
+          \t\tthis.db.collection('AuthDemo.UpdateExamples').update({\n
             \t\t\t...value,\n
             \t\t\trequiresUser: 'No',\n
             \t\t\tcustomFunction: 'test 123',\n

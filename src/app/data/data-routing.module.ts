@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 import {QueryComponent} from './query/query.component';
 import {ManageComponent} from './manage/manage.component';
 import {PrefilterComponent} from './prefilter/prefilter.component';
@@ -9,10 +9,10 @@ import {LimitComponent} from './limit/limit.component';
 import {SelectComponent} from './select/select.component';
 import {CountComponent} from './count/count.component';
 import {EventsComponent} from './events/events.component';
-import {InfoComponent} from './info/info.component';
 import {QueryFunctionComponent} from './query-function/query-function.component';
 import {ChangesComponent} from './changes/changes.component';
 import {IncludeComponent} from './include/include.component';
+import {ClassTransformerComponent} from './class-transformer/class-transformer.component';
 
 
 const routes: Routes = [
@@ -24,11 +24,11 @@ const routes: Routes = [
   { path: 'limit', component: LimitComponent },
   { path: 'select', component: SelectComponent },
   { path: 'count', component: CountComponent },
-  { path: 'info', component: InfoComponent },
   { path: 'changes', component: ChangesComponent },
   { path: 'events', component: EventsComponent },
   { path: 'query-function', component: QueryFunctionComponent },
   { path: 'include', component: IncludeComponent },
+  { path: 'class-transformer', component: ClassTransformerComponent },
   { path: '', redirectTo: 'query', pathMatch: 'full' }
 ];
 

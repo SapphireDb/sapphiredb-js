@@ -15,14 +15,17 @@ import {FirstPrefilter} from './prefilter/first-prefilter';
 import {LastPrefilter} from './prefilter/last-prefilter';
 import {ConditionType} from '../helper/condition-types';
 import {IncludePrefilter} from './prefilter/include-prefilter';
+import {ClassType} from '../models/types';
+import {SapphireClassTransformer} from '../helper/sapphire-class-transformer';
 
 export class DefaultCollection<T> extends CollectionBase<T, T[]> {
   constructor(collectionName: string,
-              contextName: string,
               connectionManagerService: ConnectionManagerService,
               collectionInformation: Observable<InfoResponse>,
-              collectionManagerService: CollectionManagerService) {
-    super(collectionName, contextName, connectionManagerService, collectionInformation, collectionManagerService);
+              collectionManagerService: CollectionManagerService,
+              classType: ClassType<T>,
+              classTransformer: SapphireClassTransformer) {
+    super(collectionName, connectionManagerService, collectionInformation, collectionManagerService, classType, classTransformer);
   }
 
   /**
@@ -31,7 +34,7 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    */
   public skip(number: number): DefaultCollection<T> {
     return <any>this.collectionManagerService.getCollection(
-      this.collectionName, this.contextName, this.prefilters, new SkipPrefilter(number));
+      `${this.contextName}.${this.collectionName}`, this.prefilters, new SkipPrefilter(number));
   }
 
   /**
@@ -40,7 +43,7 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    */
   public take(number: number): DefaultCollection<T> {
     return <any>this.collectionManagerService.getCollection(
-      this.collectionName, this.contextName, this.prefilters, new TakePrefilter(number));
+      `${this.contextName}.${this.collectionName}`, this.prefilters, new TakePrefilter(number));
   }
 
   /**
@@ -49,7 +52,7 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    */
   public where(conditions: ConditionType<T>): DefaultCollection<T> {
     return <any>this.collectionManagerService.getCollection(
-      this.collectionName, this.contextName, this.prefilters, new WherePrefilter(conditions));
+      `${this.contextName}.${this.collectionName}`, this.prefilters, new WherePrefilter(conditions));
   }
 
   /**
@@ -58,7 +61,7 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param descending Order the selection in descending order
    */
   public orderBy(property: keyof T, descending: boolean = false): OrderedCollection<T> {
-    return <any>this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters,
+    return <any>this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters,
       new OrderByPrefilter(property, descending));
   }
 
@@ -68,7 +71,7 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    */
   public select<Z>(...properties: (keyof T)[]): ReducedCollection<T, Z[]> {
     return this.collectionManagerService.getCollection(
-      this.collectionName, this.contextName, this.prefilters, new SelectPrefilter(properties));
+      `${this.contextName}.${this.collectionName}`, this.prefilters, new SelectPrefilter(properties));
   }
 
   /**
@@ -76,27 +79,27 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param include The navigation property string (use EF Core Syntax)
    */
   public include(include: string): DefaultCollection<T> {
-    return <any>this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters, new IncludePrefilter(include));
+    return <any>this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters, new IncludePrefilter(include));
   }
 
   /**
    * Get the number of elements in the collection
    */
   public count(): ReducedCollection<T, number> {
-    return this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters, new CountPrefilter());
+    return this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters, new CountPrefilter());
   }
 
   /**
    * Get the first element of the collection. Returns null if nothing was found.
    */
   public first(): ReducedCollection<T, T> {
-    return this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters, new FirstPrefilter());
+    return this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters, new FirstPrefilter());
   }
 
   /**
    * Get the last element of the collection. Returns null if nothing was found.
    */
   public last(): ReducedCollection<T, T> {
-    return this.collectionManagerService.getCollection(this.collectionName, this.contextName, this.prefilters, new LastPrefilter());
+    return this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters, new LastPrefilter());
   }
 }

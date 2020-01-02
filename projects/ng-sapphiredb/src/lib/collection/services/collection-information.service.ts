@@ -11,7 +11,12 @@ export class CollectionInformationService {
 
   constructor(private connectionManagerService: ConnectionManagerService) { }
 
-  public getCollectionInformation(collectionName: string, contextName: string) {
+  public getCollectionInformation(collectionNameRaw: string) {
+    const collectionNameParts: string[] = collectionNameRaw.split('.');
+
+    const collectionName = collectionNameParts.length === 1 ? collectionNameParts[0] : collectionNameParts[1];
+    const contextName = collectionNameParts.length === 2 ? collectionNameParts[0] : 'default';
+
     if (!this.collectionInformation[`${contextName}:${collectionName}`]) {
       const subject$ = new ReplaySubject<InfoResponse>(null);
       this.collectionInformation[`${contextName}:${collectionName}`] = subject$;

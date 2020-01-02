@@ -15,14 +15,14 @@ export class PrefilterComponent implements OnInit {
   constructor(private db: SapphireDb, private dialogService: DialogService) { }
 
   ngOnInit() {
-    this.values$ = this.db.collection<any>('entries', 'demo')
+    this.values$ = this.db.collection<any>('demo.entries')
       .where(['content', 'StartsWith', 'testValue'])
       .values();
   }
 
   addValue() {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
-      this.db.collection('entries', 'demo').add({
+      this.db.collection('demo.entries').add({
         content: v
       });
     });

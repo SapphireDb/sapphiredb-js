@@ -55,7 +55,7 @@
         \tconstructor(private db: SapphireDb) {}\n\n
 
         \tngOnInit() {\n
-          \t\tthis.values$ = this.db.collection('RequiresAuthForQueryDemos', 'AuthDemo').values();\n
+          \t\tthis.values$ = this.db.collection('AuthDemo.RequiresAuthForQueryDemos').values();\n
         \t}\n
       }
       ]]>
@@ -104,7 +104,7 @@
         \tconstructor(private db: SapphireDb) {}\n\n
 
         \tngOnInit() {\n
-      \t\tthis.values$ = this.db.collection('RequiresAdminForQueryDemos', 'AuthDemo').values();\n
+      \t\tthis.values$ = this.db.collection('AuthDemo.RequiresAdminForQueryDemos').values();\n
       \t}\n
       }
       ]]>
@@ -149,7 +149,7 @@
         \tconstructor(private db: SapphireDb) {}\n\n
 
         \tngOnInit() {\n
-      \t\tthis.values$ = this.db.collection('CustomFunctionForQueryDemos', 'AuthDemo').values();\n
+      \t\tthis.values$ = this.db.collection('AuthDemo.CustomFunctionForQueryDemos').values();\n
       \t}\n
       }
       ]]>
@@ -251,7 +251,7 @@
         \tconstructor(private db: SapphireDb) {}\n\n
 
         \tngOnInit() {\n
-      \t\tthis.values$ = this.db.collection('QueryFieldDemos', 'AuthDemo').values();\n
+      \t\tthis.values$ = this.db.collection('AuthDemo.QueryFieldDemos').values();\n
       \t}\n
       }
       ]]>

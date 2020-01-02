@@ -18,26 +18,26 @@ export class LimitComponent implements OnInit {
   constructor(private db: SapphireDb, private dialogService: DialogService) { }
 
   ngOnInit() {
-    this.values$ = this.db.collection<any>('entries', 'demo')
+    this.values$ = this.db.collection<any>('demo.entries')
       .take(5)
       .values();
 
-    this.values2$ = this.db.collection<any>('entries', 'demo')
+    this.values2$ = this.db.collection<any>('demo.entries')
       .skip(5)
       .values();
 
-    this.valueFirst$ = this.db.collection<any>('entries', 'demo')
+    this.valueFirst$ = this.db.collection<any>('demo.entries')
       .first()
       .values();
 
-    this.valueLast$ = this.db.collection<any>('entries', 'demo')
+    this.valueLast$ = this.db.collection<any>('demo.entries')
       .last()
       .values();
   }
 
   addValue() {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
-      this.db.collection('entries', 'demo').add({
+      this.db.collection('demo.entries').add({
         content: v
       });
     });
