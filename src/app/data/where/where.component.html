@@ -40,12 +40,17 @@
   A basic condition is a tuple of three elements: <code>[ key, operation, compare value ]</code><br>
   Example: You want to check a single field to equal your value: <code>['field', '==', 'value']</code><br><br>
 
-  To combine multiple condition tuples you can wrap them in another tuple of three or more elements: <code>[condition1, 'and/or', condition2]</code><br>
-  Example: You want to check if the field value equals 'value' or 'value2': <code>[['field', '==', 'value'], 'or', ['field', '==', 'value']]</code><br><br>
+  To combine multiple condition tuples you can wrap them in another tuple of three or more elements: <code>[condition1,
+  'and/or', condition2]</code><br>
+  Example: You want to check if the field value equals 'value' or 'value2': <code>[['field', '==', 'value'], 'or',
+  ['field', '==', 'value']]</code><br><br>
 
   With this syntax you can create most of the filter expressions.<br><br>
 
-  Allowed operations: <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>Contains</code>, <code>StartsWith</code> and <code>EndsWith</code>
+  Allowed operations: <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;=</code>,
+  <code>Contains</code>, <code>ContainsCaseInsensitive</code>, <code>StartsWith</code>, <code>StartsWithCaseInsensitive</code>,
+  <code>EndsWith</code>, <code>EndsWithCaseInsensitive</code>, <code>InArray</code>, <code>ArrayContains</code>, <code>NotEqualIgnoreCase</code>
+  and <code>EqualIgnoreCase</code>
 </p>
 
 <h2>Complex query</h2>
@@ -70,16 +75,17 @@
     \tconstructor(private db: SapphireDb) { }\n\n
 
     \tngOnInit() {\n
-    \t\tthis.values$ = this.db.collection<Entry>('entries')\n
-    \t\t\t.where([\n
+    \t\tthis.values$ = this.db.collection
+    <Entry>('entries')\n
+      \t\t\t.where([\n
       \t\t\t\t[['content', 'StartsWith', 'test'], 'and', ['content', 'EndsWith', 'V']],\n
       \t\t\t\t'or',\n
       \t\t\t\t[['content', 'StartsWith', 'var'], 'and', ['content', 'EndsWith', '2']]\n
-    \t\t\t])\n
-    \t\t\t.values();\n
-    \t}\n
-    }
-    ]]>
+      \t\t\t])\n
+      \t\t\t.values();\n
+      \t}\n
+      }
+      ]]>
   </div>
 </app-doc>
 

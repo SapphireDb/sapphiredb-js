@@ -46,9 +46,23 @@ export class QueryAuthComponent implements OnInit {
 
   add(collection$: Observable<DefaultCollection<any>>) {
     collection$.pipe(take(1)).subscribe(collection => {
-      collection.add({
-        content: 'This is a test value'
-      });
+      if (collection$ === this.customFunctionPerEntryValuesCollection$) {
+        collection.add({
+          content: 'Test 1'
+        });
+      } else {
+        collection.add({
+          content: 'This is a test value'
+        });
+      }
+
+      if (collection$ === this.queryFieldsCollection$) {
+        collection.add({
+          content: 'Test 1',
+          content2: 'Test 2',
+          content3: 'Test 3'
+        });
+      }
     });
   }
 

@@ -20,3 +20,85 @@
 </div>
 
 <p>The usage equals the usage of the <code>[QueryAuth]</code>-Attribute. Check out the <a routerLink="../query-auth">Documentation for Query</a></p>
+
+<h2>Demo</h2>
+
+<app-current-user></app-current-user>
+
+<div class="card">
+  <div class="card-content p-5">
+    <div *ngFor="let value of updateValues$ | async">
+      {{ value | json }}
+      <button m4-button (click)="update(updateCollection$, value)"><span class="mif-pencil"></span></button>
+      <button m4-button (click)="remove(updateCollection$, value)"><span class="mif-cross"></span></button>
+    </div>
+    <button m4-button (click)="add(updateCollection$)">Add</button>
+  </div>
+</div>
+
+<p>
+  This small demo combines all auth mechanisms at once.<br>
+  The model itself is marked as <code>[Updatable]</code>. That means that all fields of the model can get updated.<br>
+  It also has the attribute <code>[UpdateAuth]</code>. The result is, that only authenticated users that are verified by the policy <b>requireUser</b> can update properties of the model.
+  The model has three properties that are only updatable under certain conditions:<br>
+  1. <code>RequiresUser</code>: This property has no extra condition and is updatable when all requirements for the model are met<br>
+  2. <code>CustomFunction</code>: This property is marked with a custom function to check if it is updatable. It is only updatable when the property <code>RequiresUser</code> has the value <b>Yes</b>.<br>
+  3. <code>RequiresAdmin</code>: This property is marked as only updatable when the policy <b>requireAdmin</b> is met. Only users in role <b>admin</b> can update this value.
+</p>
+
+<m4-panel title="Source" [collapsible]="true" [collapsed]="true">
+  <app-doc [showContent]="false">
+    <div lang>
+      <![CDATA[
+      \f:(csharp:Model.cs)
+      [Updatable]\n
+      [UpdateAuth("requireUser")]\n
+      public class UpdateExample : Base\n
+      {\n
+        \tpublic string RequiresUser { get; set; }\n\n
+
+        \t[UpdateAuth(functionName: nameof(IsAllowed))]\n
+        \tpublic string CustomFunction { get; set; }\n\n
+
+        \tprivate bool IsAllowed()\n
+        \t{\n
+          \t\treturn RequiresUser == "Yes";\n
+        \t}\n\n
+
+        \t[UpdateAuth("requireAdmin")]\n
+        \tpublic string RequiresAdmin { get; set; }\n
+      }
+
+      \f:(csharp:Startup.cs)
+      public void ConfigureServices(IServiceCollection services)\n
+      {\n
+        \tservices.AddAuthorization(config =>\n
+        \t{\n
+          \t\tconfig.AddPolicy("requireAdmin", b => b.RequireRole("admin"));\n
+          \t\tconfig.AddPolicy("requireUser", b => b.RequireRole("user"));\n
+      \t});\n
+      }
+
+      \f:(typescript:example.component.ts)
+      export class QueryAuthComponent implements OnInit {\n
+        \tvalues$: Observable<any>;\n\n
+
+        \tconstructor(private db: SapphireDb) {}\n\n
+
+        \tngOnInit() {\n
+      \t\tthis.values$ = this.db.collection('UpdateExamples', 'AuthDemo').values();\n
+      \t}\n\n
+
+        \tupdate(collection$: Observable<DefaultCollection<any>>, value: any) {\n
+          \t\tthis.db.collection('UpdateExamples', 'AuthDemo').update({\n
+            \t\t\t...value,\n
+            \t\t\trequiresUser: 'No',\n
+            \t\t\tcustomFunction: 'test 123',\n
+            \t\t\trequiresAdmin: 'Updated'\n
+          \t\t});\n
+        \t}\n
+      }
+      ]]>
+    </div>
+  </app-doc>
+</m4-panel>
