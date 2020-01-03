@@ -117,7 +117,7 @@ export class ConnectionManagerService {
   }
 
   private createHotCommandObservable(referenceObservable$: Observable<ResponseBase>, command: CommandBase): Observable<ResponseBase> {
-    const makeHotSubject$ = new ReplaySubject<ResponseBase>(0);
+    const makeHotSubject$ = new ReplaySubject<ResponseBase>(1);
     referenceObservable$.subscribe(c => makeHotSubject$.next(c), ex => makeHotSubject$.error(ex));
     return makeHotSubject$.asObservable().pipe(finalize(() => {
       delete this.commandReferences[command.referenceId];
@@ -125,7 +125,7 @@ export class ConnectionManagerService {
   }
 
   public sendCommand(command: CommandBase, keep?: boolean, onlySend?: boolean): Observable<ResponseBase> {
-    const referenceSubject = new ReplaySubject<ResponseBase>(0);
+    const referenceSubject = new ReplaySubject<ResponseBase>(1);
 
     this.connection.send(command, this.storeSubscribeCommands(command));
 
@@ -142,7 +142,7 @@ export class ConnectionManagerService {
   public registerServerMessageHandler(): Observable<ResponseBase> {
     const guid = GuidHelper.generateGuid();
 
-    const referenceSubject = new ReplaySubject<ResponseBase>(0);
+    const referenceSubject = new ReplaySubject<ResponseBase>(1);
     this.serverMessageHandler[guid] = { subject$: referenceSubject, keep: true };
 
     return referenceSubject.pipe(finalize(() => {

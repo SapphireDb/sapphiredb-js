@@ -39,7 +39,6 @@
 <p>This example maps the content of the before used entries to an integer</p>
 
 <app-doc>
-
   <div *ngFor="let value of values$ | async; let index = index">
     <span [innerText]="value | json"></span>
     <button m4-button (click)="update(value)"><span class="mif-pencil"></span></button>

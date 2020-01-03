@@ -18,7 +18,7 @@ export class CollectionInformationService {
     const contextName = collectionNameParts.length === 2 ? collectionNameParts[0] : 'default';
 
     if (!this.collectionInformation[`${contextName}:${collectionName}`]) {
-      const subject$ = new ReplaySubject<InfoResponse>(null);
+      const subject$ = new ReplaySubject<InfoResponse>(1);
       this.collectionInformation[`${contextName}:${collectionName}`] = subject$;
       this.connectionManagerService.sendCommand(new InfoCommand(collectionName, contextName)).subscribe((info: InfoResponse) => {
         subject$.next(info);

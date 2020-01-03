@@ -6,7 +6,7 @@ import {DeleteResponse} from '../command/delete/delete-response';
 import {UpdateCommand} from '../command/update/update-command';
 import {UpdateResponse} from '../command/update/update-response';
 import {DeleteCommand} from '../command/delete/delete-command';
-import {finalize, map, share, switchMap, take} from 'rxjs/operators';
+import {finalize, map, publishReplay, refCount, share, switchMap, take} from 'rxjs/operators';
 import {InfoResponse} from '../command/info/info-response';
 import {QueryCommand} from '../command/query/query-command';
 import {QueryResponse} from '../command/query/query-response';
@@ -64,16 +64,7 @@ export class CollectionBase<T, Y> {
   public values(): Observable<Y> {
     const collectionValue = this.createValuesSubscription(this.collectionName, this.contextName,
       this.collectionInformation, this.prefilters);
-    return this.createCollectionObservable$(collectionValue).pipe(
-      map((values: Y) => {
-        if (this.classType && this.classTransformer) {
-          return <Y><any>this.classTransformer.plainToClass(values, this.classType);
-        }
-
-        return values;
-      }),
-      share()
-    );
+    return this.createCollectionObservable$(collectionValue);
   }
 
   /**
@@ -210,8 +201,14 @@ export class CollectionBase<T, Y> {
           array = prefilter.execute(array);
         }
 
+        if (this.classType && this.classTransformer) {
+          return <Y><any>this.classTransformer.plainToClass(array, this.classType);
+        }
+
         return array;
-      })
+      }),
+      publishReplay(1),
+      refCount()
     );
   }
 }

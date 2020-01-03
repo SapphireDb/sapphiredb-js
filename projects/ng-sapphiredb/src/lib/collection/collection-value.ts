@@ -7,7 +7,7 @@ export class CollectionValue<T> {
 
   constructor(referenceId: string) {
     this.referenceId = referenceId;
-    this.subject = new ReplaySubject<T[]>(null);
+    this.subject = new ReplaySubject<T[]>(1);
   }
 
   public setSubscription(socketSubscription: Subscription) {
