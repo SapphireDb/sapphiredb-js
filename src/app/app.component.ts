@@ -1,7 +1,8 @@
 import {Component} from '@angular/core';
 import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
-import {ActivityService} from 'ng-metro4';
-import {debounceTime, filter} from 'rxjs/operators';
+import {ActivityService, DialogService} from 'ng-metro4';
+import {debounceTime, filter, switchMap} from 'rxjs/operators';
+import {SwUpdate} from '@angular/service-worker';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,8 @@ import {debounceTime, filter} from 'rxjs/operators';
   styleUrls: ['./app.component.less']
 })
 export class AppComponent {
-  constructor(public router: Router, private activityService: ActivityService) {
+  constructor(public router: Router, private activityService: ActivityService, private swUpdate: SwUpdate,
+              private dialogService: DialogService) {
     let activity;
 
     this.router.events.pipe(
@@ -38,5 +40,14 @@ export class AppComponent {
           }
         }
       });
+
+    this.swUpdate.available.pipe(
+      switchMap(() => this.dialogService.confirm('New version',
+        'A new version of the application is available. Reload to update?', 'Yes', 'No'))
+    ).subscribe((reload: boolean) => {
+      if (reload) {
+        location.reload();
+      }
+    });
   }
 }
