@@ -5,36 +5,43 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {CommandBase} from '../command/command-base';
 import {ResponseBase} from '../command/response-base';
 import {NgZone} from '@angular/core';
-import {ConnectionState} from '../models/types';
+import {ConnectionInformation, ConnectionState} from '../models/types';
 import {ConnectionResponse} from '../command/connection/connection-response';
+import {SapphireDbOptions} from '../models/sapphire-db-options';
 
 export class SseConnection extends ConnectionBase {
+  private sseConnectionString: string;
+  private apiConnectionString: string;
+
+  private options: SapphireDbOptions;
+
+  private headers: { key: string, secret: string, connectionId?: string, Authorization?: string };
+
   private eventSource: EventSource;
-  private connectionData: ConnectionResponse;
+
+  private errorCount = 0;
 
   constructor(private httpClient: HttpClient, private ngZone: NgZone) {
     super();
   }
 
-  connect$(): Observable<ConnectionState> {
-    if (this.readyState$.value === 'disconnected') {
-      this.readyState$.next('connecting');
+  connect$(): Observable<ConnectionInformation> {
+    if (this.connectionInformation$.value.readyState === 'disconnected') {
+      this.updateReadyState('connecting');
 
-      const connectionString = this.createConnectionString();
-      this.eventSource = new EventSource(connectionString);
-
-      this.eventSource.onopen = () => {
-
-      };
+      this.eventSource = new EventSource(this.sseConnectionString);
 
       this.eventSource.onmessage = (messageEvent) => {
+        console.log(messageEvent);
+        this.errorCount = 0;
         this.ngZone.run(() => {
           const message: ResponseBase = JSON.parse(messageEvent.data);
 
           if (message.responseType === 'ConnectionResponse') {
-            this.connectionData = <ConnectionResponse>message;
-            this.connectionResponseHandler(this.connectionData);
-            this.readyState$.next('connected');
+            const connectionData = <ConnectionResponse>message;
+            this.headers.connectionId = connectionData.connectionId;
+            this.updateConnectionInformation('connected', connectionData.authTokenValid,
+              this.connectionInformation$.value.authTokenActive, connectionData.connectionId);
             this.openHandler();
           } else {
             this.messageHandler(message);
@@ -43,27 +50,28 @@ export class SseConnection extends ConnectionBase {
       };
 
       this.eventSource.onerror = (error) => {
+        this.errorCount++;
         this.ngZone.run(() => {
-          this.authToken = null;
-          this.readyState$.next('disconnected');
+          // this.updateReadyState('disconnected');
 
           setTimeout(() => {
-            this.connect$();
-          }, 1000);
+            this.setData(this.options);
+          }, this.errorCount === 1 ? 0 : 1000);
         });
       };
     }
 
-    return this.readyState$.asObservable();
+    return this.connectionInformation$.asObservable();
   }
 
   send(object: CommandBase, storedCommand: boolean): Subscription {
-    if (storedCommand && this.readyState$.value !== 'connected') {
+    if (storedCommand && this.connectionInformation$.value.readyState !== 'connected') {
       return null;
     }
 
     return this.connect$().pipe(
-      filter((state) => state === 'connected' && this.eventSource.readyState === EventSource.OPEN),
+      takeWhile((connectionInformation) => connectionInformation.readyState === 'connecting' || connectionInformation.readyState === 'connected' || !storedCommand),
+      filter((connectionInformation) => connectionInformation.readyState === 'connected' && this.eventSource.readyState === EventSource.OPEN),
       take(1)
     ).subscribe(() => {
       this.makePost(object);
@@ -71,15 +79,10 @@ export class SseConnection extends ConnectionBase {
   }
 
   private makePost(command: CommandBase) {
-    const url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/sapphire/api/${command.commandType}`;
+    const url = `${this.apiConnectionString}${command.commandType}`;
 
     this.httpClient.post(url, command, {
-      headers: {
-        key: this.options.apiKey ? this.options.apiKey : '',
-        secret: this.options.apiSecret ? this.options.apiSecret : '',
-        connectionId: this.connectionData.connectionId,
-        Authorization: `Bearer ${this.authToken}`
-      }
+      headers: this.headers
     }).subscribe((response: ResponseBase) => {
       if (!!response) {
         this.ngZone.run(() => {
@@ -95,29 +98,41 @@ export class SseConnection extends ConnectionBase {
     });
   }
 
-  dataUpdated() {
+  setData(options: SapphireDbOptions, authToken?: string) {
     if (this.eventSource) {
       this.eventSource.close();
     }
 
-    this.readyState$.next('disconnected');
+    this.updateConnectionInformation('disconnected', !!authToken, !!authToken, null);
+    this.setConnectionData(options, authToken);
 
     setTimeout(() => {
       this.connect$();
     }, 30);
   }
 
-  private createConnectionString(): string {
-    let url = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/sapphire/sse?`;
+  private setConnectionData(options: SapphireDbOptions, authToken?: string) {
+    let sseConnectionString = `${options.useSsl ? 'https' : 'http'}://${options.serverBaseUrl}/sapphire/sse?`;
 
-    if (this.options.apiKey && this.options.apiSecret) {
-      url += `key=${this.options.apiKey}&secret=${this.options.apiSecret}&`;
+    if (options.apiKey && options.apiSecret) {
+      sseConnectionString += `key=${options.apiKey}&secret=${options.apiSecret}&`;
     }
 
-    if (this.authToken) {
-      url += `authorization=${this.authToken}`;
+    if (!!authToken) {
+      sseConnectionString += `authorization=${authToken}`;
     }
 
-    return url;
+    this.headers = {
+      key: options.apiKey ? options.apiKey : '',
+      secret: options.apiSecret ? options.apiSecret : ''
+    };
+
+    if (!!authToken) {
+      this.headers.Authorization = `Bearer ${authToken}`;
+    }
+
+    this.options = options;
+    this.sseConnectionString = sseConnectionString;
+    this.apiConnectionString = `${options.useSsl ? 'https' : 'http'}://${options.serverBaseUrl}/sapphire/api/`;
   }
 }

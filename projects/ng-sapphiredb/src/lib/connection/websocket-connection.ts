@@ -3,25 +3,26 @@ import {SapphireDbOptions} from '../models/sapphire-db-options';
 import {ResponseBase} from '../command/response-base';
 import {CommandBase} from '../command/command-base';
 import {ConnectionResponse} from '../command/connection/connection-response';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {filter, take, takeWhile} from 'rxjs/operators';
-import {ConnectionState} from '../models/types';
+import {ConnectionInformation} from '../models/types';
 
 export class WebsocketConnection extends ConnectionBase {
+  private socketConnectionString: string;
   private socket: WebSocket;
 
-  private connect$(): Observable<ConnectionState> {
-    if (this.readyState$.value === 'disconnected') {
-      this.readyState$.next('connecting');
+  private connect$(): Observable<ConnectionInformation> {
+    if (this.connectionInformation$.value.readyState === 'disconnected') {
+      this.updateReadyState('connecting');
 
-      const connectionString = this.createConnectionString();
-      this.socket = new WebSocket(connectionString);
+      this.socket = new WebSocket(this.socketConnectionString);
 
       this.socket.onmessage = (msg: MessageEvent) => {
         const message: ResponseBase = JSON.parse(msg.data);
         if (message.responseType === 'ConnectionResponse') {
-          this.connectionResponseHandler(<ConnectionResponse>message);
-          this.readyState$.next('connected');
+          const connectionResponse = <ConnectionResponse>message;
+          this.updateConnectionInformation('connected', connectionResponse.authTokenValid,
+            this.connectionInformation$.value.authTokenActive, connectionResponse.connectionId);
           this.openHandler();
         } else {
           this.messageHandler(message);
@@ -29,7 +30,7 @@ export class WebsocketConnection extends ConnectionBase {
       };
 
       this.socket.onclose = () => {
-        this.readyState$.next('disconnected');
+        this.updateReadyState('disconnected');
 
         setTimeout(() => {
           this.connect$();
@@ -41,46 +42,47 @@ export class WebsocketConnection extends ConnectionBase {
       };
     }
 
-    return this.readyState$.asObservable();
+    return this.connectionInformation$.asObservable();
   }
 
   send(object: CommandBase, storedCommand: boolean): Subscription {
-    if (storedCommand && this.readyState$.value !== 'connected') {
+    if (storedCommand && this.connectionInformation$.value.readyState !== 'connected') {
       return;
     }
 
     return this.connect$().pipe(
-      takeWhile((state) => state !== 'disconnected' || !storedCommand),
-      filter((state) => state === 'connected' && this.socket.readyState === WebSocket.OPEN),
+      takeWhile((connectionInformation) => connectionInformation.readyState !== 'disconnected' || !storedCommand),
+      filter((connectionInformation) => connectionInformation.readyState === 'connected' && this.socket.readyState === WebSocket.OPEN),
       take(1)
     ).subscribe(() => {
       this.socket.send(JSON.stringify(object));
     });
   }
 
-  dataUpdated() {
+  setData(options: SapphireDbOptions, authToken?: string) {
     if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
       this.socket.close();
     }
 
-    this.readyState$.next('disconnected');
+    this.updateConnectionInformation('disconnected', !!authToken, !!authToken, null);
+    this.createConnectionString(options, authToken);
 
     setTimeout(() => {
       this.connect$();
     }, 10);
   }
 
-  private createConnectionString(): string {
-    let url = `${this.options.useSsl ? 'wss' : 'ws'}://${this.options.serverBaseUrl}/sapphire/socket?`;
+  private createConnectionString(options: SapphireDbOptions, authToken?: string) {
+    let url = `${options.useSsl ? 'wss' : 'ws'}://${options.serverBaseUrl}/sapphire/socket?`;
 
-    if (this.options.apiSecret && this.options.apiKey) {
-      url += `key=${this.options.apiKey}&secret=${this.options.apiSecret}&`;
+    if (options.apiSecret && options.apiKey) {
+      url += `key=${options.apiKey}&secret=${options.apiSecret}&`;
     }
 
-    if (this.authToken) {
-      url += `authorization=${this.authToken}`;
+    if (!!authToken) {
+      url += `authorization=${authToken}`;
     }
 
-    return url;
+    this.socketConnectionString = url;
   }
 }

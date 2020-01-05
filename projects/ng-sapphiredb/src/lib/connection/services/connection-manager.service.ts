@@ -25,23 +25,19 @@ interface SubscribeCommandInfo extends CommandBase {
 
 @Injectable()
 export class ConnectionManagerService {
-  private authToken: string;
-
-  private connection: ConnectionBase;
+  public connection: ConnectionBase;
 
   private storedCommandStorage: SubscribeCommandInfo[] = [];
 
-  private commandReferences: CommandReferences  = {};
+  private commandReferences: CommandReferences = {};
   private serverMessageHandler: CommandReferences = {};
 
-  public connectionData$: BehaviorSubject<ConnectionResponse>;
-  public status$: BehaviorSubject<ConnectionState>;
+  // public connectionData$ = new BehaviorSubject<{ connectionId: string, authTokenValid: boolean, authTokenActive: boolean }>(null);
+  // public status$: BehaviorSubject<ConnectionState>;
 
   constructor(@Inject(SAPPHIRE_DB_OPTIONS) private options: SapphireDbOptions,
               private httpClient: HttpClient,
               private ngZone: NgZone) {
-    this.connectionData$ = new BehaviorSubject<ConnectionResponse>(null);
-
     if (this.options.serverBaseUrl == null) {
       this.options.serverBaseUrl = window.location.host;
       this.options.useSsl = window.location.protocol === 'https:';
@@ -50,8 +46,8 @@ export class ConnectionManagerService {
     if (!this.options.connectionType) {
       if (!!window['Websocket']) {
         this.options.connectionType = 'websocket';
-      } else if (!!window['EventSource']) {
-        this.options.connectionType = 'sse';
+      // } else if (!!window['EventSource']) {
+      //   this.options.connectionType = 'sse';
       } else {
         this.options.connectionType = 'poll';
       }
@@ -62,12 +58,13 @@ export class ConnectionManagerService {
     }
 
     switch (this.options.connectionType) {
+      default:
       case 'websocket':
         this.connection = new WebsocketConnection();
         break;
-      case 'sse':
-        this.connection = new SseConnection(this.httpClient, this.ngZone);
-        break;
+      // case 'sse':
+      //   this.connection = new SseConnection(this.httpClient, this.ngZone);
+      //   break;
       case 'poll':
         this.connection = new PollConnection(this.httpClient, this.ngZone);
         break;
@@ -76,7 +73,7 @@ export class ConnectionManagerService {
     if (this.connection) {
       this.connection.openHandler = () => {
         this.storedCommandStorage.forEach(cmd => {
-          if (!cmd.sendWithAuthToken || !!this.authToken) {
+          if (!cmd.sendWithAuthToken || this.connection.connectionInformation$.value.authTokenActive) {
             delete cmd.sendWithAuthToken;
             this.connection.send(cmd, true);
           }
@@ -87,15 +84,16 @@ export class ConnectionManagerService {
         this.handleResponse(message);
       };
 
-      this.connection.connectionResponseHandler = (response: ConnectionResponse) => {
-        this.connectionData$.next(response);
-      };
+      // this.connection.connectionResponseHandler = (response: ConnectionResponse, authTokenActive: boolean) => {
+      //   this.connectionData$.next({
+      //     connectionId: response.connectionId,
+      //     authTokenValid: response.authTokenValid,
+      //     authTokenActive: authTokenActive
+      //   });
+      // };
 
-      this.status$ = this.connection.readyState$;
-
-      this.connection.authToken = this.authToken;
-      this.connection.options = this.options;
-      this.connection.dataUpdated();
+      // this.status$ = this.connection.readyState$;
+      this.connection.setData(this.options, null);
     }
   }
 
@@ -109,7 +107,7 @@ export class ConnectionManagerService {
       if (this.storedCommandStorage.findIndex(c => c.referenceId === command.referenceId) === -1) {
         this.storedCommandStorage.push({
           ...command,
-          sendWithAuthToken: !!this.authToken
+          sendWithAuthToken: this.connection.connectionInformation$.value.authTokenActive
         });
         return true;
       }
@@ -127,7 +125,7 @@ export class ConnectionManagerService {
 
     const referenceSubject = new ReplaySubject<ResponseBase>(1);
 
-    this.commandReferences[command.referenceId] = { subject$: referenceSubject, keep: keep };
+    this.commandReferences[command.referenceId] = {subject$: referenceSubject, keep: keep};
     return referenceSubject.asObservable().pipe(
       finalize(() => {
         referenceSubject.complete();
@@ -142,7 +140,7 @@ export class ConnectionManagerService {
     const guid = GuidHelper.generateGuid();
 
     const referenceSubject = new ReplaySubject<ResponseBase>(1);
-    this.serverMessageHandler[guid] = { subject$: referenceSubject, keep: true };
+    this.serverMessageHandler[guid] = {subject$: referenceSubject, keep: true};
 
     return referenceSubject.pipe(finalize(() => {
       delete this.serverMessageHandler[guid];
@@ -169,13 +167,8 @@ export class ConnectionManagerService {
 
       if (commandReference) {
         if (response.error) {
-          commandReference.subject$.error(response.error);
-        }
-
-        commandReference.subject$.next(response);
-
-        if (commandReference.keep !== true) {
           try {
+            commandReference.subject$.error(response.error);
             commandReference.subject$.complete();
             commandReference.subject$.unsubscribe();
           } catch (ignored) {
@@ -183,21 +176,30 @@ export class ConnectionManagerService {
           }
 
           delete this.commandReferences[response.referenceId];
+        } else {
+          commandReference.subject$.next(response);
+
+          if (commandReference.keep !== true) {
+            try {
+              commandReference.subject$.complete();
+              commandReference.subject$.unsubscribe();
+            } catch (ignored) {
+              // Ignored. Throws unwanted exception when no subscriber
+            }
+
+            delete this.commandReferences[response.referenceId];
+          }
         }
       }
     }
   }
 
   public setAuthToken(authToken?: string) {
-    this.connectionData$.next(null);
-    this.authToken = authToken;
-    this.connection.authToken = this.authToken;
-
-    this.connection.dataUpdated();
+    this.connection.setData(this.options, authToken);
   }
 
   public reset() {
     this.storedCommandStorage = [];
-    this.connection.dataUpdated();
+    this.connection.setData(this.options, null);
   }
 }

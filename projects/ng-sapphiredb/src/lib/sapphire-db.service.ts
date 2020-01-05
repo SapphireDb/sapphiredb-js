@@ -8,7 +8,7 @@ import {ActionResult} from './modules/action/action-result';
 import {Messaging} from './modules/messaging/messaging';
 import {DefaultCollection} from './collection/default-collection';
 import {ConnectionManagerService} from './connection/services/connection-manager.service';
-import {ClassType} from './models/types';
+import {ClassType, ConnectionInformation} from './models/types';
 
 @Injectable()
 export class SapphireDb {
@@ -53,10 +53,10 @@ export class SapphireDb {
   }
 
   /**
-   * Returns the connection status
+   * Returns the connection information (state, id, auth token)
    */
-  public getStatus$(): Observable<string> {
-    return this.connectionManagerService.status$.asObservable();
+  public getConnectionInformation$(): Observable<ConnectionInformation> {
+    return this.connectionManagerService.connection.connectionInformation$.asObservable();
   }
 
   /**
