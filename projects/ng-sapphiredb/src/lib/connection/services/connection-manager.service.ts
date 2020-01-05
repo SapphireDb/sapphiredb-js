@@ -9,7 +9,7 @@ import {SubscribeCommand} from '../../command/subscribe/subscribe-command';
 import {SubscribeMessageCommand} from '../../command/subscribe-message/subscribe-message-command';
 import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
 import {ResponseBase} from '../../command/response-base';
-import {finalize} from 'rxjs/operators';
+import {finalize, share} from 'rxjs/operators';
 import {GuidHelper} from '../../helper/guid-helper';
 import {MessageResponse} from '../../command/message/message-response';
 import {ConnectionResponse} from '../../command/connection/connection-response';
@@ -48,10 +48,10 @@ export class ConnectionManagerService {
     }
 
     if (!this.options.connectionType) {
-      if (!!window['EventSource']) {
-        this.options.connectionType = 'sse';
-      } else if (!!window['Websocket']) {
+      if (!!window['Websocket']) {
         this.options.connectionType = 'websocket';
+      } else if (!!window['EventSource']) {
+        this.options.connectionType = 'sse';
       } else {
         this.options.connectionType = 'poll';
       }
@@ -103,7 +103,9 @@ export class ConnectionManagerService {
     if (command instanceof UnsubscribeCommand || command instanceof UnsubscribeMessageCommand) {
       this.storedCommandStorage = this.storedCommandStorage.filter(cs => cs.referenceId !== command.referenceId);
       return true;
-    } else if (command instanceof SubscribeCommand || command instanceof SubscribeMessageCommand) {
+    }
+
+    if (command instanceof SubscribeCommand || command instanceof SubscribeMessageCommand) {
       if (this.storedCommandStorage.findIndex(c => c.referenceId === command.referenceId) === -1) {
         this.storedCommandStorage.push({
           ...command,
@@ -116,27 +118,24 @@ export class ConnectionManagerService {
     return false;
   }
 
-  private createHotCommandObservable(referenceObservable$: Observable<ResponseBase>, command: CommandBase): Observable<ResponseBase> {
-    const makeHotSubject$ = new ReplaySubject<ResponseBase>(1);
-    referenceObservable$.subscribe(c => makeHotSubject$.next(c), ex => makeHotSubject$.error(ex));
-    return makeHotSubject$.asObservable().pipe(finalize(() => {
-      delete this.commandReferences[command.referenceId];
-    }));
-  }
-
   public sendCommand(command: CommandBase, keep?: boolean, onlySend?: boolean): Observable<ResponseBase> {
-    const referenceSubject = new ReplaySubject<ResponseBase>(1);
-
     this.connection.send(command, this.storeSubscribeCommands(command));
 
     if (onlySend === true) {
-      referenceSubject.complete();
-      referenceSubject.unsubscribe();
       return of(null);
-    } else {
-      this.commandReferences[command.referenceId] = { subject$: referenceSubject, keep: keep };
-      return this.createHotCommandObservable(referenceSubject, command);
     }
+
+    const referenceSubject = new ReplaySubject<ResponseBase>(1);
+
+    this.commandReferences[command.referenceId] = { subject$: referenceSubject, keep: keep };
+    return referenceSubject.asObservable().pipe(
+      finalize(() => {
+        referenceSubject.complete();
+        referenceSubject.unsubscribe();
+        delete this.commandReferences[command.referenceId];
+      }),
+      share()
+    );
   }
 
   public registerServerMessageHandler(): Observable<ResponseBase> {
@@ -176,7 +175,12 @@ export class ConnectionManagerService {
         commandReference.subject$.next(response);
 
         if (commandReference.keep !== true) {
-          commandReference.subject$.complete();
+          try {
+            commandReference.subject$.complete();
+            commandReference.subject$.unsubscribe();
+          } catch (ignored) {
+            // Ignored. Throws unwanted exception when no subscriber
+          }
 
           delete this.commandReferences[response.referenceId];
         }

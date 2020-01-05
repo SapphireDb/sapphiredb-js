@@ -117,6 +117,6 @@
 
   <blockquote *ngFor="let message of messages$ | async" [class.right-side]="message.from === from">
     <p>{{ message.content }}</p>
-    <small>{{ message.from }} {{ message.createdOn | date:'hh:mm dd.MM.yyyy' }}</small>
+    <small>{{ message.from }} {{ message.createdOn | date:'HH:mm dd.MM.yyyy' }}</small>
   </blockquote>
 </ng-container>

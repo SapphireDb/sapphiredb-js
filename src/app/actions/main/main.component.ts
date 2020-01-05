@@ -14,8 +14,7 @@ export class MainComponent implements OnInit {
 
   constructor(private db: SapphireDb) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   execute() {
     this.rangeValue$ = this.db.execute('example', 'AsyncDelay').pipe(
