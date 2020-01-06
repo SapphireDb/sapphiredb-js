@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, ReplaySubject} from 'rxjs';
 import {DialogService} from 'ng-metro4';
 import {SapphireDb} from 'ng-sapphiredb';
+import {switchMap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-where',
@@ -9,6 +10,9 @@ import {SapphireDb} from 'ng-sapphiredb';
   styleUrls: ['./where.component.less']
 })
 export class WhereComponent implements OnInit {
+  id: string;
+  id$ = new ReplaySubject<string>();
+  valueById$: Observable<any>;
 
   values$: Observable<any>;
   values2$: Observable<any>;
@@ -27,6 +31,12 @@ export class WhereComponent implements OnInit {
         [['content', 'StartsWith', 'var'], 'and', ['content', 'EndsWith', '2']]
       ])
       .values();
+
+    this.valueById$ = this.id$.pipe(
+      switchMap((id: any) => {
+        return this.db.collection<any>('demo.entries').where(['id', '==', id]).first().values();
+      })
+    );
   }
 
   addValue() {

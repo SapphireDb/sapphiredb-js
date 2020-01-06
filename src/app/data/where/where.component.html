@@ -89,4 +89,33 @@
   </div>
 </app-doc>
 
+<h2>Example - Get value by id</h2>
+
+<div>
+  <m4-input [search-button]="true" (search-button-click)="id$.next(id)" [(ngModel)]="id"></m4-input>
+  <span [innerText]="valueById$ | async | json"></span>
+</div>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(typescript:demo.component.ts)
+    export class DemoComponent implements OnInit {\n
+      \t\tid$ = new ReplaySubject<string>();\n
+      \t\tvalueById$: Observable<any>;\n\n
+
+    \tconstructor(private db: SapphireDb) { }\n\n
+
+      \tngOnInit() {\n
+        \t\tthis.valueById$ = this.id$.pipe(\n
+          \t\t\tswitchMap((id: any) => {\n
+            \t\t\t\treturn this.db.collection<any>('demo.entries').where(['id', '==', id]).first().values();\n
+          \t\t\t})\n
+        \t\t);\n
+      \t}\n
+      }
+      ]]>
+  </div>
+</app-doc>
+
 <a routerLink="../order">Continue with order prefilters <span class="mif-arrow-right"></span></a>
