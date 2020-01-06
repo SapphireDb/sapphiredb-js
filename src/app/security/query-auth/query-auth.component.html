@@ -17,6 +17,9 @@
     </li>
     <li><b>Function name</b>: You can optionally pass the name of a function in the class that has to return a boolean. The function will get executed to check if the user is allowed for the action.</li>
   </ol>
+
+  <b>Multiple attributes</b>: You can define multiple Attributes for each model. Only one of the attributes defined condition has to succeed.<br>
+  <b>Heredity</b>: If you define AuthAttributes for a base class all sub classes will inherit this attributes until custom attributes of the same type are defined in the subclasses.
 </div>
 
 <h2>Demo</h2>
@@ -132,11 +135,17 @@
       <![CDATA[
       \f:(csharp:Model.cs)
       [QueryAuth(functionName: "CanQuery")]\n
+      [QueryAuth(functionName: "CanQuery2")]\n
       public class CustomFunctionForQuery : Base\n
       {\n
         \tpublic static bool CanQuery(HttpInformation httpInformation)\n
         \t{\n
           \t\treturn httpInformation.User.IsInRole("admin");\n
+        \t}\n\n
+
+        \tpublic static bool CanQuery2(HttpInformation httpInformation)\n
+        \t{\n
+          \t\treturn httpInformation.User.IsInRole("user");\n
         \t}\n\n
 
         \tpublic string Content { get; set; }\n
@@ -165,6 +174,10 @@
 
 <p>This example is a bit special. The user is allways allowed to query information and the check for permission is made for each entry. All entries that are not allowed to get queried will just get omitted.</p>
 
+<p>
+  This example also demonstrates how to use multiple auth attributes. Both attributes define a different condition and only one has to succeed.
+</p>
+
 <div class="card">
   <div class="card-content p-5">
     <div *ngFor="let value of customFunctionPerEntryValues$ | async">
@@ -181,12 +194,18 @@
     <div lang>
       <![CDATA[
       \f:(csharp:Model.cs)
-      [QueryAuth(functionName: "CanQuery", perEntry: true)]\n
+      [QueryEntryAuth(functionName: "CanQuery")]\n
+      [QueryEntryAuth(functionName: "CanQuery2")]\n
       public class CustomFunctionPerEntryForQuery : Base\n
       {\n
         \tpublic bool CanQuery(HttpInformation httpInformation)\n
         \t{\n
-          \t\treturn httpInformation.User.IsInRole("admin") && Content == "Test 1";\n
+          \t\treturn Content == "Test 1";\n
+        \t}\n\n
+
+        \tpublic bool CanQuery(HttpInformation httpInformation)\n
+        \t{\n
+          \t\treturn Content == "Test 2";\n
         \t}\n\n
 
         \tpublic string Content { get; set; }\n

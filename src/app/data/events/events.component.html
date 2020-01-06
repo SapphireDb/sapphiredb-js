@@ -18,55 +18,106 @@
   </ul>
 </div>
 
-<h2>Example</h2>
-
-<p>
-  In this example the <code>OnCreate</code>-method is called before the model gets filled with values.
-  This example ensures that the model has the value <code>CreatedOn</code>.
-</p>
-
-<app-doc [showContent]="false">
-  <div lang>
-    <![CDATA[
-    \f:(csharp:Log.cs)
-    [CreateEvent("OnCreate")]\n
-    public class Log : Base\n
-    {\n
-      \tpublic DateTime CreatedOn { get; set; }\n\n
-
-      \tpublic string Message { get; set; }\n\n
-
-      \tpublic void OnCreate()\n
-      \t{\n
-        \t\tCreatedOn = DateTime.UtcNow;\n
-      \t}\n
-    }
-    ]]>
-  </div>
-</app-doc>
-
-<h2>Dependency Injection</h2>
-
 <div class="remark success">
   You can use dependency injection for the method. SapphireDb will provide you a <code>HttpInformation</code>-object with information about the request and the instances found in the <code>DI-Container</code>.
 </div>
 
-<app-doc [showContent]="false">
-  <div lang>
-    <![CDATA[
-    \f:(csharp:Log.cs)
-    [CreateEvent("OnCreate")]\n
-    public class Log : Base\n
-    {\n
-      \tpublic DateTime CreatedOn { get; set; }\n\n
+<div class="remark info">
+  Event hooks of base classes get inherited and will also get executed in case of an event.
+</div>
 
-      \tpublic string Message { get; set; }\n\n
+<h2>Example</h2>
 
-      \tpublic void OnCreate(DemoDb db, HttpInformation information)\n
-      \t{\n
-    \t\tCreatedOn = DateTime.UtcNow;\n
-    \t}\n
-    }
-    ]]>
-  </div>
-</app-doc>
+<p>
+  This example demonstrates the use of event attributes.<br>
+  The example has 5 event-methods.<br>
+  Two of the methods update the date fields when the model is created or updated.<br>
+  The other methods create entries in the collection logs for each action.
+</p>
+
+<m4-panel cls-panel="mt-2" [collapsible]="true" [collapsed]="true" title="Source">
+  <app-doc [showContent]="false">
+    <div lang>
+      <![CDATA[
+      \f:(csharp:EventDemo.cs)
+      [CreateEvent(Before = nameof(OnCreate), After = nameof(OnCreated))]\n
+      [UpdateEvent(Before = nameof(OnUpdate), After = nameof(OnUpdated))]\n
+      [RemoveEvent(After = nameof(OnRemoved))]\n
+      public class EventDemo\n
+      {\n
+        \t[Key]\n
+        \tpublic Guid Id { get; set; }\n\n
+
+        \tpublic DateTime CreatedOn { get; set; }\n\n
+
+        \tpublic DateTime UpdatedOn { get; set; }\n\n
+
+        \t[Updatable]\n
+        \tpublic string Content { get; set; }\n\n
+
+        \tprivate void OnCreate()\n
+        \t{\n
+          \t\tCreatedOn = DateTime.Now;\n
+        \t}\n\n
+
+        \tprivate void OnCreated(DemoContext demoContext)\n
+        \t{\n
+          \t\tdemoContext.Logs.Add(new Log()\n
+          \t\t{\n
+            \t\t\tContent = $"Created {Content}"\n
+          \t\t});\n
+          \t\tdemoContext.SaveChanges();\n
+        \t}\n\n
+
+        \tprivate void OnUpdate()\n
+        \t{\n
+          \t\tUpdatedOn = DateTime.Now;\n
+        \t}\n\n
+
+        \tprivate void OnUpdated(DemoContext demoContext)\n
+        \t{\n
+          \t\tdemoContext.Logs.Add(new Log()\n
+          \t\t{\n
+            \t\t\tContent = $"Updated {Content}"\n
+          \t\t});\n
+          \t\tdemoContext.SaveChanges();\n
+        \t}\n\n
+
+        \tprivate void OnRemoved(DemoContext demoContext)\n
+        \t{\n
+          \t\tdemoContext.Logs.Add(new Log()\n
+          \t\t{\n
+            \t\t\tContent = $"Removed {Content}"\n
+          \t\t});\n
+          \t\tdemoContext.SaveChanges();\n
+        \t}\n
+      }
+
+      \f:(csharp:Log.cs)
+      public class Log\n
+      {\n
+        \t[Key]\n
+        \tpublic Guid Id { get; set; }\n\n
+
+        \tpublic string Content { get; set; }\n
+      }
+      ]]>
+    </div>
+  </app-doc>
+</m4-panel>
+
+<h3>Values</h3>
+
+<div *ngFor="let value of values$ | async">
+  <span [innerText]="value | json"></span>
+  <button m4-button (click)="update(value)"><span class="mif-pencil"></span></button>
+  <button m4-button (click)="remove(value)"><span class="mif-cross"></span></button>
+</div>
+
+<button m4-button (click)="create()">Add</button>
+
+<h3>Logs</h3>
+
+<div *ngFor="let log of logs$ | async">
+  {{ log | json }}
+</div>

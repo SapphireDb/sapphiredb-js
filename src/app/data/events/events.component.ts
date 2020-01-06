@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {DefaultCollection, SapphireDb} from 'ng-sapphiredb';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-events',
@@ -7,9 +9,33 @@ import { Component, OnInit } from '@angular/core';
 })
 export class EventsComponent implements OnInit {
 
-  constructor() { }
+  collection: DefaultCollection<any>;
+  values$: Observable<any[]>;
+  logs$: Observable<any[]>;
+
+  constructor(private db: SapphireDb) { }
 
   ngOnInit() {
+    this.collection = this.db.collection('demo.eventDemos');
+    this.values$ = this.collection.values();
+    this.logs$ = this.db.collection('demo.logs').values();
+  }
+
+  create() {
+    this.collection.add({
+      content: 'Test 123'
+    });
+  }
+
+  update(value: any) {
+    this.collection.update({
+      ...value,
+      content: 'Updated content'
+    });
+  }
+
+  remove(value: any) {
+    this.collection.remove(value);
   }
 
 }

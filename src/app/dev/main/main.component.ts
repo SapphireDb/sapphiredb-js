@@ -15,7 +15,7 @@ export class MainComponent implements OnInit {
 
   constructor(private db: SapphireDb, private router: Router) {
     // this.userInfo$ = this.db.auth.getUserData();
-    this.status$ = this.db.getStatus$();
+    this.status$ = this.db.getConnectionInformation$();
   }
 
   logout() {
