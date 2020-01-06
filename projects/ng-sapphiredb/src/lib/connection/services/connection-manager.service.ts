@@ -7,16 +7,14 @@ import {UnsubscribeCommand} from '../../command/unsubscribe/unsubscribe-command'
 import {UnsubscribeMessageCommand} from '../../command/unsubscribe-message/unsubscribe-message-command';
 import {SubscribeCommand} from '../../command/subscribe/subscribe-command';
 import {SubscribeMessageCommand} from '../../command/subscribe-message/subscribe-message-command';
-import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
+import {Observable, of, ReplaySubject} from 'rxjs';
 import {ResponseBase} from '../../command/response-base';
-import {finalize, share} from 'rxjs/operators';
+import {catchError, delay, filter, finalize, map, share, shareReplay, take} from 'rxjs/operators';
 import {GuidHelper} from '../../helper/guid-helper';
 import {MessageResponse} from '../../command/message/message-response';
-import {ConnectionResponse} from '../../command/connection/connection-response';
 import {WebsocketConnection} from '../websocket-connection';
 import {SseConnection} from '../sse-connection';
 import {HttpClient} from '@angular/common/http';
-import {ConnectionState} from '../../models/types';
 import {PollConnection} from '../poll-connection';
 
 interface SubscribeCommandInfo extends CommandBase {
@@ -25,15 +23,13 @@ interface SubscribeCommandInfo extends CommandBase {
 
 @Injectable()
 export class ConnectionManagerService {
+  private authToken?: string;
   public connection: ConnectionBase;
 
   private storedCommandStorage: SubscribeCommandInfo[] = [];
 
   private commandReferences: CommandReferences = {};
   private serverMessageHandler: CommandReferences = {};
-
-  // public connectionData$ = new BehaviorSubject<{ connectionId: string, authTokenValid: boolean, authTokenActive: boolean }>(null);
-  // public status$: BehaviorSubject<ConnectionState>;
 
   constructor(@Inject(SAPPHIRE_DB_OPTIONS) private options: SapphireDbOptions,
               private httpClient: HttpClient,
@@ -46,8 +42,8 @@ export class ConnectionManagerService {
     if (!this.options.connectionType) {
       if (!!window['Websocket']) {
         this.options.connectionType = 'websocket';
-      // } else if (!!window['EventSource']) {
-      //   this.options.connectionType = 'sse';
+      } else if (!!window['EventSource']) {
+        this.options.connectionType = 'sse';
       } else {
         this.options.connectionType = 'poll';
       }
@@ -62,38 +58,31 @@ export class ConnectionManagerService {
       case 'websocket':
         this.connection = new WebsocketConnection();
         break;
-      // case 'sse':
-      //   this.connection = new SseConnection(this.httpClient, this.ngZone);
-      //   break;
+      case 'sse':
+        this.connection = new SseConnection(this.httpClient, this.ngZone);
+        break;
       case 'poll':
         this.connection = new PollConnection(this.httpClient, this.ngZone);
         break;
     }
 
     if (this.connection) {
-      this.connection.openHandler = () => {
+      this.connection.connectionInformation$.pipe(
+        filter((connectionInformation) => connectionInformation.readyState === 'connected')
+      ).subscribe(() => {
         this.storedCommandStorage.forEach(cmd => {
-          if (!cmd.sendWithAuthToken || this.connection.connectionInformation$.value.authTokenActive) {
+          if (!cmd.sendWithAuthToken || !!this.authToken) {
             delete cmd.sendWithAuthToken;
             this.connection.send(cmd, true);
           }
         });
-      };
+      });
 
       this.connection.messageHandler = (message) => {
         this.handleResponse(message);
       };
 
-      // this.connection.connectionResponseHandler = (response: ConnectionResponse, authTokenActive: boolean) => {
-      //   this.connectionData$.next({
-      //     connectionId: response.connectionId,
-      //     authTokenValid: response.authTokenValid,
-      //     authTokenActive: authTokenActive
-      //   });
-      // };
-
-      // this.status$ = this.connection.readyState$;
-      this.connection.setData(this.options, null);
+      this.connection.setData(this.options);
     }
   }
 
@@ -107,7 +96,7 @@ export class ConnectionManagerService {
       if (this.storedCommandStorage.findIndex(c => c.referenceId === command.referenceId) === -1) {
         this.storedCommandStorage.push({
           ...command,
-          sendWithAuthToken: this.connection.connectionInformation$.value.authTokenActive
+          sendWithAuthToken: !!this.authToken
         });
         return true;
       }
@@ -117,7 +106,12 @@ export class ConnectionManagerService {
   }
 
   public sendCommand(command: CommandBase, keep?: boolean, onlySend?: boolean): Observable<ResponseBase> {
-    this.connection.send(command, this.storeSubscribeCommands(command));
+    const storedCommand = this.storeSubscribeCommands(command);
+
+    // Only send stored command if connected
+    if (!storedCommand || this.connection.connectionInformation$.value.readyState === 'connected') {
+      this.connection.send(command, storedCommand);
+    }
 
     if (onlySend === true) {
       return of(null);
@@ -194,12 +188,49 @@ export class ConnectionManagerService {
     }
   }
 
-  public setAuthToken(authToken?: string) {
-    this.connection.setData(this.options, authToken);
+  public setAuthToken(authToken?: string): Observable<'valid'|'error'|'invalid'>|null {
+    if (!!authToken) {
+      const authTokenResult$ = this.validateAuthToken$(authToken);
+
+      authTokenResult$.pipe(take(1)).subscribe(result => {
+        if (result === 'valid') {
+          this.authToken = authToken;
+          this.connection.setData(this.options, this.authToken);
+        }
+      });
+
+      return authTokenResult$;
+    } else {
+      if (!!this.authToken) {
+        this.connection.setData(this.options);
+      }
+    }
+
+    return null;
   }
 
   public reset() {
     this.storedCommandStorage = [];
     this.connection.setData(this.options, null);
+  }
+
+  private validateAuthToken$(authToken: string): Observable<'valid'|'error'|'invalid'> {
+    const checkAuthTokenUrl = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/sapphire/authToken`;
+
+    return <Observable<'valid'|'error'|'invalid'>>this.httpClient.post(checkAuthTokenUrl, null, {
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      }
+    }).pipe(
+      map((authTokenValid: boolean) => authTokenValid ? 'valid' : 'invalid'),
+      catchError(error => {
+        if (error.status === 401) {
+          return of('invalid');
+        }
+
+        return of('error');
+      }),
+      shareReplay()
+    );
   }
 }

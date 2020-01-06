@@ -23,32 +23,23 @@ export class PollConnection extends ConnectionBase {
     super();
   }
 
-  connect$(): Observable<ConnectionInformation> {
+  private connect() {
     if (this.connectionInformation$.value.readyState === 'disconnected') {
-      this.updateReadyState('connecting');
+      this.updateConnectionInformation('connecting');
 
       const connectionString = `${this.pollConnectionString}/init`;
 
       this.httpClient.get(connectionString, {
         headers: this.headers
       }).subscribe((response: ConnectionResponse) => {
-        setTimeout(() => {
-          this.headers.connectionId = response.connectionId;
-          this.updateConnectionInformation('connected', response.authTokenValid,
-            this.connectionInformation$.value.authTokenActive, response.connectionId);
-          this.openHandler();
-          this.startPolling();
-        }, 500);
+        this.headers.connectionId = response.connectionId;
+        this.updateConnectionInformation('connected', response.connectionId);
+        this.startPolling();
       }, (error) => {
-        if (error.status === 401) {
-          this.setData(this.options);
-          return;
-        }
-
-        this.updateReadyState('disconnected');
+        this.updateConnectionInformation('disconnected');
 
         setTimeout(() => {
-          this.connect$();
+          this.connect();
         }, 1000);
       });
     }
@@ -87,20 +78,16 @@ export class PollConnection extends ConnectionBase {
         return;
       }
 
-      this.updateReadyState('disconnected');
+      this.updateConnectionInformation('disconnected');
 
       setTimeout(() => {
-        this.connect$();
+        this.connect();
       }, 1000);
     });
   }
 
   send(object: CommandBase, storedCommand: boolean): Subscription {
-    if (storedCommand && this.connectionInformation$.value.readyState !== 'connected') {
-      return null;
-    }
-
-    return this.connect$().pipe(
+    return this.connect().pipe(
       takeWhile((connectionInformation) => connectionInformation.readyState !== 'disconnected' || !storedCommand),
       filter((connectionInformation) => connectionInformation.readyState === 'connected'),
       take(1)
@@ -135,7 +122,7 @@ export class PollConnection extends ConnectionBase {
     this.pollConnectionString =  `${options.useSsl ? 'https' : 'http'}://${options.serverBaseUrl}/sapphire/poll`;
     this.apiConnectionString = `${options.useSsl ? 'https' : 'http'}://${options.serverBaseUrl}/sapphire/api/`;
 
-    this.updateConnectionInformation('disconnected', !!authToken, !!authToken, null);
+    this.updateConnectionInformation('disconnected');
 
     this.pollingTime = options.pollingTime;
 
@@ -148,8 +135,6 @@ export class PollConnection extends ConnectionBase {
       this.headers.Authorization = `Bearer ${authToken}`;
     }
 
-    setTimeout(() => {
-      this.connect$();
-    }, 30);
+    this.connect();
   }
 }

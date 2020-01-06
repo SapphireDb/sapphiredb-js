@@ -63,8 +63,8 @@ export class SapphireDb {
    * Reconnect to the connectionManagerService with authentication
    * @param authToken The token to use for authentication/authorization, if empty removes the JWT Token
    */
-  public setAuthToken(authToken?: string): void {
-    this.connectionManagerService.setAuthToken(authToken);
+  public setAuthToken(authToken?: string): Observable<'valid'|'error'|'invalid'>|null {
+    return this.connectionManagerService.setAuthToken(authToken);
   }
 
   /**

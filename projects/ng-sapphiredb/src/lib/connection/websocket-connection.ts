@@ -3,17 +3,16 @@ import {SapphireDbOptions} from '../models/sapphire-db-options';
 import {ResponseBase} from '../command/response-base';
 import {CommandBase} from '../command/command-base';
 import {ConnectionResponse} from '../command/connection/connection-response';
-import {Observable, Subscription} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {filter, take, takeWhile} from 'rxjs/operators';
-import {ConnectionInformation} from '../models/types';
 
 export class WebsocketConnection extends ConnectionBase {
   private socketConnectionString: string;
   private socket: WebSocket;
 
-  private connect$(): Observable<ConnectionInformation> {
+  private connect() {
     if (this.connectionInformation$.value.readyState === 'disconnected') {
-      this.updateReadyState('connecting');
+      this.updateConnectionInformation('connecting');
 
       this.socket = new WebSocket(this.socketConnectionString);
 
@@ -21,19 +20,17 @@ export class WebsocketConnection extends ConnectionBase {
         const message: ResponseBase = JSON.parse(msg.data);
         if (message.responseType === 'ConnectionResponse') {
           const connectionResponse = <ConnectionResponse>message;
-          this.updateConnectionInformation('connected', connectionResponse.authTokenValid,
-            this.connectionInformation$.value.authTokenActive, connectionResponse.connectionId);
-          this.openHandler();
+          this.updateConnectionInformation('connected', connectionResponse.connectionId);
         } else {
           this.messageHandler(message);
         }
       };
 
       this.socket.onclose = () => {
-        this.updateReadyState('disconnected');
+        this.updateConnectionInformation('disconnected');
 
         setTimeout(() => {
-          this.connect$();
+          this.connect();
         }, 1000);
       };
 
@@ -41,35 +38,37 @@ export class WebsocketConnection extends ConnectionBase {
         this.socket.close();
       };
     }
-
-    return this.connectionInformation$.asObservable();
   }
 
   send(object: CommandBase, storedCommand: boolean): Subscription {
-    if (storedCommand && this.connectionInformation$.value.readyState !== 'connected') {
-      return;
-    }
-
-    return this.connect$().pipe(
+    return this.connectionInformation$.pipe(
       takeWhile((connectionInformation) => connectionInformation.readyState !== 'disconnected' || !storedCommand),
-      filter((connectionInformation) => connectionInformation.readyState === 'connected' && this.socket.readyState === WebSocket.OPEN),
+      filter((connectionInformation) => connectionInformation.readyState === 'connected'),
       take(1)
     ).subscribe(() => {
-      this.socket.send(JSON.stringify(object));
+      this.sendInternal(JSON.stringify(object));
     });
   }
 
+  private sendInternal(message: string) {
+    if (this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(message);
+    } else {
+      setTimeout(() => {
+        this.sendInternal(message);
+      }, 0);
+    }
+  }
+
   setData(options: SapphireDbOptions, authToken?: string) {
+    this.updateConnectionInformation('disconnected');
+
     if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
       this.socket.close();
     }
 
-    this.updateConnectionInformation('disconnected', !!authToken, !!authToken, null);
     this.createConnectionString(options, authToken);
-
-    setTimeout(() => {
-      this.connect$();
-    }, 10);
+    this.connect();
   }
 
   private createConnectionString(options: SapphireDbOptions, authToken?: string) {

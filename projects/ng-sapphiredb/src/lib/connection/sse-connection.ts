@@ -25,24 +25,20 @@ export class SseConnection extends ConnectionBase {
     super();
   }
 
-  connect$(): Observable<ConnectionInformation> {
+  private connect() {
     if (this.connectionInformation$.value.readyState === 'disconnected') {
-      this.updateReadyState('connecting');
+      this.updateConnectionInformation('connecting');
 
       this.eventSource = new EventSource(this.sseConnectionString);
 
       this.eventSource.onmessage = (messageEvent) => {
-        console.log(messageEvent);
-        this.errorCount = 0;
         this.ngZone.run(() => {
           const message: ResponseBase = JSON.parse(messageEvent.data);
 
           if (message.responseType === 'ConnectionResponse') {
             const connectionData = <ConnectionResponse>message;
             this.headers.connectionId = connectionData.connectionId;
-            this.updateConnectionInformation('connected', connectionData.authTokenValid,
-              this.connectionInformation$.value.authTokenActive, connectionData.connectionId);
-            this.openHandler();
+            this.updateConnectionInformation('connected', connectionData.connectionId);
           } else {
             this.messageHandler(message);
           }
@@ -50,28 +46,17 @@ export class SseConnection extends ConnectionBase {
       };
 
       this.eventSource.onerror = (error) => {
-        this.errorCount++;
-        this.ngZone.run(() => {
-          // this.updateReadyState('disconnected');
-
-          setTimeout(() => {
-            this.setData(this.options);
-          }, this.errorCount === 1 ? 0 : 1000);
-        });
+        setTimeout(() => {
+          this.connect();
+        }, 1000);
       };
     }
-
-    return this.connectionInformation$.asObservable();
   }
 
   send(object: CommandBase, storedCommand: boolean): Subscription {
-    if (storedCommand && this.connectionInformation$.value.readyState !== 'connected') {
-      return null;
-    }
-
-    return this.connect$().pipe(
-      takeWhile((connectionInformation) => connectionInformation.readyState === 'connecting' || connectionInformation.readyState === 'connected' || !storedCommand),
-      filter((connectionInformation) => connectionInformation.readyState === 'connected' && this.eventSource.readyState === EventSource.OPEN),
+    return this.connectionInformation$.pipe(
+      takeWhile((connectionInformation) => connectionInformation.readyState !== 'disconnected' || !storedCommand),
+      filter((connectionInformation) => connectionInformation.readyState === 'connected'),
       take(1)
     ).subscribe(() => {
       this.makePost(object);
@@ -99,16 +84,14 @@ export class SseConnection extends ConnectionBase {
   }
 
   setData(options: SapphireDbOptions, authToken?: string) {
+    this.updateConnectionInformation('disconnected');
+
     if (this.eventSource) {
       this.eventSource.close();
     }
 
-    this.updateConnectionInformation('disconnected', !!authToken, !!authToken, null);
     this.setConnectionData(options, authToken);
-
-    setTimeout(() => {
-      this.connect$();
-    }, 30);
+    this.connect();
   }
 
   private setConnectionData(options: SapphireDbOptions, authToken?: string) {
