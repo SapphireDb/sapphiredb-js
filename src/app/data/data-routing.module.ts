@@ -13,6 +13,7 @@ import {QueryFunctionComponent} from './query-function/query-function.component'
 import {ChangesComponent} from './changes/changes.component';
 import {IncludeComponent} from './include/include.component';
 import {ClassTransformerComponent} from './class-transformer/class-transformer.component';
+import {ModelValidationComponent} from './model-validation/model-validation.component';
 
 
 const routes: Routes = [
@@ -29,6 +30,7 @@ const routes: Routes = [
   { path: 'query-function', component: QueryFunctionComponent },
   { path: 'include', component: IncludeComponent },
   { path: 'class-transformer', component: ClassTransformerComponent },
+  { path: 'model-validation', component: ModelValidationComponent },
   { path: '', redirectTo: 'query', pathMatch: 'full' }
 ];
 

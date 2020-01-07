@@ -87,7 +87,7 @@ export class PollConnection extends ConnectionBase {
   }
 
   send(object: CommandBase, storedCommand: boolean): Subscription {
-    return this.connect().pipe(
+    return this.connectionInformation$.pipe(
       takeWhile((connectionInformation) => connectionInformation.readyState !== 'disconnected' || !storedCommand),
       filter((connectionInformation) => connectionInformation.readyState === 'connected'),
       take(1)

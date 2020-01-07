@@ -15,10 +15,11 @@ import {QueryFunctionComponent} from './query-function/query-function.component'
 import {ChangesComponent} from './changes/changes.component';
 import {IncludeComponent} from './include/include.component';
 import { ClassTransformerComponent } from './class-transformer/class-transformer.component';
+import { ModelValidationComponent } from './model-validation/model-validation.component';
 
 
 @NgModule({
-  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent, EventsComponent, QueryFunctionComponent, ChangesComponent, IncludeComponent, ClassTransformerComponent],
+  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent, EventsComponent, QueryFunctionComponent, ChangesComponent, IncludeComponent, ClassTransformerComponent, ModelValidationComponent],
   imports: [
     SharedModule,
     DataRoutingModule
