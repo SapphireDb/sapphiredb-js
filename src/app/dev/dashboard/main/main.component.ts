@@ -54,7 +54,7 @@ export class MainComponent implements OnInit {
     //   });
     // });
 
-    this.db.execute('example', 'GenerateRandomNumber')
+    this.db.execute<number, string>('example', 'GenerateRandomNumber')
     // .subscribe((v: ActionResult<number, string>) => console.log(v));
       .subscribe(ActionHelper.result<number, string>(
         v => console.log('Result: ' + v),
@@ -135,7 +135,7 @@ export class MainComponent implements OnInit {
     //       this.rangeValue = <any>v;
     //     }));
 
-    this.rangeValue = this.db.execute('example', 'GenerateRandomNumber').pipe(
+    this.rangeValue = this.db.execute<number, number>('example', 'GenerateRandomNumber').pipe(
       filter((r: ActionResult<number, number>) => r.type === ExecuteResponseType.Notify),
       map((r: ActionResult<number, number>) => r.notification),
       concatMap(v => {

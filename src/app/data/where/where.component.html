@@ -92,7 +92,7 @@
 <h2>Example - Get value by id</h2>
 
 <div>
-  <m4-input [search-button]="true" (search-button-click)="id$.next(id)" [(ngModel)]="id"></m4-input>
+  <m4-input prepend="Id" [search-button]="true" (search-button-click)="id$.next(id)" [(ngModel)]="id"></m4-input>
   <span [innerText]="valueById$ | async | json"></span>
 </div>
 

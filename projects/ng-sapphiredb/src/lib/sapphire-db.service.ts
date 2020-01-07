@@ -36,7 +36,8 @@ export class SapphireDb {
    * @param actionName The name of the action
    * @param parameters Parameters for the action
    */
-  public execute<X, Y>(handlerName: string, actionName: string, ...parameters: any[]): Observable<ActionResult<X, Y>> {
+  public execute<TResponseType, TNotificationType = null>(handlerName: string, actionName: string, ...parameters: any[])
+    : Observable<ActionResult<TResponseType, TNotificationType>> {
     return this.connectionManagerService.sendCommand(new ExecuteCommand(handlerName, actionName, parameters), true).pipe(
       concatMap((result: ExecuteResponse) => {
         if (result.type === ExecuteResponseType.End) {
@@ -47,7 +48,7 @@ export class SapphireDb {
       }),
       takeWhile(v => !!v),
       map((result: ExecuteResponse) => {
-        return new ActionResult<X, Y>(result);
+        return new ActionResult<TResponseType, TNotificationType>(result);
       })
     );
   }

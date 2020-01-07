@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {ActionResult, ExecuteResponseType, SapphireDb, ActionHelper} from 'ng-sapphiredb';
+import {Component, OnInit} from '@angular/core';
+import {ActionResult, ExecuteResponseType, SapphireDb} from 'ng-sapphiredb';
 import {concatMap, filter, map, shareReplay, takeWhile} from 'rxjs/operators';
 import {Observable, of} from 'rxjs';
 
@@ -17,17 +17,16 @@ export class MainComponent implements OnInit {
   ngOnInit() { }
 
   execute() {
-    this.rangeValue$ = this.db.execute('example', 'AsyncDelay').pipe(
-      filter((r: ActionResult<number, number>) => r.type === ExecuteResponseType.Notify),
-      map((r: ActionResult<number, number>) => r.notification),
-      concatMap(v => {
-        if (v === 100) {
-          return of(v, null);
+    this.rangeValue$ = this.db.execute<string, number>('example', 'AsyncDelay').pipe(
+      concatMap(r => {
+        if (r.type === ExecuteResponseType.End) {
+          return of(r, null);
         }
 
-        return of(v);
+        return of(r);
       }),
       takeWhile(v => v !== null),
+      map((r: ActionResult<string, number>) => r.notification),
       shareReplay()
     );
   }
