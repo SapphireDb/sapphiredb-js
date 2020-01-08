@@ -17,8 +17,9 @@ import {SseConnection} from '../sse-connection';
 import {HttpClient} from '@angular/common/http';
 import {PollConnection} from '../poll-connection';
 
-interface SubscribeCommandInfo extends CommandBase {
+interface SubscribeCommandInfo {
   sendWithAuthToken: boolean;
+  command: CommandBase;
 }
 
 @Injectable()
@@ -72,8 +73,7 @@ export class ConnectionManagerService {
       ).subscribe(() => {
         this.storedCommandStorage.forEach(cmd => {
           if (!cmd.sendWithAuthToken || !!this.authToken) {
-            delete cmd.sendWithAuthToken;
-            this.connection.send(cmd, true);
+            this.connection.send(cmd.command, true);
           }
         });
       });
@@ -88,14 +88,14 @@ export class ConnectionManagerService {
 
   private storeSubscribeCommands(command: CommandBase): boolean {
     if (command instanceof UnsubscribeCommand || command instanceof UnsubscribeMessageCommand) {
-      this.storedCommandStorage = this.storedCommandStorage.filter(cs => cs.referenceId !== command.referenceId);
+      this.storedCommandStorage = this.storedCommandStorage.filter(cs => cs.command.referenceId !== command.referenceId);
       return true;
     }
 
     if (command instanceof SubscribeCommand || command instanceof SubscribeMessageCommand) {
-      if (this.storedCommandStorage.findIndex(c => c.referenceId === command.referenceId) === -1) {
+      if (this.storedCommandStorage.findIndex(c => c.command.referenceId === command.referenceId) === -1) {
         this.storedCommandStorage.push({
-          ...command,
+          command: command,
           sendWithAuthToken: !!this.authToken
         });
         return true;
