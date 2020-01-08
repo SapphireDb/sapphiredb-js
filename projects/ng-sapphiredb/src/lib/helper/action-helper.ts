@@ -3,7 +3,7 @@ import {ExecuteResponseType} from '../command/execute/execute-response';
 
 // @dynamic
 export class ActionHelper {
-  public static result<ResultType, NotificationType>(completeFn: (result: ResultType) => void, notifyFn: (notification: NotificationType) => void) {
+  public static result<ResultType, NotificationType = null>(completeFn: (result: ResultType) => void, notifyFn: (notification: NotificationType) => void) {
     return (result: ActionResult<ResultType, NotificationType>) => {
       if (result.type === ExecuteResponseType.End) {
         completeFn(result.result);
