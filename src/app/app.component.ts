@@ -10,8 +10,13 @@ import {SwUpdate} from '@angular/service-worker';
   styleUrls: ['./app.component.less']
 })
 export class AppComponent {
+  enableAnalytics = true;
+  showConsent: boolean;
+
   constructor(public router: Router, private activityService: ActivityService, private swUpdate: SwUpdate,
               private dialogService: DialogService) {
+    this.showConsent = !localStorage.getItem('docs_consent_showed');
+
     let activity;
 
     this.router.events.pipe(
@@ -39,6 +44,11 @@ export class AppComponent {
             activity = null;
           }
         }
+
+        if (event instanceof NavigationEnd) {
+          (<any>window).ga('set', 'page', event.urlAfterRedirects);
+          (<any>window).ga('send', 'pageview');
+        }
       });
 
     this.swUpdate.available.pipe(
@@ -49,5 +59,14 @@ export class AppComponent {
         location.reload();
       }
     });
+  }
+
+  closeConsent(setDisableAnalyticsCookie: boolean) {
+    localStorage.setItem('docs_consent_showed', 'true');
+    this.showConsent = false;
+
+    if (setDisableAnalyticsCookie) {
+      document.cookie = 'ga-disable-UA-155987289-1=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
+    }
   }
 }

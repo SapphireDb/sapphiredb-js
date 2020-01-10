@@ -128,3 +128,11 @@
   </footer>
 
 </div>
+
+<div class="fixed-bottom bg-grayWhite p-2" *ngIf="showConsent">
+  <p>
+    This website uses Google Analytics. If you want to disable it just unselect the option:
+  </p>
+  <m4-checkbox caption="Enable Analytics" [(ngModel)]="enableAnalytics"></m4-checkbox>
+  <button m4-button (click)="closeConsent(!enableAnalytics)">Store preferences and close</button>
+</div>
