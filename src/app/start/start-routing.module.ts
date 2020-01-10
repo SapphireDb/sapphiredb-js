@@ -4,6 +4,7 @@ import {MainComponent} from './main/main.component';
 import {NetCoreComponent} from './net-core/net-core.component';
 import {AngularComponent} from './angular/angular.component';
 import {ImplementationsComponent} from './implementations/implementations.component';
+import {ContributionComponent} from './contribution/contribution.component';
 
 
 const routes: Routes = [
@@ -11,6 +12,7 @@ const routes: Routes = [
   { path: 'net-core', component: NetCoreComponent },
   { path: 'angular', component: AngularComponent },
   { path: 'implementations', component: ImplementationsComponent },
+  { path: 'contribution', component: ContributionComponent },
   { path: '', pathMatch: 'full', redirectTo: 'main' }
 ];
 
