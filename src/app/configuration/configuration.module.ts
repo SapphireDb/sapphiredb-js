@@ -6,10 +6,11 @@ import {SharedModule} from '../shared.module';
 import {FormsModule} from '@angular/forms';
 import {NlbComponent} from './nlb/nlb.component';
 import {ConnectionTypesComponent} from './connection-types/connection-types.component';
+import { FluentComponent } from './fluent/fluent.component';
 
 
 @NgModule({
-  declarations: [MainComponent, NlbComponent, ConnectionTypesComponent],
+  declarations: [MainComponent, NlbComponent, ConnectionTypesComponent, FluentComponent],
   imports: [
     SharedModule,
     FormsModule,
