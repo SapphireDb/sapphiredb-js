@@ -1,12 +1,12 @@
-import {IPrefilter} from './iprefilter';
 import {ArrayHelper} from '../../helper/array-helper';
 import {OrderByPrefilter} from './order-by-prefilter';
+import {SortDirection} from '../../models/types';
 
 export class ThenOrderByPrefilter<T> extends OrderByPrefilter<T> {
   prefilterType = 'ThenOrderByPrefilter';
 
-  constructor(property: keyof T, descending: boolean = false) {
-    super(property, descending);
+  constructor(property: keyof T, direction: SortDirection = SortDirection.ascending) {
+    super(property, direction);
   }
 
   public execute(values: T[]) {

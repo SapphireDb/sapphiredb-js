@@ -9,7 +9,7 @@ export abstract class ConnectionBase {
 
   public connectionInformation$ = new BehaviorSubject<ConnectionInformation>({
     connectionId: null,
-    readyState: 'disconnected'
+    readyState: ConnectionState.disconnected
   });
 
   public abstract send(object: CommandBase, storedCommand: boolean): Subscription;

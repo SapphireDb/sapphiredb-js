@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {DefaultCollection, SapphireDb, ReducedCollection} from 'ng-sapphiredb';
+import {Component, OnInit} from '@angular/core';
+import {DefaultCollection, ReducedCollection, SapphireDb, SortDirection} from 'ng-sapphiredb';
 import {User} from '../../model/user';
 import {Observable} from 'rxjs';
 
@@ -53,10 +53,10 @@ export class PrefiltersComponent implements OnInit {
     this.collectionTake = this.collection.take(3);
     this.takeValues$ = this.collectionTake.values();
 
-    this.collectionOrder = this.collection.orderBy('id', true);
+    this.collectionOrder = this.collection.orderBy('id', SortDirection.descending);
     this.orderValues$ = this.collectionOrder.values();
 
-    this.collectionOrder2 = this.collection.orderBy('username').thenOrderBy('id', true);
+    this.collectionOrder2 = this.collection.orderBy('username').thenOrderBy('id', SortDirection.descending);
     this.order2Values$ = this.collectionOrder2.values();
 
     this.collectionSelect = this.collection.select('username');

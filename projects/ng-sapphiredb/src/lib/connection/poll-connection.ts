@@ -1,11 +1,11 @@
 import {ConnectionResponse} from '../command/connection/connection-response';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {NgZone} from '@angular/core';
-import {BehaviorSubject, concat, Observable, of, Subscription} from 'rxjs';
-import {ConnectionInformation, ConnectionState} from '../models/types';
+import {BehaviorSubject, concat, of, Subscription} from 'rxjs';
+import {ConnectionState} from '../models/types';
 import {ResponseBase} from '../command/response-base';
 import {CommandBase} from '../command/command-base';
-import {catchError, concatMap, delay, filter, map, skip, take, takeUntil, takeWhile, tap} from 'rxjs/operators';
+import {concatMap, delay, filter, skip, take, takeUntil, takeWhile, tap} from 'rxjs/operators';
 import {ConnectionBase} from './connection-base';
 import {SapphireDbOptions} from '../models/sapphire-db-options';
 
@@ -24,8 +24,8 @@ export class PollConnection extends ConnectionBase {
   }
 
   private connect() {
-    if (this.connectionInformation$.value.readyState === 'disconnected') {
-      this.updateConnectionInformation('connecting');
+    if (this.connectionInformation$.value.readyState === ConnectionState.disconnected) {
+      this.updateConnectionInformation(ConnectionState.connecting);
 
       const connectionString = `${this.pollConnectionString}/init`;
 
@@ -33,10 +33,10 @@ export class PollConnection extends ConnectionBase {
         headers: this.headers
       }).subscribe((response: ConnectionResponse) => {
         this.headers.connectionId = response.connectionId;
-        this.updateConnectionInformation('connected', response.connectionId);
+        this.updateConnectionInformation(ConnectionState.connected, response.connectionId);
         this.startPolling();
       }, (error) => {
-        this.updateConnectionInformation('disconnected');
+        this.updateConnectionInformation(ConnectionState.disconnected);
 
         setTimeout(() => {
           this.connect();
@@ -66,7 +66,7 @@ export class PollConnection extends ConnectionBase {
       }),
       takeUntil(
         this.connectionInformation$.pipe(
-          filter(s => s.readyState === 'disconnected')
+          filter(s => s.readyState === ConnectionState.disconnected)
         )
       )
     );
@@ -78,7 +78,7 @@ export class PollConnection extends ConnectionBase {
         return;
       }
 
-      this.updateConnectionInformation('disconnected');
+      this.updateConnectionInformation(ConnectionState.disconnected);
 
       setTimeout(() => {
         this.connect();
@@ -88,8 +88,8 @@ export class PollConnection extends ConnectionBase {
 
   send(object: CommandBase, storedCommand: boolean): Subscription {
     return this.connectionInformation$.pipe(
-      takeWhile((connectionInformation) => connectionInformation.readyState !== 'disconnected' || !storedCommand),
-      filter((connectionInformation) => connectionInformation.readyState === 'connected'),
+      takeWhile((connectionInformation) => connectionInformation.readyState !== ConnectionState.disconnected || !storedCommand),
+      filter((connectionInformation) => connectionInformation.readyState === ConnectionState.connected),
       take(1)
     ).subscribe(() => {
       this.makePost(object);
@@ -122,7 +122,7 @@ export class PollConnection extends ConnectionBase {
     this.pollConnectionString =  `${options.useSsl ? 'https' : 'http'}://${options.serverBaseUrl}/sapphire/poll`;
     this.apiConnectionString = `${options.useSsl ? 'https' : 'http'}://${options.serverBaseUrl}/sapphire/api/`;
 
-    this.updateConnectionInformation('disconnected');
+    this.updateConnectionInformation(ConnectionState.disconnected);
 
     this.pollingTime = options.pollingTime;
 

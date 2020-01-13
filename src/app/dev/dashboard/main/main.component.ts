@@ -1,6 +1,6 @@
-import {AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {ActionHelper, ActionResult, DefaultCollection, ExecuteResponseType, SapphireDb} from 'ng-sapphiredb';
-import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
+import {Component, OnInit} from '@angular/core';
+import {ActionHelper, ActionResult, ExecuteResponseType, SapphireDb, SortDirection} from 'ng-sapphiredb';
+import {BehaviorSubject, Observable, of, Subscription} from 'rxjs';
 import {User} from '../../model/user';
 import {concatMap, debounceTime, filter, map, shareReplay, switchMap, take, takeWhile} from 'rxjs/operators';
 import {AccountService} from '../../services/account.service';
@@ -72,7 +72,7 @@ export class MainComponent implements OnInit {
     // }, 1000);
 
     this.db.collection<Log>('logs')
-      .orderBy('id', true)
+      .orderBy('id', SortDirection.descending)
       .take(1)
       .values()
       .pipe(

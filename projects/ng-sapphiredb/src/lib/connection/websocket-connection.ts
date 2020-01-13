@@ -5,14 +5,15 @@ import {CommandBase} from '../command/command-base';
 import {ConnectionResponse} from '../command/connection/connection-response';
 import {Subscription} from 'rxjs';
 import {filter, take, takeWhile} from 'rxjs/operators';
+import {ConnectionState} from '../models/types';
 
 export class WebsocketConnection extends ConnectionBase {
   private socketConnectionString: string;
   private socket: WebSocket;
 
   private connect() {
-    if (this.connectionInformation$.value.readyState === 'disconnected') {
-      this.updateConnectionInformation('connecting');
+    if (this.connectionInformation$.value.readyState === ConnectionState.disconnected) {
+      this.updateConnectionInformation(ConnectionState.connecting);
 
       this.socket = new WebSocket(this.socketConnectionString);
 
@@ -20,14 +21,14 @@ export class WebsocketConnection extends ConnectionBase {
         const message: ResponseBase = JSON.parse(msg.data);
         if (message.responseType === 'ConnectionResponse') {
           const connectionResponse = <ConnectionResponse>message;
-          this.updateConnectionInformation('connected', connectionResponse.connectionId);
+          this.updateConnectionInformation(ConnectionState.connected, connectionResponse.connectionId);
         } else {
           this.messageHandler(message);
         }
       };
 
       this.socket.onclose = () => {
-        this.updateConnectionInformation('disconnected');
+        this.updateConnectionInformation(ConnectionState.disconnected);
 
         setTimeout(() => {
           this.connect();
@@ -42,8 +43,8 @@ export class WebsocketConnection extends ConnectionBase {
 
   send(object: CommandBase, storedCommand: boolean): Subscription {
     return this.connectionInformation$.pipe(
-      takeWhile((connectionInformation) => connectionInformation.readyState !== 'disconnected' || !storedCommand),
-      filter((connectionInformation) => connectionInformation.readyState === 'connected'),
+      takeWhile((connectionInformation) => connectionInformation.readyState !== ConnectionState.disconnected || !storedCommand),
+      filter((connectionInformation) => connectionInformation.readyState === ConnectionState.connected),
       take(1)
     ).subscribe(() => {
       this.sendInternal(JSON.stringify(object));
@@ -61,7 +62,7 @@ export class WebsocketConnection extends ConnectionBase {
   }
 
   setData(options: SapphireDbOptions, authToken?: string) {
-    this.updateConnectionInformation('disconnected');
+    this.updateConnectionInformation(ConnectionState.disconnected);
 
     if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
       this.socket.close();

@@ -24,11 +24,11 @@
 
       \tngOnInit() {\n
         \t\tthis.values$ = this.db.collection<Entry>('entries')\n
-          \t\t\t.orderBy('content', false)\n
+          \t\t\t.orderBy('content', SortDirection.ascending)\n
           \t\t\t.values();\n\n
 
         \t\tthis.values2$ = this.db.collection<Entry>('entries')\n
-          \t\t\t.orderBy('content', true)\n
+          \t\t\t.orderBy('content', SortDirection.descending)\n
           \t\t\t.values();\n
       \t}\n
     }

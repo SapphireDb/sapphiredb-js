@@ -9,13 +9,14 @@ import {SubscribeCommand} from '../../command/subscribe/subscribe-command';
 import {SubscribeMessageCommand} from '../../command/subscribe-message/subscribe-message-command';
 import {Observable, of, ReplaySubject} from 'rxjs';
 import {ResponseBase} from '../../command/response-base';
-import {catchError, delay, filter, finalize, map, share, shareReplay, take} from 'rxjs/operators';
+import {catchError, filter, finalize, map, share, shareReplay, take} from 'rxjs/operators';
 import {GuidHelper} from '../../helper/guid-helper';
 import {MessageResponse} from '../../command/message/message-response';
 import {WebsocketConnection} from '../websocket-connection';
 import {SseConnection} from '../sse-connection';
 import {HttpClient} from '@angular/common/http';
 import {PollConnection} from '../poll-connection';
+import {ConnectionState} from '../../models/types';
 
 interface SubscribeCommandInfo {
   sendWithAuthToken: boolean;
@@ -69,7 +70,7 @@ export class ConnectionManagerService {
 
     if (this.connection) {
       this.connection.connectionInformation$.pipe(
-        filter((connectionInformation) => connectionInformation.readyState === 'connected')
+        filter((connectionInformation) => connectionInformation.readyState === ConnectionState.connected)
       ).subscribe(() => {
         this.storedCommandStorage.forEach(cmd => {
           if (!cmd.sendWithAuthToken || !!this.authToken) {
@@ -109,7 +110,7 @@ export class ConnectionManagerService {
     const storedCommand = this.storeSubscribeCommands(command);
 
     // Only send stored command if connected
-    if (!storedCommand || this.connection.connectionInformation$.value.readyState === 'connected') {
+    if (!storedCommand || this.connection.connectionInformation$.value.readyState === ConnectionState.connected) {
       this.connection.send(command, storedCommand);
     }
 

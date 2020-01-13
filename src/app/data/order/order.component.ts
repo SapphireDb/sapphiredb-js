@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {DialogService} from 'ng-metro4';
-import {SapphireDb} from 'ng-sapphiredb';
+import {SapphireDb, SortDirection} from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-order',
@@ -17,11 +17,11 @@ export class OrderComponent implements OnInit {
 
   ngOnInit() {
     this.values$ = this.db.collection<any>('demo.entries')
-      .orderBy('content', false)
+      .orderBy('content', SortDirection.ascending)
       .values();
 
     this.values2$ = this.db.collection<any>('demo.entries')
-      .orderBy('content', true)
+      .orderBy('content', SortDirection.descending)
       .values();
   }
 

@@ -15,7 +15,7 @@ import {FirstPrefilter} from './prefilter/first-prefilter';
 import {LastPrefilter} from './prefilter/last-prefilter';
 import {ConditionType} from '../helper/condition-types';
 import {IncludePrefilter} from './prefilter/include-prefilter';
-import {ClassType} from '../models/types';
+import {ClassType, SortDirection} from '../models/types';
 import {SapphireClassTransformer} from '../helper/sapphire-class-transformer';
 
 export class DefaultCollection<T> extends CollectionBase<T, T[]> {
@@ -58,11 +58,11 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
   /**
    * Apply ordering to the collection
    * @param property The name of the property to order by
-   * @param descending Order the selection in descending order
+   * @param direction The direction of ordering
    */
-  public orderBy(property: keyof T, descending: boolean = false): OrderedCollection<T> {
+  public orderBy(property: keyof T, direction: SortDirection = SortDirection.ascending): OrderedCollection<T> {
     return <any>this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters,
-      new OrderByPrefilter(property, descending));
+      new OrderByPrefilter(property, direction));
   }
 
   /**
