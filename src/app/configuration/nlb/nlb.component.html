@@ -1,18 +1,22 @@
-<h1>Server - NLB Configuration</h1>
+<h1>Server - Sync/NLB Configuration</h1>
 
 <p>
-  SapphireDb supports running in a NLB configuration. The data between the different instances will be transferred
+  SapphireDb supports running in an NLB configuration/with multiple instances. The data between the different instances can be transferred
   through a webhook-like interface.
 </p>
 
 <h2>General</h2>
+
+<p class="mb-2">
+  You basically only have to configure all instances using the appsettings.json.
+</p>
 
 <app-doc [showContent]="false">
   <div lang>
     <![CDATA[
     \f:(json:appsettings.json)
     "SapphireDb": {\n
-      \t"Nlb": {\n
+      \t"Sync": {\n
         \t\t"Enabled": true,\n\n
 
         \t\t// A unique id of the current instance. Will be used in nlb configurations of other instances.\n
@@ -42,3 +46,33 @@
     ]]>
   </div>
 </app-doc>
+
+<h2>Propagate external change</h2>
+
+<p>
+  You can also use the feature described above to send changes from an external source (for example if you changed something in the database directly) to the instances of SapphireDb.<br>
+  A request to the server should look like this:
+</p>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(json:request)\n
+    POST http://localhost:5000/sapphire/sync/message?propagate=true\n
+    Accept: */*\n
+    Cache-Control: no-cache\n
+    Secret: nlbSecret\n
+    OriginId: nlb2\n\n
+
+    {\n
+      \t"message": "test123456"\n
+    }\n\n
+
+    ###
+    ]]>
+  </div>
+</app-doc>
+
+<div class="remark info">
+  Note the query parameter <code>propagate=true</code>. This will tell the one instance you call to propagate the changes to the other instances of SapphireDb.
+</div>
