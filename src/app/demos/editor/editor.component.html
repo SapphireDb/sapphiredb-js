@@ -80,6 +80,10 @@
   </app-doc>
 </m4-panel>
 
+<m4-panel title="Example on Stackblitz" [collapsed]="true" [collapsible]="true">
+  <iframe src="https://stackblitz.com/edit/ng-sapphiredb-editor?embed=1" class="w-100 h-vh-75"></iframe>
+</m4-panel>
+
 <div class="row">
   <div class="cell-md-12">
     <m4-input [(ngModel)]="name" (ngModelChange)="name$.next($event)" prepend="Document"></m4-input>
