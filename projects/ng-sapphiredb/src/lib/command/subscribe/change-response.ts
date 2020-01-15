@@ -5,6 +5,10 @@ export interface ChangeResponse extends ResponseBase {
   value: any;
 }
 
+export interface ChangeResponses extends ResponseBase {
+  changes: ChangeResponse[];
+}
+
 export enum ChangeState {
   Added, Deleted, Modified
 }

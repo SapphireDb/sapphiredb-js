@@ -12,26 +12,7 @@
         \tconstructor(private db: SapphireDb) {\n
           \t\tthis.collection = this.db.collection<Pixel>('pixels');\n
           \t\t// Load all pixels from collection\n
-          \t\tthis.pixels$ = this.collection.orderBy('x').thenOrderBy('y').values();\n\n
-
-          \t\t// Subscribe the pixels once and check if pixels were already created. If not create them.\n
-          \t\tthis.pixels$.pipe(take(1)).subscribe((pixels) => {\n
-            \t\t\tif (pixels.length === 0) {\n
-              \t\t\t\tconst values: Pixel[] = [];\n\n
-
-              \t\t\t\tfor (let x = 0; x < this.size; x++) {\n
-                \t\t\t\t\tfor (let y = 0; y < this.size; y++) {\n
-                  \t\t\t\t\t\tvalues.push({\n
-                    \t\t\t\t\t\t\tcolor: 'darkBlue',\n
-                    \t\t\t\t\t\t\tx: x,\n
-                    \t\t\t\t\t\t\ty: y\n
-                  \t\t\t\t\t\t});\n
-                \t\t\t\t\t}\n
-              \t\t\t\t}\n\n
-
-              \t\t\t\tthis.collection.add(...values);\n
-            \t\t\t}\n
-          \t\t});\n
+          \t\tthis.pixels$ = this.collection.orderBy('x').thenOrderBy('y').values();\n
         \t}\n\n
 
         \tchangeColor(pixel: Pixel, change: number) {\n

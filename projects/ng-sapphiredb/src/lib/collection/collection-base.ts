@@ -17,7 +17,7 @@ import {CollectionManagerService} from './services/collection-manager.service';
 import {CollectionHelper} from '../helper/collection-helper';
 import {ConnectionManagerService} from '../connection/services/connection-manager.service';
 import {SubscribeCommand} from '../command/subscribe/subscribe-command';
-import {ChangeResponse} from '../command/subscribe/change-response';
+import {ChangeResponse, ChangeResponses} from '../command/subscribe/change-response';
 import {CreateRangeCommand} from '../command/create-range/create-range-command';
 import {UpdateRangeCommand} from '../command/update-range/update-range-command';
 import {DeleteRangeCommand} from '../command/delete-range/delete-range-command';
@@ -174,11 +174,15 @@ export class CollectionBase<T, Y> {
     const collectionValue = new CollectionValue<T>(subscribeCommand.referenceId);
 
     const wsSubscription = this.connectionManagerService.sendCommand(subscribeCommand, true)
-      .subscribe((response: (QueryResponse | ChangeResponse)) => {
+      .subscribe((response: (QueryResponse | ChangeResponse | ChangeResponses)) => {
         if (response.responseType === 'QueryResponse') {
           collectionValue.subject.next((<QueryResponse>response).result);
         } else if (response.responseType === 'ChangeResponse') {
           CollectionHelper.updateCollection<T>(collectionValue.subject, collectionInformation, <ChangeResponse>response);
+        } else if (response.responseType === 'ChangeResponses') {
+          (<ChangeResponses>response).changes.forEach(change => {
+            CollectionHelper.updateCollection<T>(collectionValue.subject, collectionInformation, change);
+          });
         }
       }, (error) => {
         collectionValue.subject.error(error);

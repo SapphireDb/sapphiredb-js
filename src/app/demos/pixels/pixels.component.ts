@@ -27,24 +27,6 @@ export class PixelsComponent implements OnInit {
   constructor(private db: SapphireDb) {
     this.collection = this.db.collection<Pixel>('demo.pixels');
     this.pixels$ = this.collection.orderBy('x').thenOrderBy('y').values();
-
-    this.pixels$.pipe(take(1)).subscribe((pixels) => {
-      if (pixels.length === 0) {
-        const values: Pixel[] = [];
-
-        for (let x = 0; x < this.size; x++) {
-          for (let y = 0; y < this.size; y++) {
-            values.push({
-              color: 'darkBlue',
-              x: x,
-              y: y
-            });
-          }
-        }
-
-        this.collection.add(...values);
-      }
-    });
   }
 
   changeColor(pixel: Pixel, change: number) {

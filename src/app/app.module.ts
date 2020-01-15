@@ -35,6 +35,7 @@ export function hljsLanguages() {
 
 export function createRealtimeOptions(): SapphireDbOptions {
   return {
+    serverBaseUrl: 'localhost:5000',
     // serverBaseUrl: environment.serverBaseUrl,
     apiSecret: 'pw1234',
     apiKey: 'webapp',
