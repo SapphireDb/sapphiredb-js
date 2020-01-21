@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {DefaultCollection, SapphireDb} from 'ng-sapphiredb';
+import {DefaultCollection} from 'sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 import {UserStateService} from '../user-state.service';
 import {Observable, of} from 'rxjs';
 import {catchError, map, shareReplay, switchMap, take} from 'rxjs/operators';

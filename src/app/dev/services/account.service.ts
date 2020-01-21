@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {SapphireDb} from 'ng-sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 import {take} from 'rxjs/operators';
 import {HttpClient} from '@angular/common/http';
 

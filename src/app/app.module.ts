@@ -11,7 +11,8 @@ import csharp from 'highlight.js/lib/languages/cs';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {SAPPHIRE_DB_OPTIONS, SapphireDbModule, SapphireDbOptions, SapphireClassTransformer, ClassType} from 'ng-sapphiredb';
+import { SapphireDbOptions, SapphireClassTransformer, ClassType} from 'sapphiredb';
+import { SAPPHIRE_DB_OPTIONS, SapphireDbModule } from 'ng-sapphiredb';
 import {ReactiveFormsModule} from '@angular/forms';
 import {environment} from '../environments/environment';
 import {HighlightModule} from 'ngx-highlightjs';

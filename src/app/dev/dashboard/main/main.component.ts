@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {ActionHelper, ActionResult, ExecuteResponseType, SapphireDb, SortDirection} from 'ng-sapphiredb';
+import {ActionHelper, ActionResult, ExecuteResponseType, SortDirection} from 'sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 import {BehaviorSubject, Observable, of, Subscription} from 'rxjs';
 import {User} from '../../model/user';
 import {concatMap, debounceTime, filter, map, shareReplay, switchMap, take, takeWhile} from 'rxjs/operators';

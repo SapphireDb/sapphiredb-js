@@ -3,6 +3,7 @@
   "dest": "../../dist/ng-sapphiredb",
   "deleteDestPath": false,
   "lib": {
-    "entryFile": "src/public_api.ts"
+    "entryFile": "src/public_api.ts",
+    "embedded": [ "sapphiredb" ]
   }
 }

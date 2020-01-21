@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {SapphireDb, RealtimeConnection, ConnectionResponse} from 'ng-sapphiredb';
+import {RealtimeConnection, ConnectionResponse} from 'sapphiredb';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import { SapphireDb } from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-connections',

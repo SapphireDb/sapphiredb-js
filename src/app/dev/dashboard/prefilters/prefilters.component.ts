@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {DefaultCollection, ReducedCollection, SapphireDb, SortDirection} from 'ng-sapphiredb';
+import {DefaultCollection, ReducedCollection, SortDirection} from 'sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 import {User} from '../../model/user';
 import {Observable} from 'rxjs';
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
 import {DialogService} from 'ng-metro4';
-import {SapphireDb} from 'ng-sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-select',

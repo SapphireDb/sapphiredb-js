@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
-import {SapphireDb, DefaultCollection} from 'ng-sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
+import {DefaultCollection} from 'sapphiredb';
 import {DialogService} from 'ng-metro4';
 
 @Component({

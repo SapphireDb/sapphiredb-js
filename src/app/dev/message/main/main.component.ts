@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {SapphireDb, DefaultCollection} from 'ng-sapphiredb';
+import { DefaultCollection} from 'sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 import {Message} from '../../model/message';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {map, publish, share, shareReplay, switchMap} from 'rxjs/operators';

@@ -24,6 +24,12 @@
       ],
       "ng-sapphiredb/*": [
         "dist/ng-sapphiredb/*"
+      ],
+      "sapphiredb": [
+        "dist/sapphiredb"
+      ],
+      "sapphiredb/*": [
+        "dist/sapphiredb/*"
       ]
     }
   }

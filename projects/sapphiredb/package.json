@@ -1,10 +1,8 @@
 {
-  "name": "ng-sapphiredb",
-  "version": "1.2.0",
-  "description": "Angular client implementation for SapphireDb",
+  "name": "sapphiredb",
+  "version": "0.0.1",
+  "description": "Javascript client implementation for SapphireDb",
   "peerDependencies": {
-    "@angular/common": "~8.1.0",
-    "@angular/core": "~8.1.0",
     "rxjs": "^6.5.2",
     "axios": "^0.19.1"
   },
@@ -14,7 +12,6 @@
     "asp.net core",
     "entity framework",
     "websocket",
-    "angular",
     "rxjs",
     "sse",
     "self-hosted",

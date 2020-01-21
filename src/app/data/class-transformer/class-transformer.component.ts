@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {DefaultCollection, SapphireDb} from 'ng-sapphiredb';
+import {DefaultCollection} from 'sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {classToClass, Transform} from 'class-transformer';
 

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {SapphireDb, DefaultCollection} from 'ng-sapphiredb';
+import {DefaultCollection} from 'sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {FormControl, FormGroup} from '@angular/forms';
-import {CommandResult} from '../../../../projects/ng-sapphiredb/src/lib/models/command-result';
+import {CommandResult} from '../../../../projects/sapphiredb/src/lib/models/command-result';
 import {take} from 'rxjs/operators';
 import {M4FormGroup} from 'ng-metro4';
 

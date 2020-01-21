@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {DialogService} from 'ng-metro4';
-import {SapphireDb, SortDirection} from 'ng-sapphiredb';
+import { SortDirection} from 'sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-order',

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {DefaultCollection, SapphireDb} from 'ng-sapphiredb';
+import {DefaultCollection} from 'sapphiredb';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {Lists} from 'ng-metro4';
+import { SapphireDb } from 'ng-sapphiredb';
 
 interface Pixel {
   id?: string;

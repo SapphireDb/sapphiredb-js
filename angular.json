@@ -174,6 +174,41 @@
           }
         }
       }
+    },
+    "sapphiredb": {
+      "projectType": "library",
+      "root": "projects/sapphiredb",
+      "sourceRoot": "projects/sapphiredb/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sapphiredb/tsconfig.lib.json",
+            "project": "projects/sapphiredb/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sapphiredb/src/test.ts",
+            "tsConfig": "projects/sapphiredb/tsconfig.spec.json",
+            "karmaConfig": "projects/sapphiredb/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sapphiredb/tsconfig.lib.json",
+              "projects/sapphiredb/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "DemoClient"

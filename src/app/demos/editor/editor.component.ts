@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {DefaultCollection, SapphireDb} from 'ng-sapphiredb';
+import {DefaultCollection} from 'sapphiredb';
 import {Observable, of, ReplaySubject} from 'rxjs';
 import {debounceTime, filter, map, skip, switchMap} from 'rxjs/operators';
+import { SapphireDb } from 'ng-sapphiredb';
 
 interface Document {
   id?: string;

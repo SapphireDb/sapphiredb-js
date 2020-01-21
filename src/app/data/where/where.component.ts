@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Observable, ReplaySubject} from 'rxjs';
 import {DialogService} from 'ng-metro4';
-import {SapphireDb} from 'ng-sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 import {switchMap} from 'rxjs/operators';
 
 @Component({

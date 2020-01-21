@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {ActionResult, ExecuteResponseType, SapphireDb} from 'ng-sapphiredb';
+import {ActionResult, ExecuteResponseType} from 'sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 import {concatMap, filter, map, shareReplay, takeWhile} from 'rxjs/operators';
 import {Observable, of} from 'rxjs';
 

@@ -33,6 +33,7 @@
     "ng-metro4": "^1.0.8",
     "ngx-highlightjs": "^3.0.3",
     "rxjs": "^6.5.2",
+    "tslib": "^1.10.0",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {

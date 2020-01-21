@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {SapphireDb, DefaultCollection} from 'ng-sapphiredb';
+import {DefaultCollection} from 'sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 import {User} from '../../model/user';
 import * as faker from 'faker';
 

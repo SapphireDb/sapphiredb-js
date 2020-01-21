@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
-import {SapphireDb} from 'ng-sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-main',

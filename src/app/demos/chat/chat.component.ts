@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {DefaultCollection, SapphireDb} from 'ng-sapphiredb';
+import {DefaultCollection} from 'sapphiredb';
 import {combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {debounceTime, switchMap} from 'rxjs/operators';
+import { SapphireDb } from 'ng-sapphiredb';
 
 interface Message {
   from: string;

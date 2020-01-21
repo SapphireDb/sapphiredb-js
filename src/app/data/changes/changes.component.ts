@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {SapphireDb} from 'ng-sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {DialogService} from 'ng-metro4';
 import {filter, scan, shareReplay} from 'rxjs/operators';

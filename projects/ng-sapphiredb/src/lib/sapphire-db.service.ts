@@ -1,7 +1,5 @@
 import {Inject, Injectable, InjectionToken, NgZone, Optional} from '@angular/core';
-import {SapphireDbOptions} from './models/sapphire-db-options';
-import {SapphireDb as SapphireDbBase} from './sapphire-db';
-import {SapphireClassTransformer} from './helper/sapphire-class-transformer';
+import {SapphireDbOptions, SapphireDb as SapphireDbBase, SapphireClassTransformer} from 'sapphiredb';
 
 export const SAPPHIRE_DB_OPTIONS = new InjectionToken<SapphireDbOptions>('sapphire-db.options');
 

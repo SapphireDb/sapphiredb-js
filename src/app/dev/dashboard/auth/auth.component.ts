@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {SapphireDb} from 'ng-sapphiredb';
+import { SapphireDb } from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-auth',
