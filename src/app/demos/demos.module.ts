@@ -7,10 +7,11 @@ import { ChatComponent } from './chat/chat.component';
 import { EditorComponent } from './editor/editor.component';
 import { PixelsComponent } from './pixels/pixels.component';
 import { StackblitzStarterComponent } from './stackblitz-starter/stackblitz-starter.component';
+import { ExamplesComponent } from './examples/examples.component';
 
 
 @NgModule({
-  declarations: [ChatComponent, EditorComponent, PixelsComponent, StackblitzStarterComponent],
+  declarations: [ChatComponent, EditorComponent, PixelsComponent, StackblitzStarterComponent, ExamplesComponent],
   imports: [
     SharedModule,
     DemosRoutingModule
