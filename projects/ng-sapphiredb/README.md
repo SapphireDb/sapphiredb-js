@@ -38,7 +38,7 @@ To use ng-sapphiredb you have to install the package using npm
 In your angular app folder execute
 
 ```
-npm install ng-sapphiredb axios -S
+npm install ng-sapphiredb sapphiredb axios -S
 ```
 
 ### Import SapphireDbModule in your app.module

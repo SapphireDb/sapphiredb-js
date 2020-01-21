@@ -1,7 +1,7 @@
-<h1>Get started - Setup angular client</h1>
+<h1>Get started - Setup JS client</h1>
 
 <p>
-  ng-sapphiredb is a client implementation for Angular.
+  sapphiredb is a client implementation for Javascript. It also works with NodeJs.
 </p>
 
 <h2>Installation</h2>
@@ -9,69 +9,72 @@
 <h3>Install package</h3>
 <p class="mb-5">To install the package execute the following command in your console</p>
 
-<pre><code [highlight]="'npm install -S ng-sapphiredb sapphiredb axios'" [languages]="[ 'ps' ]"></code></pre>
+<pre><code [highlight]="'npm install -S sapphiredb rxjs axios'" [languages]="[ 'ps' ]"></code></pre>
 
 <p>
   You can find the project here:
-  <a href="https://www.npmjs.com/package/ng-sapphiredb" target="_blank">https://www.npmjs.com/package/ng-sapphiredb</a>
+  <a href="https://www.npmjs.com/package/sapphiredb" target="_blank">https://www.npmjs.com/package/sapphiredb</a>
 </p>
 
-<h3>Import <code>SapphireDbModule</code></h3>
-<p>Import the module in your <code>app.module.ts</code></p>
+<h3>Create <code>SapphireDb</code> instace</h3>
 
 <app-doc [showContent]="false">
   <div lang>
     <![CDATA[
     \f:(typescript:app.module.ts)
-    @NgModule({\n
-      \timports: [\n
-        \t\tSapphireDbModule\n
-      \t],\n
-      \tproviders: [\n
-        \t\t{\n
-          \t\t\tprovide: SAPPHIRE_DB_OPTIONS,\n
-          \t\t\tuseValue: {\n
-            \t\t\t\tserverBaseUrl: environment.serverBaseUrl,\n
-            \t\t\t\tapiSecret: 'pw1234',\n
-            \t\t\t\tapiKey: 'webapp',\n
-            \t\t\t\tconnectionType: 'websocket'\n
-          \t\t\t}\n
-        \t\t}\n
-      \t],\n
-    })\n
-    export class AppModule {}
+    var sapphiredb = require('sapphiredb');\n\n
+
+    var db = new sapphiredb.SapphireDb({\n
+      \tserverBaseUrl: 'localhost:5000',\n
+      \tuseSsl: false,\n
+      \tapiKey: 'webapp',\n
+      \tapiSecret: 'pw1234'\n
+    });\n\n
+
+    db.collection('demo.entries').values().subscribe(function (values) {\n
+      \tconsole.log(values);\n
+    });
     ]]>
   </div>
 </app-doc>
 
-<div class="remark success">
-  <code>SAPPHIRE_DB_OPTIONS</code> is optional. ng-sapphiredb will automatically get the current url, port and protocol and call the correct endpoint.<br>
-  ng-sapphiredb will also figure out a working connection type for your client.
-</div>
+<h4>Use websockets on NodeJs</h4>
 
-<h3>Access the database</h3>
+<p>
+  sapphiredb also works in a NodeJs application. It will use polling as communication strategy by default. If you want to use websockets you have to install an external library for that.
+</p>
 
-<p>To call function on the database you have to inject <code>SapphireDb</code> in your components etc.</p>
+<pre><code [highlight]="'npm install -S ws'" [languages]="[ 'ps' ]"></code></pre>
 
 <app-doc [showContent]="false">
   <div lang>
     <![CDATA[
-    \f:(typescript:main.component.ts)
-    constructor(private db: SapphireDb) { }
+    \f:(typescript:app.module.ts)
+    var sapphiredb = require('sapphiredb');\n\n
+
+    var ws = require('ws');\n
+    WebSocket = ws;\n\n
+
+    var db = new sapphiredb.SapphireDb({\n
+      \tserverBaseUrl: 'localhost:5000',\n
+      \tuseSsl: false,\n
+      \tapiKey: 'webapp',\n
+      \tapiSecret: 'pw1234'\n
+    });\n\n
+
+    db.collection('demo.entries').values().subscribe(function (values) {\n
+      \tconsole.log(values);\n
+    });
     ]]>
   </div>
 </app-doc>
 
-<div class="remark info">
-  Make sure to import SapphireDb from <b>ng-sapphiredb</b> and not from <b>sapphiredb</b>
-</div>
-
-<h2>Browser compatibility</h2>
+<h2>Compatibility</h2>
 
 <table class="table">
   <thead>
   <tr>
-    <th class="w-25">Browser</th>
+    <th class="w-25">Browser/Engine</th>
     <th class="w-25">Websocket</th>
     <th class="w-25">SSE</th>
     <th class="w-25">Polling</th>
@@ -112,12 +115,19 @@
     <td class="alert"><m4-icon icon="cross"></m4-icon></td>
     <td class="success"><m4-icon icon="checkmark"></m4-icon></td>
   </tr>
+
+  <tr>
+    <td>NodeJs</td>
+    <td class="success"><m4-icon icon="checkmark"></m4-icon></td>
+    <td class="alert"><m4-icon icon="cross"></m4-icon></td>
+    <td class="success"><m4-icon icon="checkmark"></m4-icon></td>
+  </tr>
   </tbody>
 </table>
 
 <h2>Example</h2>
 
-You can also check out the example project: <a href="https://github.com/SapphireDb/Example-Angular" target="_blank"><span class="mif-github"></span> Example</a>
+You can also check out the example project: <a href="https://github.com/SapphireDb/Example-NodeJs" target="_blank"><span class="mif-github"></span> Example</a>
 
 <h2>Done</h2>
 
