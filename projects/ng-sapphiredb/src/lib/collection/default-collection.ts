@@ -5,12 +5,12 @@ import {SkipPrefilter} from './prefilter/skip-prefilter';
 import {TakePrefilter} from './prefilter/take-prefilter';
 import {OrderByPrefilter} from './prefilter/order-by-prefilter';
 import {CollectionBase} from './collection-base';
-import {CollectionManagerService} from './services/collection-manager.service';
+import {CollectionManager} from './collection-manager';
 import {ReducedCollection} from './reduced-collection';
 import {SelectPrefilter} from './prefilter/select-prefilter';
 import {CountPrefilter} from './prefilter/count-prefilter';
 import {OrderedCollection} from './ordered-collection';
-import {ConnectionManagerService} from '../connection/services/connection-manager.service';
+import {ConnectionManager} from '../connection/connection-manager';
 import {FirstPrefilter} from './prefilter/first-prefilter';
 import {LastPrefilter} from './prefilter/last-prefilter';
 import {ConditionType} from '../helper/condition-types';
@@ -20,9 +20,9 @@ import {SapphireClassTransformer} from '../helper/sapphire-class-transformer';
 
 export class DefaultCollection<T> extends CollectionBase<T, T[]> {
   constructor(collectionName: string,
-              connectionManagerService: ConnectionManagerService,
+              connectionManagerService: ConnectionManager,
               collectionInformation: Observable<InfoResponse>,
-              collectionManagerService: CollectionManagerService,
+              collectionManagerService: CollectionManager,
               classType: ClassType<T>,
               classTransformer: SapphireClassTransformer) {
     super(collectionName, connectionManagerService, collectionInformation, collectionManagerService, classType, classTransformer);

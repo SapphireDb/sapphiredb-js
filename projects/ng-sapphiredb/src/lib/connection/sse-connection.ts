@@ -1,13 +1,12 @@
 import {ConnectionBase} from './connection-base';
 import {Subscription} from 'rxjs';
 import {filter, take, takeWhile} from 'rxjs/operators';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {CommandBase} from '../command/command-base';
 import {ResponseBase} from '../command/response-base';
-import {NgZone} from '@angular/core';
 import {ConnectionState} from '../models/types';
 import {ConnectionResponse} from '../command/connection/connection-response';
 import {SapphireDbOptions} from '../models/sapphire-db-options';
+import {AxiosError, AxiosResponse, default as axios} from 'axios';
 
 export class SseConnection extends ConnectionBase {
   private sseConnectionString: string;
@@ -19,9 +18,7 @@ export class SseConnection extends ConnectionBase {
 
   private eventSource: EventSource;
 
-  private errorCount = 0;
-
-  constructor(private httpClient: HttpClient, private ngZone: NgZone) {
+  constructor() {
     super();
   }
 
@@ -32,17 +29,15 @@ export class SseConnection extends ConnectionBase {
       this.eventSource = new EventSource(this.sseConnectionString);
 
       this.eventSource.onmessage = (messageEvent) => {
-        this.ngZone.run(() => {
-          const message: ResponseBase = JSON.parse(messageEvent.data);
+        const message: ResponseBase = JSON.parse(messageEvent.data);
 
-          if (message.responseType === 'ConnectionResponse') {
-            const connectionData = <ConnectionResponse>message;
-            this.headers.connectionId = connectionData.connectionId;
-            this.updateConnectionInformation(ConnectionState.connected, connectionData.connectionId);
-          } else {
-            this.messageHandler(message);
-          }
-        });
+        if (message.responseType === 'ConnectionResponse') {
+          const connectionData = <ConnectionResponse>message;
+          this.headers.connectionId = connectionData.connectionId;
+          this.updateConnectionInformation(ConnectionState.connected, connectionData.connectionId);
+        } else {
+          this.messageHandler(message);
+        }
       };
 
       this.eventSource.onerror = (error) => {
@@ -66,20 +61,14 @@ export class SseConnection extends ConnectionBase {
   private makePost(command: CommandBase) {
     const url = `${this.apiConnectionString}${command.commandType}`;
 
-    this.httpClient.post(url, command, {
+    axios.post(url, command, {
       headers: this.headers
-    }).subscribe((response: ResponseBase) => {
-      if (!!response) {
-        this.ngZone.run(() => {
-          this.messageHandler(response);
-        });
+    }).then((axiosResponse: AxiosResponse<ResponseBase>) => {
+      if (!!axiosResponse.data) {
+        this.messageHandler(axiosResponse.data);
       }
-    }, (error: HttpErrorResponse) => {
-      if (!!error) {
-        this.ngZone.run(() => {
-          this.messageHandler(error.error);
-        });
-      }
+    }).catch((error: AxiosError<ResponseBase>) => {
+      this.messageHandler(error.response.data);
     });
   }
 

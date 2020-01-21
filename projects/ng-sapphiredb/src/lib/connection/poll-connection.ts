@@ -1,13 +1,12 @@
 import {ConnectionResponse} from '../command/connection/connection-response';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {NgZone} from '@angular/core';
-import {BehaviorSubject, concat, of, Subscription} from 'rxjs';
+import {BehaviorSubject, concat, from, of, Subscription} from 'rxjs';
 import {ConnectionState} from '../models/types';
 import {ResponseBase} from '../command/response-base';
 import {CommandBase} from '../command/command-base';
-import {concatMap, delay, filter, skip, take, takeUntil, takeWhile, tap} from 'rxjs/operators';
+import {concatMap, delay, filter, map, skip, take, takeUntil, takeWhile, tap} from 'rxjs/operators';
 import {ConnectionBase} from './connection-base';
 import {SapphireDbOptions} from '../models/sapphire-db-options';
+import {AxiosError, AxiosResponse, default as axios} from 'axios';
 
 export class PollConnection extends ConnectionBase {
   private headers: { key: string, secret: string, Authorization?: string, connectionId?: string };
@@ -19,7 +18,7 @@ export class PollConnection extends ConnectionBase {
 
   private options: SapphireDbOptions;
 
-  constructor(private httpClient: HttpClient, private ngZone: NgZone) {
+  constructor() {
     super();
   }
 
@@ -29,11 +28,11 @@ export class PollConnection extends ConnectionBase {
 
       const connectionString = `${this.pollConnectionString}/init`;
 
-      this.httpClient.get(connectionString, {
+      axios.get(connectionString, {
         headers: this.headers
-      }).subscribe((response: ConnectionResponse) => {
-        this.headers.connectionId = response.connectionId;
-        this.updateConnectionInformation(ConnectionState.connected, response.connectionId);
+      }).then((axiosResponse: AxiosResponse<ConnectionResponse>) => {
+        this.headers.connectionId = axiosResponse.data.connectionId;
+        this.updateConnectionInformation(ConnectionState.connected, axiosResponse.data.connectionId);
         this.startPolling();
       }, (error) => {
         this.updateConnectionInformation(ConnectionState.disconnected);
@@ -58,9 +57,11 @@ export class PollConnection extends ConnectionBase {
 
     const poll$ = load$.pipe(
       concatMap(() => {
-        const request$ = this.httpClient.get(this.pollConnectionString, {
+        const request$ = from(axios.get(this.pollConnectionString, {
           headers: this.headers
-        });
+        })).pipe(
+          map((response: AxiosResponse<ResponseBase[]>) => response.data)
+        );
 
         return concat(request$, whenToRefresh$);
       }),
@@ -99,20 +100,14 @@ export class PollConnection extends ConnectionBase {
   private makePost(command: CommandBase) {
     const url = `${this.apiConnectionString}${command.commandType}`;
 
-    this.httpClient.post(url, command, {
+    axios.post(url, command, {
       headers: this.headers
-    }).subscribe((response: ResponseBase) => {
-      if (!!response) {
-        this.ngZone.run(() => {
-          this.messageHandler(response);
-        });
+    }).then((axiosResponse: AxiosResponse<ResponseBase>) => {
+      if (!!axiosResponse.data) {
+        this.messageHandler(axiosResponse.data);
       }
-    }, (error: HttpErrorResponse) => {
-      if (!!error) {
-        this.ngZone.run(() => {
-          this.messageHandler(error.error);
-        });
-      }
+    }).catch((error: AxiosError<ResponseBase>) => {
+      this.messageHandler(error.response.data);
     });
   }
 

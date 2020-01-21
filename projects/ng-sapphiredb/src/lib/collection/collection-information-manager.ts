@@ -1,15 +1,13 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
-import {InfoResponse} from '../../command/info/info-response';
-import {InfoCommand} from '../../command/info/info-command';
-import {filter, take} from 'rxjs/operators';
-import {ConnectionManagerService} from '../../connection/services/connection-manager.service';
+import {Observable, ReplaySubject} from 'rxjs';
+import {InfoResponse} from '../command/info/info-response';
+import {InfoCommand} from '../command/info/info-command';
+import {take} from 'rxjs/operators';
+import {ConnectionManager} from '../connection/connection-manager';
 
-@Injectable()
-export class CollectionInformationService {
+export class CollectionInformationManager {
   private collectionInformation: { [name: string]: Observable<InfoResponse> } = {};
 
-  constructor(private connectionManagerService: ConnectionManagerService) { }
+  constructor(private connectionManagerService: ConnectionManager) { }
 
   public getCollectionInformation(collectionNameRaw: string) {
     const collectionNameParts: string[] = collectionNameRaw.split('.');

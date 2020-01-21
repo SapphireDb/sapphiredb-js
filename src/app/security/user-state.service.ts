@@ -11,7 +11,7 @@ export class UserStateService {
 
   public login(username: string, password: string) {
     this.db.execute('user', 'login', username, password).subscribe(response => {
-      this.db.setAuthToken(<string>response.result + '').pipe(take(1)).subscribe((result) => {
+      this.db.setAuthToken(<string>response.result).pipe(take(1)).subscribe((result) => {
         if (result === AuthTokenState.valid) {
           this.currentUser$.next(username);
         }

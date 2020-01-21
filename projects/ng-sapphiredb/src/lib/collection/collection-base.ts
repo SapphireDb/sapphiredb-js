@@ -13,9 +13,9 @@ import {QueryResponse} from '../command/query/query-response';
 import {CollectionValue} from './collection-value';
 import {IPrefilter} from './prefilter/iprefilter';
 import {UnsubscribeCommand} from '../command/unsubscribe/unsubscribe-command';
-import {CollectionManagerService} from './services/collection-manager.service';
+import {CollectionManager} from './collection-manager';
 import {CollectionHelper} from '../helper/collection-helper';
-import {ConnectionManagerService} from '../connection/services/connection-manager.service';
+import {ConnectionManager} from '../connection/connection-manager';
 import {SubscribeCommand} from '../command/subscribe/subscribe-command';
 import {ChangeResponse, ChangeResponses} from '../command/subscribe/change-response';
 import {CreateRangeCommand} from '../command/create-range/create-range-command';
@@ -30,9 +30,9 @@ export class CollectionBase<T, Y> {
   public contextName: string;
 
   constructor(collectionNameRaw: string,
-              protected connectionManagerService: ConnectionManagerService,
+              protected connectionManagerService: ConnectionManager,
               protected collectionInformation: Observable<InfoResponse>,
-              protected collectionManagerService: CollectionManagerService,
+              protected collectionManagerService: CollectionManager,
               protected classType: ClassType<T>,
               protected classTransformer: SapphireClassTransformer) {
     const collectionNameParts: string[] = collectionNameRaw.split('.');

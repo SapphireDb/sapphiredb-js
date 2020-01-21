@@ -6,10 +6,10 @@ import {UnsubscribeMessageCommand} from '../../command/unsubscribe-message/unsub
 import {PublishCommand} from '../../command/publish/publish-command';
 import {MessageResponse} from '../../command/message/message-response';
 import {MessageCommand} from '../../command/message/message-command';
-import {ConnectionManagerService} from '../../connection/services/connection-manager.service';
+import {ConnectionManager} from '../../connection/connection-manager';
 
 export class Messaging {
-  constructor(private connectionManagerService: ConnectionManagerService) {
+  constructor(private connectionManagerService: ConnectionManager) {
 
   }
 

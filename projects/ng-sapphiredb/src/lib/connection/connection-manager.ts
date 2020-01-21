@@ -1,30 +1,24 @@
-import {Inject, Injectable, NgZone} from '@angular/core';
-import {SAPPHIRE_DB_OPTIONS, SapphireDbOptions} from '../../models/sapphire-db-options';
-import {ConnectionBase} from '../connection-base';
-import {CommandBase} from '../../command/command-base';
-import {CommandReferences} from '../../models/command-references';
-import {UnsubscribeCommand} from '../../command/unsubscribe/unsubscribe-command';
-import {UnsubscribeMessageCommand} from '../../command/unsubscribe-message/unsubscribe-message-command';
-import {SubscribeCommand} from '../../command/subscribe/subscribe-command';
-import {SubscribeMessageCommand} from '../../command/subscribe-message/subscribe-message-command';
-import {Observable, of, ReplaySubject} from 'rxjs';
-import {ResponseBase} from '../../command/response-base';
+import {SapphireDbOptions} from '../models/sapphire-db-options';
+import {ConnectionBase} from './connection-base';
+import {CommandBase} from '../command/command-base';
+import {CommandReferences} from '../models/command-references';
+import {UnsubscribeCommand} from '../command/unsubscribe/unsubscribe-command';
+import {UnsubscribeMessageCommand} from '../command/unsubscribe-message/unsubscribe-message-command';
+import {SubscribeCommand} from '../command/subscribe/subscribe-command';
+import {SubscribeMessageCommand} from '../command/subscribe-message/subscribe-message-command';
+import {from, Observable, of, ReplaySubject} from 'rxjs';
+import {ResponseBase} from '../command/response-base';
 import {catchError, filter, finalize, map, share, shareReplay, take} from 'rxjs/operators';
-import {GuidHelper} from '../../helper/guid-helper';
-import {MessageResponse} from '../../command/message/message-response';
-import {WebsocketConnection} from '../websocket-connection';
-import {SseConnection} from '../sse-connection';
-import {HttpClient} from '@angular/common/http';
-import {PollConnection} from '../poll-connection';
-import {AuthTokenState, ConnectionState} from '../../models/types';
+import {GuidHelper} from '../helper/guid-helper';
+import {MessageResponse} from '../command/message/message-response';
+import {WebsocketConnection} from './websocket-connection';
+import {SseConnection} from './sse-connection';
+import {PollConnection} from './poll-connection';
+import {AuthTokenState, ConnectionState} from '../models/types';
+import {SubscribeCommandInfo} from '../models/subscribe-command-info';
+import {AxiosResponse, default as axios} from 'axios';
 
-interface SubscribeCommandInfo {
-  sendWithAuthToken: boolean;
-  command: CommandBase;
-}
-
-@Injectable()
-export class ConnectionManagerService {
+export class ConnectionManager {
   private authToken?: string;
   public connection: ConnectionBase;
 
@@ -33,38 +27,17 @@ export class ConnectionManagerService {
   private commandReferences: CommandReferences = {};
   private serverMessageHandler: CommandReferences = {};
 
-  constructor(@Inject(SAPPHIRE_DB_OPTIONS) private options: SapphireDbOptions,
-              private httpClient: HttpClient,
-              private ngZone: NgZone) {
-    if (this.options.serverBaseUrl == null) {
-      this.options.serverBaseUrl = window.location.host;
-      this.options.useSsl = window.location.protocol === 'https:';
-    }
-
-    if (!this.options.connectionType) {
-      if (!!window['Websocket']) {
-        this.options.connectionType = 'websocket';
-      } else if (!!window['EventSource']) {
-        this.options.connectionType = 'sse';
-      } else {
-        this.options.connectionType = 'poll';
-      }
-    }
-
-    if (!this.options.pollingTime) {
-      this.options.pollingTime = 300;
-    }
-
+  constructor(private options: SapphireDbOptions, private responseActionInterceptor: (executeCode: () => void) => void) {
     switch (this.options.connectionType) {
       default:
       case 'websocket':
         this.connection = new WebsocketConnection();
         break;
       case 'sse':
-        this.connection = new SseConnection(this.httpClient, this.ngZone);
+        this.connection = new SseConnection();
         break;
       case 'poll':
-        this.connection = new PollConnection(this.httpClient, this.ngZone);
+        this.connection = new PollConnection();
         break;
     }
 
@@ -72,15 +45,19 @@ export class ConnectionManagerService {
       this.connection.connectionInformation$.pipe(
         filter((connectionInformation) => connectionInformation.readyState === ConnectionState.connected)
       ).subscribe(() => {
-        this.storedCommandStorage.forEach(cmd => {
-          if (!cmd.sendWithAuthToken || !!this.authToken) {
-            this.connection.send(cmd.command, true);
-          }
+        this.responseActionInterceptor(() => {
+          this.storedCommandStorage.forEach(cmd => {
+            if (!cmd.sendWithAuthToken || !!this.authToken) {
+              this.connection.send(cmd.command, true);
+            }
+          });
         });
       });
 
       this.connection.messageHandler = (message) => {
-        this.handleResponse(message);
+        this.responseActionInterceptor(() => {
+          this.handleResponse(message);
+        });
       };
 
       this.connection.setData(this.options);
@@ -218,11 +195,12 @@ export class ConnectionManagerService {
   private validateAuthToken$(authToken: string): Observable<AuthTokenState> {
     const checkAuthTokenUrl = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/sapphire/authToken`;
 
-    return this.httpClient.post(checkAuthTokenUrl, null, {
+    return from(axios.post(checkAuthTokenUrl, null, {
       headers: {
         Authorization: `Bearer ${authToken}`
       }
-    }).pipe(
+    })).pipe(
+      map((response: AxiosResponse<boolean>) => response.data),
       map((authTokenValid: boolean) => authTokenValid ? AuthTokenState.valid : AuthTokenState.invalid),
       catchError(error => {
         if (error.status === 401) {
