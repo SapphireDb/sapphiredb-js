@@ -23,12 +23,14 @@ export class SapphireDb {
 
   constructor(private options?: SapphireDbOptions, private classTransformer?: SapphireClassTransformer,
               private responseActionInterceptor?: (executeCode: () => void) => void) {
-    if (this.options.serverBaseUrl == null && !!window) {
+    const windowDefined = typeof window !== 'undefined';
+
+    if (this.options.serverBaseUrl == null && windowDefined) {
       this.options.serverBaseUrl = `${window.location.hostname}:${window.location.port}`;
       this.options.useSsl = window.location.protocol === 'https:';
     }
 
-    if (!this.options.connectionType && !!window) {
+    if (!this.options.connectionType && windowDefined) {
       if (!!window['Websocket']) {
         this.options.connectionType = 'websocket';
       } else if (!!window['EventSource']) {

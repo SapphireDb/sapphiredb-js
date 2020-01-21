@@ -28,17 +28,18 @@ export class ConnectionManager {
   private serverMessageHandler: CommandReferences = {};
 
   constructor(private options: SapphireDbOptions, private responseActionInterceptor: (executeCode: () => void) => void) {
-    switch (this.options.connectionType) {
-      default:
-      case 'websocket':
+    if (this.options.connectionType === 'sse' && typeof EventSource !== 'undefined') {
+      this.connection = new SseConnection();
+    } else if (this.options.connectionType === 'websocket' && typeof WebSocket !== 'undefined') {
+      this.connection = new WebsocketConnection();
+    } else if (this.options.connectionType === 'poll') {
+      this.connection = new PollConnection();
+    } else {
+      if (typeof WebSocket !== 'undefined') {
         this.connection = new WebsocketConnection();
-        break;
-      case 'sse':
-        this.connection = new SseConnection();
-        break;
-      case 'poll':
+      } else {
         this.connection = new PollConnection();
-        break;
+      }
     }
 
     if (this.connection) {

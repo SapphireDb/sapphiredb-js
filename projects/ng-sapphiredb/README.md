@@ -9,7 +9,7 @@
 SapphireDb is an open source library that enables you to easily create your own application with realtime data synchronization.
 
 Build amazing reactive applications with realtime data synchronization and get the best results of your project.
-SapphireDb should serve as a self hosted alternative to firebase and also gives you an alternative to SignalR.
+SapphireDb should serve as a self hosted alternative to firebase realtime database and firestore and also gives you an alternative to SignalR.
 
 Check out the documentation for more details: [Documentation](https://sapphire-db.com/)
 
@@ -33,12 +33,12 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 ## Installation
 
 ### Install Package
-To use ng-sapphiredb you have to install the package using node.js
+To use ng-sapphiredb you have to install the package using npm
 
-In your Angular App-Folder execute
+In your angular app folder execute
 
 ```
-npm install ng-sapphiredb -S
+npm install ng-sapphiredb axios -S
 ```
 
 ### Import SapphireDbModule in your app.module
@@ -46,7 +46,7 @@ npm install ng-sapphiredb -S
 ```
 imports: [
     BrowserModule,
-    SapphireDbModule, 
+    SapphireDbModule,
 ]
 ```
 
@@ -66,9 +66,15 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 
 ## Implementations
 
+### Server
+
 [SapphireDb - Server for Asp.Net Core](https://github.com/morrisjdev/SapphireDb)
 
-[ng-sapphiredb - Angular client](https://github.com/morrisjdev/ng-sapphiredb)
+### Client
+
+[sapphiredb - JS client](https://github.com/SapphireDb/sapphiredb-js/blob/master/projects/sapphiredb/README.md)
+
+[ng-sapphiredb - Angular client](https://github.com/SapphireDb/sapphiredb-js/blob/master/projects/ng-sapphiredb/README.md)
 
 ## Author
 
@@ -76,4 +82,4 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 
 ## License
 
-ng-sapphiredb - [MIT License](https://github.com/morrisjdev/SapphireDb/blob/master/LICENSE)
+ng-sapphiredb - [MIT License](https://github.com/SapphireDb/sapphiredb-js/blob/master/LICENSE)

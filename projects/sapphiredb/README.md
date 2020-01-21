@@ -1,4 +1,4 @@
-# sapphiredb - Javascript client [![Build Status](https://travis-ci.org/morrisjdev/ng-realtime-database.svg?branch=master)](https://travis-ci.org/morrisjdev/ng-realtime-database)
+# sapphiredb - JS client [![Build Status](https://travis-ci.org/morrisjdev/ng-realtime-database.svg?branch=master)](https://travis-ci.org/morrisjdev/ng-realtime-database)
 
 <p align="center">
   <a href="https://sapphire-db.com/">
@@ -9,7 +9,7 @@
 SapphireDb is an open source library that enables you to easily create your own application with realtime data synchronization.
 
 Build amazing reactive applications with realtime data synchronization and get the best results of your project.
-SapphireDb should serve as a self hosted alternative to firebase and also gives you an alternative to SignalR.
+SapphireDb should serve as a self hosted alternative to firebase realtime database and firestore and also gives you an alternative to SignalR.
 
 Check out the documentation for more details: [Documentation](https://sapphire-db.com/)
 
@@ -33,32 +33,69 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 ## Installation
 
 ### Install Package
-To use ng-sapphiredb you have to install the package using node.js
+To use sapphiredb you have to install the package using npm
 
-In your Angular App-Folder execute
-
-```
-npm install ng-sapphiredb -S
-```
-
-### Import SapphireDbModule in your app.module
+In your app folder execute
 
 ```
-imports: [
-    BrowserModule,
-    SapphireDbModule, 
-]
+npm install sapphiredb rxjs axios -S
 ```
 
-## Browser compatibility
+### Create SapphireDb instance
 
-| Browser              | Websocket          | SSE                | Polling            |
+```js
+var sapphiredb = require('sapphiredb');
+
+var db = new sapphiredb.SapphireDb({
+    serverBaseUrl: 'localhost:5000',
+    useSsl: false,
+    apiKey: 'webapp',
+    apiSecret: 'pw1234'
+});
+
+db.collection('demo.entries').values().subscribe(function (values) {
+    console.log(values);
+});
+```
+
+#### Use websockets on NodeJs
+
+sapphiredb also works in a NodeJs application. It will use polling as communication strategy by default.
+If you want to use websockets you have to install an external library for that.
+
+##### Example
+```
+npm install ws -S
+```
+
+```js
+var sapphiredb = require('sapphiredb');
+
+var ws = require('ws');
+WebSocket = ws;
+
+var db = new sapphiredb.SapphireDb({
+    serverBaseUrl: 'localhost:5000',
+    useSsl: false,
+    apiKey: 'webapp',
+    apiSecret: 'pw1234'
+});
+
+db.collection('demo.entries').values().subscribe(function (values) {
+    console.log(values);
+});
+```
+
+## Compatibility
+
+| Browser/Engine              | Websocket          | SSE                | Polling            |
 |----------------------|--------------------|--------------------|--------------------|
 | Chrome               | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | Firefox              | :heavy_check_mark: | :x:                | :heavy_check_mark: |
 | Opera                | :heavy_check_mark: | :x:                | :heavy_check_mark: |
 | Edge                 | :heavy_check_mark: | :x:                | :heavy_check_mark: |
 | Internet Explorer 11 | :heavy_check_mark: | :x:                | :heavy_check_mark: |
+| NodeJs               | :heavy_check_mark: | :x:                | :heavy_check_mark: |
 
 ## Documentation
 
@@ -66,9 +103,15 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 
 ## Implementations
 
+### Server
+
 [SapphireDb - Server for Asp.Net Core](https://github.com/morrisjdev/SapphireDb)
 
-[ng-sapphiredb - Angular client](https://github.com/morrisjdev/ng-sapphiredb)
+### Client
+
+[sapphiredb - JS client](https://github.com/SapphireDb/sapphiredb-js/blob/master/projects/sapphiredb/README.md)
+
+[ng-sapphiredb - Angular client](https://github.com/SapphireDb/sapphiredb-js/blob/master/projects/ng-sapphiredb/README.md)
 
 ## Author
 
@@ -76,4 +119,4 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 
 ## License
 
-ng-sapphiredb - [MIT License](https://github.com/morrisjdev/SapphireDb/blob/master/LICENSE)
+sapphiredb - [MIT License](https://github.com/SapphireDb/sapphiredb-js/blob/master/LICENSE)

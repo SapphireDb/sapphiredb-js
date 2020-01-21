@@ -1,4 +1,4 @@
-# ng-sapphiredb - Angular client [![Build Status](https://travis-ci.org/morrisjdev/ng-realtime-database.svg?branch=master)](https://travis-ci.org/morrisjdev/ng-realtime-database)
+# sapphiredb / ng-sapphiredb [![Build Status](https://travis-ci.org/morrisjdev/ng-realtime-database.svg?branch=master)](https://travis-ci.org/morrisjdev/ng-realtime-database)
 
 <p align="center">
   <a href="https://sapphire-db.com/">
@@ -30,35 +30,13 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 - :electric_plug: Actions
 - :globe_with_meridians: NLB support
 
-## Installation
+## Packages
 
-### Install Package
-To use ng-sapphiredb you have to install the package using node.js
+This repository contains the sources of sapphiredb and ng-sapphiredb.
 
-In your Angular App-Folder execute
+[sapphiredb](./projects/sapphiredb/README.md)
 
-```
-npm install ng-sapphiredb -S
-```
-
-### Import SapphireDbModule in your app.module
-
-```
-imports: [
-    BrowserModule,
-    SapphireDbModule, 
-]
-```
-
-## Browser compatibility
-
-| Browser              | Websocket          | SSE                | Polling            |
-|----------------------|--------------------|--------------------|--------------------|
-| Chrome               | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| Firefox              | :heavy_check_mark: | :x:                | :heavy_check_mark: |
-| Opera                | :heavy_check_mark: | :x:                | :heavy_check_mark: |
-| Edge                 | :heavy_check_mark: | :x:                | :heavy_check_mark: |
-| Internet Explorer 11 | :heavy_check_mark: | :x:                | :heavy_check_mark: |
+[ng-sapphiredb](./projects/ng-sapphiredb/README.md)
 
 ## Documentation
 
@@ -66,9 +44,15 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 
 ## Implementations
 
+### Server
+
 [SapphireDb - Server for Asp.Net Core](https://github.com/morrisjdev/SapphireDb)
 
-[ng-sapphiredb - Angular client](https://github.com/morrisjdev/ng-sapphiredb)
+### Client
+
+[sapphiredb - JS client](https://github.com/SapphireDb/sapphiredb-js/blob/master/projects/sapphiredb/README.md)
+
+[ng-sapphiredb - Angular client](https://github.com/SapphireDb/sapphiredb-js/blob/master/projects/ng-sapphiredb/README.md)
 
 ## Author
 
@@ -76,4 +60,4 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 
 ## License
 
-ng-sapphiredb - [MIT License](https://github.com/morrisjdev/SapphireDb/blob/master/LICENSE)
+sapphiredb-js - [MIT License](https://github.com/SapphireDb/sapphiredb-js/blob/master/LICENSE)
