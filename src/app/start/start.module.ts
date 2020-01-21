@@ -7,10 +7,10 @@ import {AngularComponent} from './angular/angular.component';
 import {SharedModule} from '../shared.module';
 import {ImplementationsComponent} from './implementations/implementations.component';
 import { ContributionComponent } from './contribution/contribution.component';
-
+import { SponsorsComponent } from './sponsors/sponsors.component';
 
 @NgModule({
-  declarations: [MainComponent, NetCoreComponent, AngularComponent, ImplementationsComponent, ContributionComponent],
+  declarations: [MainComponent, NetCoreComponent, AngularComponent, ImplementationsComponent, ContributionComponent, SponsorsComponent],
   imports: [
     SharedModule,
     StartRoutingModule
