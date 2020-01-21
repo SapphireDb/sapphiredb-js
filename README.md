@@ -1,4 +1,4 @@
-# ng-sapphiredb - Angular client [![Build Status](https://travis-ci.org/morrisjdev/ng-realtime-database.svg?branch=master)](https://travis-ci.org/morrisjdev/ng-realtime-database) [![Maintainability](https://api.codeclimate.com/v1/badges/6cc48bef1a9e51422f95/maintainability)](https://codeclimate.com/github/morrisjdev/ng-realtime-database/maintainability) 
+# ng-sapphiredb - Angular client [![Build Status](https://travis-ci.org/morrisjdev/ng-realtime-database.svg?branch=master)](https://travis-ci.org/morrisjdev/ng-realtime-database)
 
 <p align="center">
   <a href="https://sapphire-db.com/">
