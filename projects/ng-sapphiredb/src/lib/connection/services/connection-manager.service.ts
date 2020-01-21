@@ -16,7 +16,7 @@ import {WebsocketConnection} from '../websocket-connection';
 import {SseConnection} from '../sse-connection';
 import {HttpClient} from '@angular/common/http';
 import {PollConnection} from '../poll-connection';
-import {ConnectionState} from '../../models/types';
+import {AuthTokenState, ConnectionState} from '../../models/types';
 
 interface SubscribeCommandInfo {
   sendWithAuthToken: boolean;
@@ -189,12 +189,12 @@ export class ConnectionManagerService {
     }
   }
 
-  public setAuthToken(authToken?: string): Observable<'valid'|'error'|'invalid'>|null {
+  public setAuthToken(authToken?: string): Observable<AuthTokenState> {
     if (!!authToken) {
       const authTokenResult$ = this.validateAuthToken$(authToken);
 
       authTokenResult$.pipe(take(1)).subscribe(result => {
-        if (result === 'valid') {
+        if (result === AuthTokenState.valid) {
           this.authToken = authToken;
           this.connection.setData(this.options, this.authToken);
         }
@@ -207,7 +207,7 @@ export class ConnectionManagerService {
       }
     }
 
-    return null;
+    return of(AuthTokenState.valid);
   }
 
   public reset() {
@@ -215,21 +215,21 @@ export class ConnectionManagerService {
     this.connection.setData(this.options, null);
   }
 
-  private validateAuthToken$(authToken: string): Observable<'valid'|'error'|'invalid'> {
+  private validateAuthToken$(authToken: string): Observable<AuthTokenState> {
     const checkAuthTokenUrl = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/sapphire/authToken`;
 
-    return <Observable<'valid'|'error'|'invalid'>>this.httpClient.post(checkAuthTokenUrl, null, {
+    return this.httpClient.post(checkAuthTokenUrl, null, {
       headers: {
         Authorization: `Bearer ${authToken}`
       }
     }).pipe(
-      map((authTokenValid: boolean) => authTokenValid ? 'valid' : 'invalid'),
+      map((authTokenValid: boolean) => authTokenValid ? AuthTokenState.valid : AuthTokenState.invalid),
       catchError(error => {
         if (error.status === 401) {
-          return of('invalid');
+          return of(AuthTokenState.invalid);
         }
 
-        return of('error');
+        return of(AuthTokenState.error);
       }),
       shareReplay()
     );

@@ -8,7 +8,7 @@ import {ActionResult} from './modules/action/action-result';
 import {Messaging} from './modules/messaging/messaging';
 import {DefaultCollection} from './collection/default-collection';
 import {ConnectionManagerService} from './connection/services/connection-manager.service';
-import {ClassType, ConnectionInformation} from './models/types';
+import {AuthTokenState, ClassType, ConnectionInformation} from './models/types';
 
 @Injectable()
 export class SapphireDb {
@@ -64,7 +64,7 @@ export class SapphireDb {
    * Reconnect to the connectionManagerService with authentication
    * @param authToken The token to use for authentication/authorization, if empty removes the JWT Token
    */
-  public setAuthToken(authToken?: string): Observable<'valid'|'error'|'invalid'>|null {
+  public setAuthToken(authToken?: string): Observable<AuthTokenState> {
     return this.connectionManagerService.setAuthToken(authToken);
   }
 

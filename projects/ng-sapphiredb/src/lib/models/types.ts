@@ -2,6 +2,10 @@ export enum ConnectionState {
   disconnected, connecting, connected
 }
 
+export enum AuthTokenState {
+  valid, error, invalid
+}
+
 export interface ConnectionInformation {
   readyState: ConnectionState;
   connectionId: string;
