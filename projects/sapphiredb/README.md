@@ -90,7 +90,7 @@ db.collection('demo.entries').values().subscribe(function (values) {
 
 ## Compatibility
 
-| Browser/Engine              | Websocket          | SSE                | Polling            |
+| Browser/Engine       | Websocket          | SSE                | Polling            |
 |----------------------|--------------------|--------------------|--------------------|
 | Chrome               | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | Firefox              | :heavy_check_mark: | :x:                | :heavy_check_mark: |
@@ -129,6 +129,8 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 
 [Morris Janatzek](http://morrisj.net) ([morrisjdev](https://github.com/morrisjdev))
 
-## License
+## Licenses
 
-sapphiredb - [MIT License](https://github.com/SapphireDb/sapphiredb-js/blob/master/LICENSE)
+SapphireDb - [MIT License](https://github.com/SapphireDb/SapphireDb/blob/master/LICENSE)
+
+sapphiredb-js - [MIT License](https://github.com/SapphireDb/sapphiredb-js/blob/master/LICENSE)

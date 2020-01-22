@@ -86,6 +86,8 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 
 [Morris Janatzek](http://morrisj.net) ([morrisjdev](https://github.com/morrisjdev))
 
-## License
+## Licenses
 
-ng-sapphiredb - [MIT License](https://github.com/SapphireDb/sapphiredb-js/blob/master/LICENSE)
+SapphireDb - [MIT License](https://github.com/SapphireDb/SapphireDb/blob/master/LICENSE)
+
+sapphiredb-js - [MIT License](https://github.com/SapphireDb/sapphiredb-js/blob/master/LICENSE)
