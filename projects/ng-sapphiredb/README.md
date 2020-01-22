@@ -62,6 +62,10 @@ imports: [
 | Edge                 | :heavy_check_mark: | :x:                | :heavy_check_mark: |
 | Internet Explorer 11 | :heavy_check_mark: | :x:                | :heavy_check_mark: |
 
+# Example
+
+[Angular Example](https://github.com/SapphireDb/Example-Angular)
+
 ## Documentation
 
 Check out the documentation for more details: [Documentation](https://sapphire-db.com/)

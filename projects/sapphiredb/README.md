@@ -99,6 +99,16 @@ db.collection('demo.entries').values().subscribe(function (values) {
 | Internet Explorer 11 | :heavy_check_mark: | :x:                | :heavy_check_mark: |
 | NodeJs               | :heavy_check_mark: | :x:                | :heavy_check_mark: |
 
+### Technology support
+
+JS, NodeJs, Svelte ...
+
+## Examples
+
+[Svelte Example](https://github.com/SapphireDb/Example-Svelte)
+
+[NodeJs Example](https://github.com/SapphireDb/Example-NodeJs)
+
 ## Documentation
 
 Check out the documentation for more details: [Documentation](https://sapphire-db.com/)

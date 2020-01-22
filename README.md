@@ -36,9 +36,17 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 
 This repository contains the sources of sapphiredb and ng-sapphiredb.
 
-[sapphiredb](./projects/sapphiredb/README.md)
+[sapphiredb](./projects/sapphiredb/README.md) (client for JS, NodeJs, Svelte ...)
 
-[ng-sapphiredb](./projects/ng-sapphiredb/README.md)
+[ng-sapphiredb](./projects/ng-sapphiredb/README.md) (client for Angular)
+
+## Examples
+
+[Svelte Example](https://github.com/SapphireDb/Example-Svelte)
+
+[NodeJs Example](https://github.com/SapphireDb/Example-NodeJs)
+
+[Angular Example](https://github.com/SapphireDb/Example-Angular)
 
 ## Documentation
 
