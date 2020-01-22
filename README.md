@@ -36,7 +36,7 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 
 This repository contains the sources of sapphiredb and ng-sapphiredb.
 
-[sapphiredb](./projects/sapphiredb/README.md) (client for JS, NodeJs, Svelte ...)
+[sapphiredb](./projects/sapphiredb/README.md) (client for JS, NodeJs, React, Svelte, ...)
 
 [ng-sapphiredb](./projects/ng-sapphiredb/README.md) (client for Angular)
 

@@ -101,7 +101,7 @@ db.collection('demo.entries').values().subscribe(function (values) {
 
 ### Technology support
 
-JS, NodeJs, Svelte ...
+JS, NodeJs, React, Svelte ...
 
 ## Examples
 
