@@ -8,7 +8,13 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "browser-sync": "browser-sync start --proxy \"localhost:5000\""
+    "browser-sync": "browser-sync start --proxy \"localhost:5000\"",
+    "build-sapphiredb": "npm run build -- sapphiredb",
+    "build-ng-sapphiredb": "npm run build -- ng-sapphiredb",
+    "build-packages": "npm run build-sapphiredb && npm run build-ng-sapphiredb",
+    "build-client": "npm run build-packages && npm run build -- --prod && ng run DemoClient:server",
+    "copy-files": "cpx ./server.js ./dist/DemoClient/ && cpx ./ssr-polyfills.js ./dist/DemoClient/ && cpx ./package.json ./dist/DemoClient/",
+    "publish": "npm run build-client && npm run copy-files"
   },
   "private": true,
   "dependencies": {
@@ -50,6 +56,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
     "codelyzer": "^5.0.1",
+    "cpx": "^1.5.0",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "^4.1.0",
