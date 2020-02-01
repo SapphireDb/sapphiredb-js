@@ -36,9 +36,8 @@ export function hljsLanguages() {
 
 export function createRealtimeOptions(): SapphireDbOptions {
   return {
-    // serverBaseUrl: 'localhost:5000',
-    // useSsl: false,
-    // serverBaseUrl: environment.serverBaseUrl,
+    useSsl: environment.useSsl,
+    serverBaseUrl: environment.serverBaseUrl,
     apiSecret: 'pw1234',
     apiKey: 'webapp',
     connectionType: <any>(localStorage.getItem('connectionType') || 'websocket')

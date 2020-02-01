@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  serverBaseUrl: 'localhost:5000'
+  serverBaseUrl: 'sapphire-db.com',
+  useSsl: true
 };

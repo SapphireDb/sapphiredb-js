@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  serverBaseUrl: `${window.location.hostname}:${window.location.port}`
+  serverBaseUrl: undefined,
+  useSsl: undefined
 };
 
 /*

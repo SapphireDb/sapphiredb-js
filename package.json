@@ -13,7 +13,7 @@
     "build-ng-sapphiredb": "npm run build -- ng-sapphiredb",
     "build-packages": "npm run build-sapphiredb && npm run build-ng-sapphiredb",
     "build-client": "npm run build-packages && npm run build -- --prod && ng run DemoClient:server",
-    "copy-files": "cpx ./server.js ./dist/DemoClient/ && cpx ./ssr-polyfills.js ./dist/DemoClient/ && cpx ./package.json ./dist/DemoClient/",
+    "copy-files": "cpx ./server.js ./dist/DemoClient/ && cpx ./ssr-polyfills.js ./dist/DemoClient/ && cpx ./package.json ./dist/DemoClient/ && cpx ./robots.txt ./dist/DemoClient/",
     "publish": "npm run build-client && npm run copy-files"
   },
   "private": true,
@@ -23,7 +23,6 @@
     "@angular/compiler": "~8.1.0",
     "@angular/core": "~8.1.0",
     "@angular/forms": "~8.1.0",
-    "@angular/http": "~7.2.15",
     "@angular/platform-browser": "~8.1.0",
     "@angular/platform-browser-dynamic": "~8.1.0",
     "@angular/platform-server": "^8.2.14",

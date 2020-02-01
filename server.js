@@ -34,6 +34,8 @@ app.get('*', (req, res) => {
   console.log(`new GET request at : ${req.originalUrl}`);
 });
 
-app.listen(3000, () => {
-  console.log('Angular server started on port 3000');
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  console.log(`Angular server started on port ${port}`);
 });
