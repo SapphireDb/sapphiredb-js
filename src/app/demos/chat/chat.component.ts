@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {DefaultCollection} from 'sapphiredb';
 import {combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {debounceTime, switchMap} from 'rxjs/operators';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 
 interface Message {
   from: string;
@@ -29,7 +29,7 @@ export class ChatComponent implements OnInit {
 
   messageCollection: DefaultCollection<Message>;
 
-  constructor(private db: SapphireDb) { }
+  constructor(private db: SapphireDbService) { }
 
   ngOnInit() {
     this.messageCollection = this.db.collection<Message>('demo.messages');

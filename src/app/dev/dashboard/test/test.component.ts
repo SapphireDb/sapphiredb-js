@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import * as faker from 'faker';
 import {User} from '../../model/user';
 import {Observable, ReplaySubject} from 'rxjs';
@@ -11,7 +11,7 @@ import {Observable, ReplaySubject} from 'rxjs';
 })
 export class TestComponent implements OnInit {
 
-  constructor(private db: SapphireDb) {
+  constructor(private db: SapphireDbService) {
     // this.values$.subscribe(console.log);
   }
 

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {RealtimeConnection, ConnectionResponse} from 'sapphiredb';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-connections',
@@ -14,7 +14,7 @@ export class ConnectionsComponent implements OnInit {
   connectionData$: Observable<ConnectionResponse>;
   connections$: Observable<RealtimeConnection[]>;
 
-  constructor(private db: SapphireDb) { }
+  constructor(private db: SapphireDbService) { }
 
   ngOnInit() {
     // this.connectionData$ = this.db.auth.getConnectionData();

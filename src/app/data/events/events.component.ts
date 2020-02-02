@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {DefaultCollection} from 'sapphiredb';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 
 @Component({
@@ -14,7 +14,7 @@ export class EventsComponent implements OnInit {
   values$: Observable<any[]>;
   logs$: Observable<any[]>;
 
-  constructor(private db: SapphireDb) { }
+  constructor(private db: SapphireDbService) { }
 
   ngOnInit() {
     this.collection = this.db.collection('demo.eventDemos');

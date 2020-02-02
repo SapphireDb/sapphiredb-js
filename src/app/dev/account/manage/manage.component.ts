@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import * as faker from 'faker';
 import {Observable} from 'rxjs';
 
@@ -10,7 +10,7 @@ import {Observable} from 'rxjs';
 })
 export class ManageComponent implements OnInit {
 
-  constructor(private db: SapphireDb) { }
+  constructor(private db: SapphireDbService) { }
 
   ngOnInit() {
     // this.users$ = this.db.auth.info.getUsers();

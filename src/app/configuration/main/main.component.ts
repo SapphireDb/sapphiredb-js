@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {SapphireDb} from 'ng-sapphiredb';
+import {SapphireDbService} from 'ng-sapphiredb';
 import {Observable, of, Subject} from 'rxjs';
 import {debounce, debounceTime, filter, map, switchMap} from 'rxjs/operators';
 
@@ -13,7 +13,7 @@ export class MainComponent implements OnInit {
   input$ = new Subject<string>();
   hash$: Observable<string>;
 
-  constructor(private db: SapphireDb) { }
+  constructor(private db: SapphireDbService) { }
 
   ngOnInit() {
     this.hash$ = this.input$.pipe(

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-auth',
@@ -10,7 +10,7 @@ export class AuthComponent implements OnInit {
 
   dbName: string;
 
-  constructor(private db: SapphireDb) { }
+  constructor(private db: SapphireDbService) { }
 
   ngOnInit() {
   }

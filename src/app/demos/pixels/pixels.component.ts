@@ -3,7 +3,7 @@ import {DefaultCollection} from 'sapphiredb';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {Lists} from 'ng-metro4';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 
 interface Pixel {
   id?: string;
@@ -25,7 +25,7 @@ export class PixelsComponent implements OnInit {
   private collection: DefaultCollection<Pixel>;
   public pixels$: Observable<Pixel[]>;
 
-  constructor(private db: SapphireDb) {
+  constructor(private db: SapphireDbService) {
     this.collection = this.db.collection<Pixel>('demo.pixels');
     this.pixels$ = this.collection.orderBy('x').thenOrderBy('y').values();
   }

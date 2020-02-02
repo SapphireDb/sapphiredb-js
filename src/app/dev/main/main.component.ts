@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {Router} from '@angular/router';
 
 @Component({
@@ -13,7 +13,7 @@ export class MainComponent implements OnInit {
   // userInfo$: Observable<UserData>;
   status$: Observable<any>;
 
-  constructor(private db: SapphireDb, private router: Router) {
+  constructor(private db: SapphireDbService, private router: Router) {
     // this.userInfo$ = this.db.auth.getUserData();
     this.status$ = this.db.getConnectionInformation$();
   }

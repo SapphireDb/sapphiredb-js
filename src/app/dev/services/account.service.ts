@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {take} from 'rxjs/operators';
 import {HttpClient} from '@angular/common/http';
 
@@ -8,7 +8,7 @@ import {HttpClient} from '@angular/common/http';
   providedIn: 'root'
 })
 export class AccountService {
-  constructor(private route: ActivatedRoute, private router: Router, private db: SapphireDb, private httpClient: HttpClient) {}
+  constructor(private route: ActivatedRoute, private router: Router, private db: SapphireDbService, private httpClient: HttpClient) {}
 
   userData() {
     return null;

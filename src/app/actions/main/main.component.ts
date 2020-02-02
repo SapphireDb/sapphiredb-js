@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActionResult, ExecuteResponseType} from 'sapphiredb';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {concatMap, filter, map, shareReplay, takeWhile} from 'rxjs/operators';
 import {Observable, of} from 'rxjs';
 
@@ -13,7 +13,7 @@ export class MainComponent implements OnInit {
 
   rangeValue$: Observable<number>;
 
-  constructor(private db: SapphireDb) { }
+  constructor(private db: SapphireDbService) { }
 
   ngOnInit() { }
 

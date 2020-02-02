@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DefaultCollection} from 'sapphiredb';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {User} from '../../model/user';
 import * as faker from 'faker';
 
@@ -13,7 +13,7 @@ export class CollectionTestComponent implements OnInit {
 
   collection: DefaultCollection<User>;
 
-  constructor(private db: SapphireDb) { }
+  constructor(private db: SapphireDbService) { }
 
   ngOnInit() {
     // const collection1 = this.db.collection<User>('users').skip(2);

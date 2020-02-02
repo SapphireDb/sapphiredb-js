@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DefaultCollection} from 'sapphiredb';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {UserStateService} from '../user-state.service';
 import {Observable, of} from 'rxjs';
 import {catchError, map, shareReplay, switchMap, take} from 'rxjs/operators';
@@ -26,7 +26,7 @@ export class QueryAuthComponent implements OnInit {
   queryFieldsCollection$: Observable<DefaultCollection<any>>;
   queryFields$: Observable<any[]>;
 
-  constructor(private db: SapphireDb, private userState: UserStateService) {}
+  constructor(private db: SapphireDbService, private userState: UserStateService) {}
 
   ngOnInit() {
     this.requiresAuthValuesCollection$ = this.getCollection$('RequiresAuthForQueryDemos');

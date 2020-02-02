@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {UserStateService} from '../user-state.service';
 import {Observable} from 'rxjs';
 
@@ -12,7 +12,7 @@ export class CurrentUserComponent implements OnInit {
 
   public currentUser$: Observable<string>;
 
-  constructor(private db: SapphireDb, private userState: UserStateService) { }
+  constructor(private db: SapphireDbService, private userState: UserStateService) { }
 
   ngOnInit() {
     this.currentUser$ = this.userState.currentUser$;

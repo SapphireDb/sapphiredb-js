@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {DialogService} from 'ng-metro4';
 import {filter, scan, shareReplay} from 'rxjs/operators';
@@ -14,7 +14,7 @@ export class ChangesComponent implements OnInit {
   changes$: Observable<any[]>;
   values$: Observable<any>;
 
-  constructor(private db: SapphireDb, private dialogService: DialogService) { }
+  constructor(private db: SapphireDbService, private dialogService: DialogService) { }
 
   ngOnInit() {
     this.values$ = this.db.collection('demo.entries').values();

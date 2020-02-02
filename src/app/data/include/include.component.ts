@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DefaultCollection} from 'sapphiredb';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 
 
@@ -16,7 +16,7 @@ export class IncludeComponent implements OnInit {
   public users$: Observable<any[]>;
   public entries$: Observable<any[]>;
 
-  constructor(private db: SapphireDb) {
+  constructor(private db: SapphireDbService) {
     this.userCollection = this.db.collection('Demo.Users').include('entries');
     this.users$ = this.userCollection.values();
 

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActionHelper, ActionResult, ExecuteResponseType, SortDirection} from 'sapphiredb';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {BehaviorSubject, Observable, of, Subscription} from 'rxjs';
 import {User} from '../../model/user';
 import {concatMap, debounceTime, filter, map, shareReplay, switchMap, take, takeWhile} from 'rxjs/operators';
@@ -24,7 +24,7 @@ export class MainComponent implements OnInit {
 
   testSub: Subscription;
 
-  constructor(private db: SapphireDb, private account: AccountService) {}
+  constructor(private db: SapphireDbService, private account: AccountService) {}
 
   ngOnInit() {
     // this.account.userData().subscribe((userData: UserData) => {

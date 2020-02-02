@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
 import {DialogService} from 'ng-metro4';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-limit',
@@ -15,7 +15,7 @@ export class LimitComponent implements OnInit {
   valueFirst$: Observable<any>;
   valueLast$: Observable<any>;
 
-  constructor(private db: SapphireDb, private dialogService: DialogService) { }
+  constructor(private db: SapphireDbService, private dialogService: DialogService) { }
 
   ngOnInit() {
     this.values$ = this.db.collection<any>('demo.entries')

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DefaultCollection} from 'sapphiredb';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {classToClass, Transform} from 'class-transformer';
 
@@ -26,7 +26,7 @@ export class ClassTransformerComponent implements OnInit {
   collection: DefaultCollection<ExampleEntry>;
   values$: Observable<ExampleEntry[]>;
 
-  constructor(private db: SapphireDb) { }
+  constructor(private db: SapphireDbService) { }
 
   ngOnInit() {
     this.collection = this.db.collection('demo.entries', ExampleEntry);

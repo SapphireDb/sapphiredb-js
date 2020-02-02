@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {AccountService} from '../../services/account.service';
 import {ActionResult} from 'sapphiredb';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AppUser} from '../../model/app-user';
@@ -17,7 +17,7 @@ export class LoginComponent implements OnInit {
   public users$: Observable<AppUser[]>;
   public form: FormGroup;
 
-  constructor(private accountService: AccountService, private db: SapphireDb) {
+  constructor(private accountService: AccountService, private db: SapphireDbService) {
     this.form = new FormGroup({
       email: new FormControl(),
       password: new FormControl()

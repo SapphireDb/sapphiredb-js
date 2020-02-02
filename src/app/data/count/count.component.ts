@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
 import {DialogService} from 'ng-metro4';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-count',
@@ -13,7 +13,7 @@ export class CountComponent implements OnInit {
 
   values$: Observable<any>;
 
-  constructor(private db: SapphireDb, private dialogService: DialogService) { }
+  constructor(private db: SapphireDbService, private dialogService: DialogService) { }
 
   ngOnInit() {
     this.values$ = this.db.collection<any>('demo.entries')

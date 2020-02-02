@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {AuthTokenState} from 'sapphiredb';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {BehaviorSubject} from 'rxjs';
 import {take} from 'rxjs/operators';
 
@@ -8,7 +8,7 @@ import {take} from 'rxjs/operators';
 export class UserStateService {
   public currentUser$ = new BehaviorSubject<string>(null);
 
-  constructor(private db: SapphireDb) { }
+  constructor(private db: SapphireDbService) { }
 
   public login(username: string, password: string) {
     this.db.execute('user', 'login', username, password).subscribe(response => {

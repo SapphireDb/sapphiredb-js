@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {DefaultCollection} from 'sapphiredb';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {FormControl, FormGroup} from '@angular/forms';
 import {CommandResult} from '../../../../projects/sapphiredb/src/lib/models/command-result';
@@ -19,7 +19,7 @@ export class ModelValidationComponent implements OnInit {
 
   form: FormGroup;
 
-  constructor(private db: SapphireDb) { }
+  constructor(private db: SapphireDbService) { }
 
   ngOnInit() {
     this.collection = this.db.collection('demo.validationDemos');

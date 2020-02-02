@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {DefaultCollection} from 'sapphiredb';
 import {Observable, of, ReplaySubject} from 'rxjs';
 import {debounceTime, filter, map, skip, switchMap} from 'rxjs/operators';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 
 interface Document {
   id?: string;
@@ -24,7 +24,7 @@ export class EditorComponent implements OnInit {
 
   document$: Observable<Document>;
 
-  constructor(private db: SapphireDb) { }
+  constructor(private db: SapphireDbService) { }
 
   ngOnInit() {
     this.collection = this.db.collection<Document>('demo.documents');

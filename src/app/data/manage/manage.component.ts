@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
-import { SapphireDb } from 'ng-sapphiredb';
+import { SapphireDbService } from 'ng-sapphiredb';
 import {DefaultCollection} from 'sapphiredb';
 import {DialogService} from 'ng-metro4';
 
@@ -13,7 +13,7 @@ export class ManageComponent implements OnInit {
   collection: DefaultCollection<any>;
   values$: Observable<any>;
 
-  constructor(private db: SapphireDb, private dialogService: DialogService) { }
+  constructor(private db: SapphireDbService, private dialogService: DialogService) { }
 
   ngOnInit() {
     this.collection = this.db.collection('demo.entries');
