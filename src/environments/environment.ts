@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  serverBaseUrl: undefined,
-  useSsl: undefined
+  serverBaseUrl: 'localhost:5000',
+  useSsl: false
 };
 
 /*

@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: 'legal-details', component: LegalDisclosureComponent },
   { path: 'privacy', component: PrivacyComponent },
 
-  { path: '', redirectTo: 'start', pathMatch: 'full' }
+  { path: '**', redirectTo: 'start', pathMatch: 'full' }
 ];
 
 @NgModule({

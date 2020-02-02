@@ -13,7 +13,7 @@
     "build-ng-sapphiredb": "npm run build -- ng-sapphiredb",
     "build-packages": "npm run build-sapphiredb && npm run build-ng-sapphiredb",
     "build-client": "npm run build-packages && npm run build -- --prod && ng run DemoClient:server",
-    "copy-files": "cpx ./server.js ./dist/DemoClient/ && cpx ./ssr-polyfills.js ./dist/DemoClient/ && cpx ./package.json ./dist/DemoClient/ && cpx ./robots.txt ./dist/DemoClient/browser",
+    "copy-files": "cpx ./server.js ./dist/DemoClient/ && cpx ./ssr-polyfills.js ./dist/DemoClient/ && cpx ./package.json ./dist/DemoClient/ && cpx ./robots.txt ./dist/DemoClient/browser && cpx ./sitemap.xml ./dist/DemoClient/browser",
     "publish": "npm run build-client && npm run copy-files"
   },
   "private": true,

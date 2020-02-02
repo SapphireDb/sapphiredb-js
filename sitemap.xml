@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+
+<url>
+  <loc>https://sapphire-db.com/</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/start/net-core</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/start/js</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/start/angular</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/start/implementations</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/start/contribution</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/start/sponsors</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data/manage</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data/prefilter</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data/where</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data/order</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data/limit</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data/select</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data/count</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data/include</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data/class-transformer</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data/model-validation</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data/changes</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data/events</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/data/query-function</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/security/general</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/security/net-core</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/security/query-auth</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/security/update-auth</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/security/create-auth</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/security/remove-auth</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/security/action-auth</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/actions</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/messaging</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/configuration</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/configuration/nlb</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/configuration/connection-types</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/configuration/fluent</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/demos/chat</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/demos/editor</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/demos/pixels</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/demos/examples</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/demos/stackblitz</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/legal-details</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/privacy</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://sapphire-db.com/configuration/main</loc>
+  <lastmod>2020-02-02T12:04:16+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+
+
+</urlset>

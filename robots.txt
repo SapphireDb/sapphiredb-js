@@ -1,3 +1,4 @@
 User-Agent: *
 Allow: /
 
+Sitemap: https://sapphire-db.com/sitemap.xml
