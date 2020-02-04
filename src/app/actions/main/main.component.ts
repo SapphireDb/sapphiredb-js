@@ -18,12 +18,6 @@ export class MainComponent implements OnInit {
   constructor(private db: SapphireDbService) { }
 
   ngOnInit() {
-    // this.db.execute('example', 'AsyncEnumerableTest').subscribe(
-    //   ActionHelper.result(
-    //     () => console.log('complete'),
-    //     (value) => console.log(value),
-    //     (notification) => console.warn(notification)
-    //   ));
   }
 
   execute() {
