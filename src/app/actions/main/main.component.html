@@ -106,3 +106,62 @@
     ]]>
   </div>
 </app-doc>
+
+<h2>Stream data</h2>
+
+<div class="remark info">
+  You can also stream async data from server to client.
+</div>
+
+<app-doc>
+  <m4-progress [value]="rangeValueStream$ | async"></m4-progress><br>
+  <button m4-button (click)="executeStream()">Execute</button>
+  <span [textContent]="rangeValueStatus$ | async"></span>
+
+  <div lang>
+    <![CDATA[
+    \f:(csharp:AsyncActions.cs)
+    public class AsyncActions : ActionHandlerBase\n
+    {\n
+      \tpublic async IAsyncEnumerable<string> AsyncEnumerableTest()\n
+      \t{\n
+        \t\tfor (int i = 0; i <= 100; i++)\n
+        \t\t{\n
+          \t\t\tyield return i.ToString();\n\n
+
+          \t\t\tif (i % 10 == 0)\n
+          \t\t\t{\n
+            \t\t\t\tNotify("Progress: " + i + "%");\n
+          \t\t\t}\n\n
+
+          \t\t\tawait Task.Delay(10);\n
+        \t\t}\n
+      \t}\n
+    }
+
+    \f:(typescript:async-actions.component.ts)
+    this.db.execute('example', 'AsyncEnumerableTest').subscribe(\n
+      \tActionHelper.result(\n
+        \t\t() => console.log('complete'),\n
+        \t\t(value) => console.log(value),\n
+        \t\t(notification) => console.warn(notification)\n
+      \t));\n
+    );\n\n
+
+    // The code of the above example\n
+    const result$ = this.db.execute<number, string>('example', 'AsyncEnumerableTest').pipe(\n
+      \tshareReplay()\n
+    );\n\n
+
+    this.rangeValueStream$ = result$.pipe(\n
+      \tfilter(v => v.type === ExecuteResponseType.Async),\n
+      \tmap(v => v.result)\n
+    );\n\n
+
+    this.rangeValueStatus$ = result$.pipe(\n
+      \tfilter(v => v.type === ExecuteResponseType.Notify),\n
+      \tmap(v => v.notification)\n
+    );
+    ]]>
+  </div>
+</app-doc>

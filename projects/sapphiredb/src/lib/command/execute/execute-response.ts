@@ -6,5 +6,5 @@ export interface ExecuteResponse extends ResponseBase {
 }
 
 export enum ExecuteResponseType {
-  End, Notify
+  End, Notify, Async
 }

@@ -8,7 +8,7 @@ export class ActionResult<X, Y> {
   constructor (response: ExecuteResponse) {
     this.type = response.type;
 
-    if (response.type === ExecuteResponseType.End) {
+    if (response.type === ExecuteResponseType.End || response.type === ExecuteResponseType.Async) {
       this.result = response.result;
     } else {
       this.notification = response.result;
