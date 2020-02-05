@@ -13,7 +13,11 @@ export class MainComponent implements OnInit {
 
   message: string;
 
-  constructor(private db: SapphireDbService) { }
+  constructor(private db: SapphireDbService) {
+    this.db.messaging.messages().subscribe((m) => {
+      console.log(m);
+    });
+  }
 
   ngOnInit() {
     this.message$ = this.db.messaging.messages();
@@ -21,7 +25,7 @@ export class MainComponent implements OnInit {
   }
 
   send() {
-    this.db.messaging.send(this.message);
+    this.db.messaging.send(this.message, 'admin');
   }
 
   publish() {

@@ -41,9 +41,11 @@ export class Messaging {
   /**
    * Send data to other clients
    * @param data The data to send
+   * @param filter A client-filter to apply when sending message
+   * @param filterParameters Data to use in the filter
    */
-  public send(data: any): void {
-    this.connectionManagerService.sendCommand(new MessageCommand(data), false, true);
+  public send(data: any, filter?: string, filterParameters?: any[]): void {
+    this.connectionManagerService.sendCommand(new MessageCommand(data, filter, filterParameters), false, true);
   }
 
   /**
