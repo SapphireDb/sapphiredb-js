@@ -134,40 +134,12 @@
   <m4-input class="mt-2" prepend="Hash" [ngModel]="hash$ | async"></m4-input>
 </div>
 
-<h3>EnableAuthCommands</h3>
-
-<p>
-  If you want to disable auth commands (commands to manage users and to login) you can use this option.<br>
-  Default: <code>true</code>
-</p>
-
-<h3>ServerSentEventsInterface/WebsocketInterface/PollInterface/RestInterface</h3>
-
-<p>
-  You can disable the different interfaces if you dont need them.<br>
-  Default: <code>true</code>
-</p>
-
 <h3>CanExecuteCommand</h3>
 
 <p>
   Checks if a connection is allowed to execute a command. Because every action is a command, this method can be used to
   generally control all interactions.<br>
   Default: Allows to execute <code>Login</code> and <code>Renew</code> when not authenticated. If authenticated everything is allowed.
-</p>
-
-<h3>AuthInfoAllowFunction</h3>
-
-<p>
-  Control if the user is allowed to query information of roles and users.<br>
-  Default: Allowed for every authenticated user in role <code>admin</code>
-</p>
-
-<h3>AuthAllowFunction</h3>
-
-<p>
-  Control if the user is allowed to manipulate information of roles and users.<br>
-  Default: Allowed for every authenticated user in role <code>admin</code>
 </p>
 
 <h3>IsAllowedToSendMessages</h3>
@@ -191,9 +163,9 @@
   Default: Allowed for every authenticated user
 </p>
 
-<h3>IsAllowedForConnectionManagement</h3>
+<h3>ServerSentEventsInterface/WebsocketInterface/PollInterface/RestInterface</h3>
 
 <p>
-  Control if the user is allowed to manage connections.<br>
-  Default: Allowed for every authenticated user in role <code>admin</code>
+  You can disable the different interfaces if you dont need them.<br>
+  Default: <code>true</code>
 </p>
