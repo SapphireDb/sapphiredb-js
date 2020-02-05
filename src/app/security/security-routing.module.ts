@@ -16,7 +16,7 @@ const routes: Routes = [
   { path: 'create-auth', component: CreateAuthComponent },
   { path: 'remove-auth', component: RemoveAuthComponent },
   { path: 'action-auth', component: ExecuteComponent },
-  { path: '', pathMatch: 'full', redirectTo: 'authentication' }
+  { path: '', pathMatch: 'full', redirectTo: 'general' }
 ];
 
 @NgModule({

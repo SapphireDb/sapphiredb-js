@@ -34,7 +34,7 @@
           <div class="info-panel-header bg-steel fg-white">Easy to use</div>
           <div class="info-panel-content">
             <div class="mx-10 my-6"><span class="mif-rocket mif-8x fg-steel"></span></div>
-            <span class="text-leader2">All features are well designed and easy to use</span>
+            <span class="text-leader2">All features are well designed and easy to use. Development never was easier</span>
           </div>
           <div class="info-panel-footer">
             <a routerLink="../net-core" class="button large outline secondary rounded">Setup server</a>
@@ -43,10 +43,12 @@
       </div>
       <div class="cell-md-4">
         <div class="info-panel rounded no-overflow shadow-3">
-          <div class="info-panel-header bg-orange fg-white">Modern technologies</div>
+          <div class="info-panel-header bg-orange fg-white">Technology support</div>
           <div class="info-panel-content">
             <div class="mx-10 my-6"><span class="mif-power mif-8x fg-orange"></span></div>
-            <span class="text-leader2">This library is very powerful because it can be used with modern technology like Angular, RxJs, Entity Framework Core and much more</span>
+            <span class="text-leader2">
+              This library aims to support many technologies and brings a consistent and easy to use API to all of them
+            </span>
           </div>
           <div class="info-panel-footer">
             <a routerLink="../implementations" class="button large outline warning rounded">See implementations</a>
@@ -90,6 +92,7 @@
           SapphireDb is very easy to configure and to use. It is aimed to bring results and not to waste time you could better use for own features.
           You can easily extend an existing application using EntityFrameworkCore.
         </p>
+        <a routerLink="/start/net-core">Get started</a>
       </div>
       <div class="cell-md-4 mt-4">
         <div><span class="mif-power mif-8x"></span></div>
@@ -100,10 +103,12 @@
       </div>
       <div class="cell-md-4 mt-4">
         <div><span class="mif-satellite mif-8x"></span></div>
-        <h4 class="mt-4">Modern technologies</h4>
+        <h4 class="mt-4">Broad support</h4>
         <p>
-          SapphireDb uses modern technologies like ServerSentEvents, Websockets, Entity Framework and RxJs.
+          SapphireDb aims to support many technologies and brings a consistent and easy to use API to all of them.
+          It is built on top of modern technologies like Entity Framework Core, Websockets and utilizes programming paradigms like reactive programming.
         </p>
+        <a routerLink="/start/implementations">Supported technolgies</a>
       </div>
     </div>
 
@@ -112,7 +117,7 @@
         <div><span class="mif-server mif-8x"></span></div>
         <h4 class="mt-4">Self hosted</h4>
         <p>
-          Self host your application and keep the control of everything. No third party services are used.
+          Self host your application and keep the control of everything. No third party services are required.
         </p>
       </div>
       <div class="cell-md-4 mt-4">
@@ -121,13 +126,15 @@
         <p>
           SapphireDb already implements the CRUD operations so you dont need to care about <b>C</b>reating, <b>R</b>eading, <b>U</b>pdating and <b>D</b>eleting data on server side.
         </p>
+        <a routerLink="/data/manage">Learn more</a>
       </div>
       <div class="cell-md-4 mt-4">
-        <div><span class="mif-security mif-8x"></span></div>
-        <h4 class="mt-4">Authentication/Authorization included</h4>
+        <div><span class="mif-spell-check mif-8x"></span></div>
+        <h4 class="mt-4">Model validation</h4>
         <p>
-          SapphireDb comes with lots of features to secure you application and data. It also comes with a login provider.
+          SapphireDb includes server side model validation.
         </p>
+        <a routerLink="/data/model-validation">Learn more</a>
       </div>
     </div>
 
@@ -138,32 +145,65 @@
         <p>
           Because SapphireDb is an extension for Entity Framework Core it also supports all database systems supported by EF Core.
         </p>
+        <a href="https://docs.microsoft.com/de-de/ef/core/providers/?tabs=dotnet-core-cli" title="EF Core Database providers" target="_blank" rel="noreferrer">Learn more</a>
       </div>
 
       <div class="cell-md-4 mt-4">
         <div><span class="mif-folder-open mif-8x"></span></div>
-        <h4 class="mt-4">Support joins/includes</h4>
+        <h4 class="mt-4">Supports joins/includes</h4>
         <p>
           SapphireDb supports joins/includes what makes it very easy to get an object with all related data to your clients.
         </p>
+        <a routerLink="/data/data-include">Learn more</a>
       </div>
 
+      <div class="cell-md-4 mt-4">
+        <div><span class="mif-list-numbered mif-8x"></span></div>
+        <h4 class="mt-4">Complex queries</h4>
+        <p>
+          SapphireDb allows clients to create complex queries using prefilters. It is possible to filter, order, aggregate and much more with simple pieces of code.
+        </p>
+        <a routerLink="/data/prefilter">Learn more</a>
+      </div>
+    </div>
+
+    <div class="row mt-12">
       <div class="cell-md-4 mt-4">
         <div><span class="mif-power-cord mif-8x"></span></div>
         <h4 class="mt-4">Actions</h4>
         <p>
-          SapphireDb adds support for actions. Actions are server methods that can be called through the communication pipeline. Also supports async methods.
+          SapphireDb adds support for actions. Actions are server methods that can be called through the communication pipeline. Also supports async methods and async streaming of data.
         </p>
+        <a routerLink="/actions">Learn more</a>
+      </div>
+
+      <div class="cell-md-4 mt-4">
+        <div><span class="mif-security mif-8x"></span></div>
+        <h4 class="mt-4">Authorization included</h4>
+        <p>
+          SapphireDb comes with lots of features to secure you application and data. It also comes with a login provider.
+        </p>
+        <a routerLink="/security">Learn more</a>
+      </div>
+
+      <div class="cell-md-4 mt-4">
+        <div><span class="mif-paper-plane mif-8x"></span></div>
+        <h4 class="mt-4">Messaging</h4>
+        <p>
+          SapphireDb includes an easy to use topic based messaging API to send data from and to clients.
+        </p>
+        <a routerLink="/messaging">Learn more</a>
       </div>
     </div>
 
     <div class="row mt-12">
       <div class="cell-md-4 mt-4">
         <div><span class="mif-cloud mif-8x"></span></div>
-        <h4 class="mt-4">NLB (Network load balancer) support</h4>
+        <h4 class="mt-4">Scalable</h4>
         <p>
-          SapphireDb supports running in an NLB with multiple instances and scales very well.
+          SapphireDb supports running in multiple instances and therefore allows easy scaling.
         </p>
+        <a routerLink="/configuration/nlb">Learn more</a>
       </div>
     </div>
   </div>
