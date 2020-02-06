@@ -13,7 +13,7 @@ export class ActionHelper {
         if (asyncFn) {
           asyncFn(result.result);
         }
-      } else {
+      } else if (result.type === ExecuteResponseType.Notify) {
         if (notifyFn) {
           notifyFn(result.notification);
         }

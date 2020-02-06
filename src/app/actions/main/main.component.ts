@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActionHelper, ActionResult, ExecuteResponseType} from 'sapphiredb';
 import { SapphireDbService } from 'ng-sapphiredb';
 import {concatMap, filter, map, shareReplay, takeWhile} from 'rxjs/operators';
-import {Observable, of} from 'rxjs';
+import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 
 @Component({
   selector: 'app-main',
@@ -49,6 +49,13 @@ export class MainComponent implements OnInit {
       filter(v => v.type === ExecuteResponseType.Notify),
       map(v => v.notification)
     );
+  }
+
+  executeUpStream() {
+    const subject$ = new ReplaySubject<string>();
+    this.db.execute('example', 'StreamTest', subject$).subscribe(console.log);
+    subject$.next('23465');
+    subject$.complete();
   }
 
 }

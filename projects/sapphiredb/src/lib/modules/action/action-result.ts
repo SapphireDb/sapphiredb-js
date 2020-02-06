@@ -10,7 +10,7 @@ export class ActionResult<X, Y> {
 
     if (response.type === ExecuteResponseType.End || response.type === ExecuteResponseType.Async) {
       this.result = response.result;
-    } else {
+    } else if (response.type === ExecuteResponseType.Notify) {
       this.notification = response.result;
     }
   }
