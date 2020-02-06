@@ -1,22 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import { SapphireDbService } from 'ng-sapphiredb';
+import {SapphireDbService} from 'ng-sapphiredb';
+import {take} from 'rxjs/operators';
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.less']
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit, OnDestroy {
   message$: Observable<any>;
   topic$: Observable<any>;
 
   message: string;
 
+  subscriptions = [];
+
   constructor(private db: SapphireDbService) {
-    this.db.messaging.messages().subscribe((m) => {
-      console.log(m);
-    });
+
   }
 
   ngOnInit() {
@@ -25,10 +26,15 @@ export class MainComponent implements OnInit {
   }
 
   send() {
-    this.db.messaging.send(this.message, 'admin');
+    this.db.messaging.send(this.message);
   }
 
   publish() {
-    this.db.messaging.publish('test', this.message);
+    this.db.messaging.publish('test', this.message, true);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions = [];
   }
 }

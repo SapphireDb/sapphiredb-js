@@ -9,7 +9,6 @@ import {SubscribeMessageCommand} from '../command/subscribe-message/subscribe-me
 import {from, Observable, of, ReplaySubject} from 'rxjs';
 import {ResponseBase} from '../command/response-base';
 import {catchError, filter, finalize, map, share, shareReplay, take} from 'rxjs/operators';
-import {GuidHelper} from '../helper/guid-helper';
 import {MessageResponse} from '../command/message/message-response';
 import {WebsocketConnection} from './websocket-connection';
 import {SseConnection} from './sse-connection';
@@ -25,7 +24,7 @@ export class ConnectionManager {
   private storedCommandStorage: SubscribeCommandInfo[] = [];
 
   private commandReferences: CommandReferences = {};
-  private serverMessageHandler: CommandReferences = {};
+  public serverMessageHandler = new ReplaySubject<MessageResponse>(1);
 
   constructor(private options: SapphireDbOptions, private responseActionInterceptor: (executeCode: () => void) => void) {
     if (this.options.connectionType === 'sse' && typeof EventSource !== 'undefined') {
@@ -109,25 +108,12 @@ export class ConnectionManager {
     );
   }
 
-  public registerServerMessageHandler(): Observable<ResponseBase> {
-    const guid = GuidHelper.generateGuid();
-
-    const referenceSubject = new ReplaySubject<ResponseBase>(1);
-    this.serverMessageHandler[guid] = {subject$: referenceSubject, keep: true};
-
-    return referenceSubject.pipe(finalize(() => {
-      delete this.serverMessageHandler[guid];
-    }));
-  }
-
   private handleMessageResponse(response: MessageResponse) {
-    Object.keys(this.serverMessageHandler).map(k => this.serverMessageHandler[k]).forEach(handler => {
-      if (response.error) {
-        handler.subject$.error(response);
-      }
+    if (response.error) {
+      this.serverMessageHandler.error(response);
+    }
 
-      handler.subject$.next(response);
-    });
+    this.serverMessageHandler.next(response);
   }
 
   private handleResponse(response: ResponseBase) {
