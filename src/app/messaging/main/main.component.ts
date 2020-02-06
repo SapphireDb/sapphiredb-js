@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {SapphireDbService} from 'ng-sapphiredb';
-import {take} from 'rxjs/operators';
 
 @Component({
   selector: 'app-main',

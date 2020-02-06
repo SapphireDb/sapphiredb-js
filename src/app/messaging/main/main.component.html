@@ -6,57 +6,82 @@
   SapphireDb includes a messaging system that can be easily used.
 </p>
 
+<h2>Listen to messages</h2>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(typescript:message.component.ts)
+    // Subscribe messages\n
+    this.db.messaging.messages()\n
+    \t.subscribe((message: any) => console.log(message));\n\n
+
+    // Subscribe to a topic\n
+    this.db.messaging.topic(topic)\n
+    \t.subscribe((message: any) => console.log(message));
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Send messages from server</h2>
+
+<div class="remark info">
+  You can use the <code>SapphireMessageSender</code> to publish messages from server to clients.
+</div>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:MessageActions.cs)
+    public class MessageActions : ActionHandlerBase\n
+    {\n
+    \tprivate readonly SapphireMessageSender MessageSender;\n\n
+
+    \tpublic MessageActions(SapphireMessageSender messageSender)\n
+    \t{\n
+    \t\tMessageSender = messageSender;\n
+    \t}\n\n
+
+    \tpublic void Send(string message)\n
+    \t{\n
+    \t\tMessageSender.Send(message);\n
+    \t}\n\n
+
+    \tpublic void SendToAdmin(string message)\n
+    \t{\n
+    \t\t// Filters connections by the given filter 'admin'. Configured in Startup.cs\n
+    \t\tMessageSender.Send(message, "admin");\n
+    \t}\n\n
+
+    \tpublic void PublishToTopic(string message)\n
+    \t{\n
+    \t\tMessageSender.Publish("topic", message);\n
+    \t}\n
+    }
+
+    \f:(csharp:Startup.cs)
+    services.AddSapphireDb(options)\n
+      \t.AddContext<RealtimeContext>(cfg => cfg.UseFileContextDatabase(databaseName: "realtime"))\n
+      \t.AddMessageFilter("admin", i => i.User.IsInRole("admin");\n
+    ]]>
+  </div>
+</app-doc>
+
 <h2>Server</h2>
 
 <div class="remark info">
-  You can use the <code>SapphireMessageSender</code> to publish messages to the client. <br>
-  It is also possible to send messages directly from the client to other clients with some limitations.<br>
-  Check out both code examples to learn how to use the methods.
+  It is also possible to send messages directly from clients to other clients.
 </div>
 
 <app-doc [showContent]="false">
   <div lang>
   <![CDATA[
-  \f:(csharp:MessageActions.cs)
-  public class MessageActions : ActionHandlerBase\n
-  {\n
-    \tprivate readonly SapphireMessageSender MessageSender;\n\n
-
-    \tpublic MessageActions(SapphireMessageSender messageSender)\n
-    \t{\n
-      \t\tMessageSender = messageSender;\n
-    \t}\n\n
-
-    \tpublic void Send(string message)\n
-    \t{\n
-      \t\tMessageSender.Send(message);\n
-    \t}\n\n
-
-    \tpublic void SendToAdmin(string message)\n
-    \t{\n
-      \t\tMessageSender.Send(c => c.HttpInformation.User.IsInRole("admin"), message);\n
-    \t}\n\n
-
-    \tpublic void PublishToTopic(string message)\n
-    \t{\n
-      \t\tMessageSender.Publish("topic", message);\n
-    \t}\n
-  }
-
-  \f:(typescript:message.component.ts)
+  \f:(typescript:send-message.component.ts)
   // Send a message to all clients\n
   this.db.messaging.send(message);\n\n
 
-  // Subscribe messages\n
-  this.db.messaging.messages()\n
-    \t.subscribe((message: any) => console.log(message));\n\n
-
   // Publish a message to a topic\n
   this.db.messaging.publish(topic, message);\n\n
-
-  // Subscribe to a topic\n
-  this.db.messaging.topic(topic)\n
-    \t.subscribe((message: any) => console.log(message));
   ]]>
   </div>
 </app-doc>
