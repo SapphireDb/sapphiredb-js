@@ -89,10 +89,11 @@ export class SapphireDb {
           filter(r => r.responseType === 'InitStreamResponse'),
           take(1)
         ).subscribe((initStreamResponse: InitStreamResponse) => {
+          let index = 0;
           subject$.subscribe({
-            complete: () => this.connectionManager.sendCommand(new CompleteStreamCommand(initStreamResponse.id), false, true),
-            error: () => this.connectionManager.sendCommand(new CompleteStreamCommand(initStreamResponse.id), false, true),
-            next: (value) => this.connectionManager.sendCommand(new StreamCommand(initStreamResponse.id, value), false, true)
+            complete: () => this.connectionManager.sendCommand(new CompleteStreamCommand(initStreamResponse.id, index++), false, true),
+            error: () => this.connectionManager.sendCommand(new CompleteStreamCommand(initStreamResponse.id, index++), false, true),
+            next: (value) => this.connectionManager.sendCommand(new StreamCommand(initStreamResponse.id, value, index++), false, true)
           });
         });
       }

@@ -55,6 +55,11 @@ export class MainComponent implements OnInit {
     const subject$ = new ReplaySubject<string>();
     this.db.execute('example', 'StreamTest', subject$).subscribe(console.log);
     subject$.next('23465');
+    subject$.next('3456');
+    subject$.next('456');
+    subject$.next('567');
+    subject$.next('789');
+    subject$.next('90ß');
     subject$.complete();
   }
 

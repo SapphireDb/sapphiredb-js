@@ -4,9 +4,7 @@
   "description": "Angular client implementation for SapphireDb",
   "peerDependencies": {
     "@angular/common": "~8.1.0",
-    "@angular/core": "~8.1.0",
-    "rxjs": "^6.5.2",
-    "axios": "^0.19.1"
+    "@angular/core": "~8.1.0"
   },
   "keywords": [
     "realtime",
