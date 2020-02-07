@@ -107,7 +107,7 @@
   </div>
 </app-doc>
 
-<h2>Stream data</h2>
+<h2>Stream data from server</h2>
 
 <div class="remark info">
   You can also stream async data from server to client.
@@ -166,4 +166,35 @@
   </div>
 </app-doc>
 
-<button m4-button (click)="executeUpStream()">Execute</button>
+<h2>Stream data to server</h2>
+
+<div class="remark info">
+  Streaming data from client to server is also possible. It is also possible to do both.
+</div>
+
+<app-doc>
+  <button m4-button (click)="executeUpStream()">Execute</button>
+  <span [textContent]="streamValueResponse$ | async"></span>
+
+  <div lang>
+    <![CDATA[
+    \f:(csharp:AsyncActions.cs)
+    public class AsyncActions : ActionHandlerBase\n
+    {\n
+      \tpublic async IAsyncEnumerable<string> StreamTest(IAsyncEnumerable<string> inputStream)\n
+      \t{\n
+        \t\tawait foreach (string input in inputStream)\n
+        \t\t{\n
+          \t\t\tyield return input + " from server";\n
+        \t\t}\n
+      \t}\n
+    }
+
+    \f:(typescript:async-actions.component.ts)
+    const subject$ = new ReplaySubject<string>();\n
+    this.streamValueResponse$ = this.db.execute<string>('example', 'StreamTest', subject$);\n
+    subject$.next('value');\n
+    subject$.complete();
+    ]]>
+  </div>
+</app-doc>

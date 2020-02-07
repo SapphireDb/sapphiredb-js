@@ -12,8 +12,11 @@ import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 export class MainComponent implements OnInit {
 
   rangeValue$: Observable<number>;
+
   rangeValueStream$: Observable<number>;
   rangeValueStatus$: Observable<string>;
+
+  streamValueResponse$: Observable<string>;
 
   constructor(private db: SapphireDbService) { }
 
@@ -53,14 +56,20 @@ export class MainComponent implements OnInit {
 
   executeUpStream() {
     const subject$ = new ReplaySubject<string>();
-    this.db.execute('example', 'StreamTest', subject$).subscribe(console.log);
-    subject$.next('23465');
-    subject$.next('3456');
-    subject$.next('456');
-    subject$.next('567');
-    subject$.next('789');
-    subject$.next('90ß');
-    subject$.complete();
+    this.streamValueResponse$ = this.db.execute<string>('example', 'StreamTest', subject$).pipe(
+      filter(r => !!r.result),
+      map(r => r.result)
+    );
+
+    for (let i = 0; i <= 10; i++) {
+      setTimeout(() => {
+        subject$.next(i.toString());
+
+        if (i === 10) {
+          subject$.complete();
+        }
+      }, i * 200);
+    }
   }
 
 }

@@ -14,6 +14,7 @@ import {SapphireClassTransformer} from './helper/sapphire-class-transformer';
 import {InitStreamResponse} from './command/stream/init-stream-response';
 import {StreamCommand} from './command/stream/stream-command';
 import {CompleteStreamCommand} from './command/stream/complete-stream-command';
+import {ResponseBase} from './command/response-base';
 
 export class SapphireDb {
   private collectionManager: CollectionManager;
@@ -75,7 +76,7 @@ export class SapphireDb {
    */
   public execute<TResponseType = null, TNotificationType = null>(handlerName: string, actionName: string, ...parameters: any[])
     : Observable<ActionResult<TResponseType, TNotificationType>> {
-    const sendObservable$ = this.connectionManager.sendCommand(new ExecuteCommand(handlerName, actionName, parameters), true);
+    let sendObservable$: Observable<ResponseBase>;
 
     // Test to run async stream to server
     if (parameters) {
@@ -85,6 +86,8 @@ export class SapphireDb {
         const subject$: ReplaySubject<any> = parameters[subjectIndex];
         parameters[subjectIndex] = null;
 
+        sendObservable$ = this.connectionManager.sendCommand(new ExecuteCommand(handlerName, actionName, parameters), true);
+
         sendObservable$.pipe(
           filter(r => r.responseType === 'InitStreamResponse'),
           take(1)
@@ -92,11 +95,15 @@ export class SapphireDb {
           let index = 0;
           subject$.subscribe({
             complete: () => this.connectionManager.sendCommand(new CompleteStreamCommand(initStreamResponse.id, index++), false, true),
-            error: () => this.connectionManager.sendCommand(new CompleteStreamCommand(initStreamResponse.id, index++), false, true),
+            error: () => this.connectionManager.sendCommand(new CompleteStreamCommand(initStreamResponse.id, index++, true), false, true),
             next: (value) => this.connectionManager.sendCommand(new StreamCommand(initStreamResponse.id, value, index++), false, true)
           });
         });
       }
+    }
+
+    if (!sendObservable$) {
+      sendObservable$ = this.connectionManager.sendCommand(new ExecuteCommand(handlerName, actionName, parameters), true);
     }
 
     return sendObservable$.pipe(
