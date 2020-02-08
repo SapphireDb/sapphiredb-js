@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NlbComponent } from './nlb.component';
+import { SyncComponent } from './sync.component';
 
 describe('NlbComponent', () => {
-  let component: NlbComponent;
-  let fixture: ComponentFixture<NlbComponent>;
+  let component: SyncComponent;
+  let fixture: ComponentFixture<SyncComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NlbComponent ]
+      declarations: [ SyncComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NlbComponent);
+    fixture = TestBed.createComponent(SyncComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

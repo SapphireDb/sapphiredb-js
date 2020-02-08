@@ -1,0 +1,84 @@
+<h1>Server - Scaling/Multiple instance configuration</h1>
+
+<p>
+  SapphireDb supports running in multiple instances. Each instance will synchronize with the other instances with different mechanisms.
+</p>
+
+<h2>Redis cache (recommended)</h2>
+
+<p class="mb-2">
+  If you want to scale dynamically you don't know the instances in advance. You therefor need a kind of message broker that distributes changes to all application instances.
+  SapphireDb uses Redis to achieve this goal.
+</p>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(json:appsettings.json)
+    "SapphireDb": {\n
+      \t"Sync": {\n
+    \t\t"ConnectionString": "<Redis connection string>"\n
+    \t}\n
+    },
+
+    \f:(csharp:Startup.cs)
+    // Add this to ConfigureServices-method\n
+    services.AddSapphireDb(options)\n
+    \t.AddContext<RealtimeContext>(cfg => ...)\n
+      \t.AddRedisSync();\n\n
+      ]]>
+  </div>
+</app-doc>
+
+<div class="remark success">
+  Also works with <a href="https://azure.microsoft.com/de-de/services/cache/" target="_blank" rel="noreferrer" title="Azure Cache for Redis">Azure Cache for Redis</a> and is pretty easy to setup.
+</div>
+
+<h2>Simple sync (Http sync)</h2>
+
+<p class="mb-2">
+  If you only have a predefined (and small) number of instances and don't need dynamic scaling you can use this option.
+  SapphireDb will sync changes through a http-interface and send them to all other known instances.
+  You only need a seperate sync configuration for all instances.
+</p>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(json:appsettings.json)
+    "SapphireDb": {\n
+      \t"Sync": {\n
+        \t\t// A unique id of the current instance. Will be used as identifier.\n
+        \t\t"Id": "nlb1"\n\n
+
+        \t\t// Secret for current instance. Should be unique for every instance of the application. Has to be a SHA512 Hash\n
+        \t\t"Secret": "77CF97E34BED553679748144E3676A95942F91EC470BBD7AD9887DC2F0BED0C53A91413F6E366AD25F037222EE4583775B8660A3E5BC72F41066E702A8989851", //= nlbSecret\n\n
+
+        \t\t// Urls, ids and secrets of all other instances of the application\n
+        \t\t"Entries": [\n
+          \t\t\t{\n
+            \t\t\t\t"Url": "http://localhost:5001",\n
+            \t\t\t\t"Secret": "nlbSecret"\n
+            \t\t\t\t"Id": "nlb2"\n
+          \t\t\t},\n
+          \t\t\t{\n
+            \t\t\t\t"Url": "http://localhost:5002",\n
+            \t\t\t\t"Secret": "nlbSecret"\n
+            \t\t\t\t"Id": "nlb3"\n
+          \t\t\t}\n
+        \t\t]\n
+      \t}\n
+    },
+
+    \f:(csharp:Startup.cs)
+    // Add this to ConfigureServices-method\n
+    services.AddSapphireDb(options)\n
+      \t.AddContext<RealtimeContext>(cfg => ...)\n
+      \t.AddHttpSync();\n\n
+
+    // Add this to Configure-method\n
+    app.UseSapphireDb();\n
+    app.UseSapphireHttpSync();
+    ]]>
+  </div>
+</app-doc>
