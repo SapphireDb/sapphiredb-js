@@ -9,7 +9,7 @@
 <h3>Install package</h3>
 <p class="mb-5">To install the package execute the following command in your console</p>
 
-<pre><code [highlight]="'npm install -S ng-sapphiredb sapphiredb axios'" [languages]="[ 'ps' ]"></code></pre>
+<pre *ngIf="platform.isBrowser"><code [highlight]="'npm install -S ng-sapphiredb sapphiredb axios'" [languages]="[ 'ps' ]"></code></pre>
 
 <p>
   You can find the project here:

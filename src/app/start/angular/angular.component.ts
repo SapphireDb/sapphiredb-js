@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
+import {PlatformService} from '../../shared/platform.service';
 
 @Component({
   selector: 'app-angular',
@@ -6,8 +7,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./angular.component.less']
 })
 export class AngularComponent implements OnInit {
-
-  constructor() { }
+  constructor(public platform: PlatformService) { }
 
   ngOnInit() {
   }

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {PlatformService} from '../../shared/platform.service';
 
 @Component({
   selector: 'app-net-core',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NetCoreComponent implements OnInit {
 
-  constructor() { }
+  constructor(public platform: PlatformService) { }
 
   ngOnInit() {
   }

@@ -59,12 +59,18 @@ $ = function () {
     },
     clone: function () {
       return {
+        addClass: function () {
+
+        },
         removeClass: function () {
 
         },
         parent: function () {
           return {
             remove: function () {
+
+            },
+            addClass: function () {
 
             }
           }
@@ -74,6 +80,52 @@ $ = function () {
             data: function () {
               return {
                 enable: function () {
+
+                },
+                disable: function () {
+
+                }
+              }
+            }
+          }
+        },
+        input: function() {
+          return {
+            data: function () {
+              return {
+                enable: function () {
+
+                }
+              }
+            }
+          }
+        },
+        panel: function() {
+          return {
+            data: function () {
+              return {
+
+              }
+            }
+          }
+        },
+        progress: function() {
+          return {
+            data: function () {
+              return {
+
+              }
+            }
+          }
+        },
+        textarea: function() {
+          return {
+            data: function () {
+              return {
+                enable: function () {
+
+                },
+                resize: function () {
 
                 }
               }
@@ -91,12 +143,32 @@ $ = function () {
         },
         prop: function () {
 
+        },
+        attr: function () {
+
+        },
+        val: function () {
+
+        },
+        children: function () {
+          return {
+            appendTo: function () {
+
+            }
+          }
         }
       }
     },
     parent: function () {
       return {
         append: function () {
+
+        }
+      }
+    },
+    children: function () {
+      return {
+        appendTo: function () {
 
         }
       }

@@ -9,7 +9,7 @@
 <h3>Install package</h3>
 <p class="mb-5">To install the package execute the following command in your console</p>
 
-<pre><code [highlight]="'npm install -S sapphiredb rxjs axios'" [languages]="[ 'ps' ]"></code></pre>
+<pre *ngIf="platform.isBrowser"><code [highlight]="'npm install -S sapphiredb rxjs axios'" [languages]="[ 'ps' ]"></code></pre>
 
 <p>
   You can find the project here:
@@ -44,7 +44,7 @@
   sapphiredb also works in a NodeJs application. It will use polling as communication strategy by default. If you want to use websockets you have to install an external library for that.
 </p>
 
-<pre><code [highlight]="'npm install -S ws'" [languages]="[ 'ps' ]"></code></pre>
+<pre *ngIf="platform.isBrowser"><code [highlight]="'npm install -S ws'" [languages]="[ 'ps' ]"></code></pre>
 
 <app-doc [showContent]="false">
   <div lang>
