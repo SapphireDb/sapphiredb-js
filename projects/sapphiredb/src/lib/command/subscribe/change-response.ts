@@ -5,7 +5,7 @@ export interface ChangeResponse extends ResponseBase {
   value: any;
 }
 
-export interface ChangeResponses extends ResponseBase {
+export interface ChangesResponse extends ResponseBase {
   changes: ChangeResponse[];
 }
 

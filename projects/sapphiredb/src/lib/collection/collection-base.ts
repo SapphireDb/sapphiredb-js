@@ -17,7 +17,7 @@ import {CollectionManager} from './collection-manager';
 import {CollectionHelper} from '../helper/collection-helper';
 import {ConnectionManager} from '../connection/connection-manager';
 import {SubscribeCommand} from '../command/subscribe/subscribe-command';
-import {ChangeResponse, ChangeResponses} from '../command/subscribe/change-response';
+import {ChangeResponse, ChangesResponse} from '../command/subscribe/change-response';
 import {CreateRangeCommand} from '../command/create-range/create-range-command';
 import {UpdateRangeCommand} from '../command/update-range/update-range-command';
 import {DeleteRangeCommand} from '../command/delete-range/delete-range-command';
@@ -70,11 +70,11 @@ export class CollectionBase<T, Y> {
   /**
    * Get all changes of a collection
    */
-  public changes(): Observable<QueryResponse | ChangeResponse> {
+  public changes(): Observable<QueryResponse | ChangeResponse | ChangesResponse> {
     const subscribeCommand = new SubscribeCommand(this.collectionName, this.contextName, this.prefilters);
     return this.connectionManagerService.sendCommand(subscribeCommand, true)
       .pipe(
-        map((response) => <QueryResponse | ChangeResponse>response),
+        map((response) => <QueryResponse | ChangeResponse | ChangesResponse>response),
         finalize(() => {
           this.connectionManagerService.sendCommand(
             new UnsubscribeCommand(this.collectionName, this.contextName, subscribeCommand.referenceId), false, true);
@@ -174,13 +174,13 @@ export class CollectionBase<T, Y> {
     const collectionValue = new CollectionValue<T>(subscribeCommand.referenceId);
 
     const wsSubscription = this.connectionManagerService.sendCommand(subscribeCommand, true)
-      .subscribe((response: (QueryResponse | ChangeResponse | ChangeResponses)) => {
+      .subscribe((response: (QueryResponse | ChangeResponse | ChangesResponse)) => {
         if (response.responseType === 'QueryResponse') {
           collectionValue.subject.next((<QueryResponse>response).result);
         } else if (response.responseType === 'ChangeResponse') {
           CollectionHelper.updateCollection<T>(collectionValue.subject, collectionInformation, <ChangeResponse>response);
-        } else if (response.responseType === 'ChangeResponses') {
-          (<ChangeResponses>response).changes.forEach(change => {
+        } else if (response.responseType === 'ChangesResponse') {
+          (<ChangesResponse>response).changes.forEach(change => {
             CollectionHelper.updateCollection<T>(collectionValue.subject, collectionInformation, change);
           });
         }
