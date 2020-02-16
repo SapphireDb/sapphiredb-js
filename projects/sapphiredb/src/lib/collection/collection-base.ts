@@ -23,6 +23,8 @@ import {UpdateRangeCommand} from '../command/update-range/update-range-command';
 import {DeleteRangeCommand} from '../command/delete-range/delete-range-command';
 import {ClassType} from '../models/types';
 import {SapphireClassTransformer} from '../helper/sapphire-class-transformer';
+import {CreateRangeResponse} from '../command/create-range/create-range-response';
+import {UpdateRangeResponse} from '../command/update-range/update-range-response';
 
 export class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
@@ -161,6 +163,7 @@ export class CollectionBase<T, Y> {
   }
 
   private createCommandResult$(observable$: Observable<CreateResponse|UpdateResponse>): Observable<CommandResult<T>> {
+    // TODO: Handle update/create-Range response
     return observable$.pipe(map((response: CreateResponse|UpdateResponse) => {
       return new CommandResult<T>(response.error, response.validationResults,
         response.responseType === 'CreateResponse' ?
