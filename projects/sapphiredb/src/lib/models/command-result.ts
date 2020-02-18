@@ -1,13 +1,22 @@
+import {CreateResponse} from '../command/create/create-response';
+import {UpdateResponse} from '../command/update/update-response';
+import {DeleteResponse} from '../command/delete/delete-response';
+
 export class CommandResult<T> {
   error: any;
   validationResults: { [propertyName: string]: string[] };
 
   value?: T;
 
-  constructor(error: any, validationResults: { [propertyName: string]: string[] }, value?: T) {
-    this.error = error;
-    this.validationResults = validationResults;
-    this.value = value;
+  constructor(response: CreateResponse|UpdateResponse|DeleteResponse) {
+    this.error = response.error;
+    this.validationResults = response.validationResults;
+
+    if (response.responseType === 'CreateResponse') {
+      this.value = (<CreateResponse>response).newObject;
+    } else if (response.responseType === 'UpdateResponse') {
+      this.value = (<UpdateResponse>response).updatedObject;
+    }
   }
 
   hasSuccess(): boolean {

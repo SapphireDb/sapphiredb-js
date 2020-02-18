@@ -23,6 +23,11 @@ import {UpdateRangeCommand} from '../command/update-range/update-range-command';
 import {DeleteRangeCommand} from '../command/delete-range/delete-range-command';
 import {ClassType} from '../models/types';
 import {SapphireClassTransformer} from '../helper/sapphire-class-transformer';
+import {UpdateRangeResponse} from '../command/update-range/update-range-response';
+import {CreateRangeResponse} from '../command/create-range/create-range-response';
+import {CommandResults} from '../models/command-results';
+import {ValidatedResponseBase} from '../command/validated-response-base';
+import {DeleteRangeResponse} from '../command/delete-range/delete-range-response';
 
 export class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
@@ -87,17 +92,17 @@ export class CollectionBase<T, Y> {
    * Add a value to the collection
    * @param values The object(s) to add to the collection
    */
-  public add(...values: T[]): Observable<CommandResult<T>> {
+  public add(...values: T[]): Observable<CommandResults<T>> {
     if (this.classType && this.classTransformer) {
       values = this.classTransformer.classToPlain(values);
     }
 
     if (values.length === 1) {
-      return this.createCommandResult$(
-        <any>this.connectionManagerService.sendCommand(new CreateCommand(this.collectionName, this.contextName, values[0])));
+      return this.createCommandResults$(
+        <any>this.connectionManagerService.sendCommand(new CreateCommand(this.collectionName, this.contextName, values[0])), false);
     } else {
-      return this.createCommandResult$(
-        <any>this.connectionManagerService.sendCommand(new CreateRangeCommand(this.collectionName, this.contextName, values)));
+      return this.createCommandResults$(
+        <any>this.connectionManagerService.sendCommand(new CreateRangeCommand(this.collectionName, this.contextName, values)), true);
     }
   }
 
@@ -105,17 +110,17 @@ export class CollectionBase<T, Y> {
    * Update a value of the collection
    * @param values The object(s) to update in the collection
    */
-  public update(...values: T[]): Observable<CommandResult<T>> {
+  public update(...values: T[]): Observable<CommandResults<T>> {
     if (this.classType && this.classTransformer) {
       values = this.classTransformer.classToPlain(values);
     }
 
     if (values.length === 1) {
-      return this.createCommandResult$(
-        <any>this.connectionManagerService.sendCommand(new UpdateCommand(this.collectionName, this.contextName, values[0])));
+      return this.createCommandResults$(
+        <any>this.connectionManagerService.sendCommand(new UpdateCommand(this.collectionName, this.contextName, values[0])), false);
     } else {
-      return this.createCommandResult$(
-        <any>this.connectionManagerService.sendCommand(new UpdateRangeCommand(this.collectionName, this.contextName, values)));
+      return this.createCommandResults$(
+        <any>this.connectionManagerService.sendCommand(new UpdateRangeCommand(this.collectionName, this.contextName, values)), true);
     }
   }
 
@@ -123,12 +128,12 @@ export class CollectionBase<T, Y> {
    * Remove a value from the collection
    * @param values The object(s) to remove from the collection
    */
-  public remove(...values: T[]): Observable<CommandResult<T>> {
+  public remove(...values: T[]): Observable<CommandResults<T>> {
     if (this.classType && this.classTransformer) {
       values = this.classTransformer.classToPlain(values);
     }
 
-    const subject = new Subject<CommandResult<T>>();
+    const subject = new Subject<CommandResults<T>>();
 
     this.collectionInformation.pipe(
       switchMap((info: InfoResponse) => {
@@ -140,17 +145,13 @@ export class CollectionBase<T, Y> {
           return primaryValues;
         });
 
-        let deleteCommand;
-
         if (primaryKeyList.length === 1) {
-          deleteCommand = new DeleteCommand(this.collectionName, this.contextName, primaryKeyList[0]);
+          return this.createCommandResults$(
+            <any>this.connectionManagerService.sendCommand(new DeleteCommand(this.collectionName, this.contextName, primaryKeyList[0])), false);
         } else {
-          deleteCommand = new DeleteRangeCommand(this.collectionName, this.contextName, primaryKeyList);
+          return this.createCommandResults$(
+            <any>this.connectionManagerService.sendCommand(new DeleteRangeCommand(this.collectionName, this.contextName, primaryKeyList)), false);
         }
-
-        return this.connectionManagerService.sendCommand(deleteCommand).pipe(map((response: DeleteResponse) => {
-          return new CommandResult<T>(response.error, response.validationResults);
-        }));
       }),
       take(1)
     ).subscribe((response) => {
@@ -160,12 +161,17 @@ export class CollectionBase<T, Y> {
     return subject;
   }
 
-  private createCommandResult$(observable$: Observable<CreateResponse|UpdateResponse>): Observable<CommandResult<T>> {
-    // TODO: Handle update/create-Range response
-    return observable$.pipe(map((response: CreateResponse|UpdateResponse) => {
-      return new CommandResult<T>(response.error, response.validationResults,
-        response.responseType === 'CreateResponse' ?
-          (<CreateResponse>response).newObject : (<UpdateResponse>response).updatedObject);
+  private createCommandResults$(observable$: Observable<CreateResponse | CreateRangeResponse | UpdateResponse | UpdateRangeResponse | DeleteResponse | DeleteRangeResponse>, range: boolean): Observable<CommandResults<T>> {
+    return observable$.pipe(map((response: CreateResponse | CreateRangeResponse | UpdateResponse | UpdateRangeResponse) => {
+      let results;
+
+      if (range) {
+        results = (<(CreateResponse | UpdateResponse | DeleteResponse)[]>(<DeleteRangeResponse | UpdateRangeResponse | CreateRangeResponse>response).results).map(r => new CommandResult<T>(r));
+      } else {
+        results = [new CommandResult<T>(<CreateResponse | UpdateResponse | DeleteResponse>response)];
+      }
+
+      return new CommandResults(results);
     }));
   }
 
