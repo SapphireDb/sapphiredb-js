@@ -23,9 +23,9 @@ export class LoginComponent implements OnInit {
       password: new FormControl()
     });
 
-    // this.db.execute('tes', 'test').subscribe(console.log);
+    // this.db.execute('tes.test').subscribe(console.log);
 
-    this.users$ = this.db.execute('user', 'GetUsers').pipe(map((result: ActionResult<AppUser[], null>) => {
+    this.users$ = this.db.execute('user.GetUsers').pipe(map((result: ActionResult<AppUser[], null>) => {
       return result.result;
     }));
   }
@@ -34,8 +34,8 @@ export class LoginComponent implements OnInit {
   }
 
   createUser() {
-    this.db.execute('user', 'CreateUser', { firstName: 'Morris', lastName: 'Janatzek', email: 'test@test.de', password: 'pw1234' });
-    this.db.execute('user', 'AddRole', 'test@test.de', 'admin');
+    this.db.execute('user.CreateUser', { firstName: 'Morris', lastName: 'Janatzek', email: 'test@test.de', password: 'pw1234' });
+    this.db.execute('user.AddRole', 'test@test.de', 'admin');
   }
 
   select(user: AppUser) {

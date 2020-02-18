@@ -20,7 +20,7 @@ export class MainComponent implements OnInit {
       debounceTime(200),
       filter(v => !!v),
       switchMap((v) => {
-        return this.db.execute<string, null>('Example', 'CreateHash', v).pipe(
+        return this.db.execute<string, null>('Example.CreateHash', v).pipe(
           map(r => r.result)
         );
       })

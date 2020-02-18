@@ -25,8 +25,8 @@ export class AccountService {
   }
 
   login(username: string, password: string) {
-    this.db.execute('user', 'login', username, password).subscribe(response => {
-      this.db.setAuthToken(<string>response.result);;
+    this.db.execute('user.login', username, password).subscribe(response => {
+      this.db.setAuthToken(<string>response.result);
     });
 
     // this.db.auth.login(username, password).subscribe((data: UserData) => {

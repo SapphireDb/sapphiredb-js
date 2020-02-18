@@ -53,7 +53,7 @@
     }
 
     \f:(typescript:actions.component.ts)
-    this.db.execute('example', 'MethodWithParameters', 'parameter1', 'parameter2')\n
+    this.db.execute('example.MethodWithParameters', 'parameter1', 'parameter2')\n
       \t.subscribe(console.log);
     ]]>
   </div>
@@ -93,7 +93,7 @@
     }
 
     \f:(typescript:async-actions.component.ts)
-    this.db.execute('example', 'MethodWithParameters', 'parameter1', 'parameter2')\n
+    this.db.execute('example.MethodWithParameters', 'parameter1', 'parameter2')\n
       \t.subscribe(ActionHelper.result<string, number>(\n
         \t\t(result) => {\n
           \t\t\talert(result);\n
@@ -140,7 +140,7 @@
     }
 
     \f:(typescript:async-actions.component.ts)
-    this.db.execute('example', 'AsyncEnumerableTest').subscribe(\n
+    this.db.execute('example.AsyncEnumerableTest').subscribe(\n
       \tActionHelper.result(\n
         \t\t() => console.log('complete'),\n
         \t\t(value) => console.log(value),\n
@@ -149,7 +149,7 @@
     );\n\n
 
     // The code of the above example\n
-    const result$ = this.db.execute<number, string>('example', 'AsyncEnumerableTest').pipe(\n
+    const result$ = this.db.execute<number, string>('example.AsyncEnumerableTest').pipe(\n
       \tshareReplay()\n
     );\n\n
 
@@ -192,7 +192,7 @@
 
     \f:(typescript:async-actions.component.ts)
     const subject$ = new ReplaySubject<string>();\n
-    this.streamValueResponse$ = this.db.execute<string>('example', 'StreamTest', subject$);\n
+    this.streamValueResponse$ = this.db.execute<string>('example.StreamTest', subject$);\n
     subject$.next('value');\n
     subject$.complete();
     ]]>

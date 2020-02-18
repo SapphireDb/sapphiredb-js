@@ -55,7 +55,7 @@ export class MainComponent implements OnInit {
     //   });
     // });
 
-    this.db.execute<number, string>('example', 'GenerateRandomNumber')
+    this.db.execute<number, string>('example.GenerateRandomNumber')
     // .subscribe((v: ActionResult<number, string>) => console.log(v));
       .subscribe(ActionHelper.result<number, string>(
         v => console.log('Result: ' + v),
@@ -87,10 +87,10 @@ export class MainComponent implements OnInit {
 
     // this.db.collection('tests').values();
 
-    this.db.execute('example', 'TestWithParams', 'test1234', 'test2345')
+    this.db.execute('example.TestWithParams', 'test1234', 'test2345')
       .subscribe(console.log);
 
-    this.db.execute('example', 'NoReturn').subscribe(console.log);
+    this.db.execute('example.NoReturn').subscribe(console.log);
 
     this.db.messaging.topic('test').pipe(take(3)).subscribe(alert);
 
@@ -128,7 +128,7 @@ export class MainComponent implements OnInit {
   }
 
   execute() {
-    // this.db.execute('example', 'GenerateRandomNumber')
+    // this.db.execute('example.GenerateRandomNumber')
     // // .subscribe((v: ActionResult<number, string>) => console.log(v));
     //   .subscribe(ActionHelper.result<number, string>(
     //     v => console.log('Result: ' + v),
@@ -136,7 +136,7 @@ export class MainComponent implements OnInit {
     //       this.rangeValue = <any>v;
     //     }));
 
-    this.rangeValue = this.db.execute<number, number>('example', 'GenerateRandomNumber').pipe(
+    this.rangeValue = this.db.execute<number, number>('example.GenerateRandomNumber').pipe(
       filter((r: ActionResult<number, number>) => r.type === ExecuteResponseType.Notify),
       map((r: ActionResult<number, number>) => r.notification),
       concatMap(v => {
@@ -154,13 +154,13 @@ export class MainComponent implements OnInit {
   }
 
   send() {
-    this.db.execute('message', 'SendToAdmin', 'Das ist ei ntest').subscribe(console.warn);
+    this.db.execute('message.SendToAdmin', 'Das ist ei ntest').subscribe(console.warn);
     this.db.messaging.send({data: this.message});
     this.db.messaging.publish('test', this.message);
   }
 
   executeTest() {
-    this.db.execute('user', 'Test');
+    this.db.execute('user.Test');
   }
 
   createTestSecond() {

@@ -3,6 +3,7 @@ import {ActionHelper, ActionResult, ExecuteResponseType} from 'sapphiredb';
 import { SapphireDbService } from 'ng-sapphiredb';
 import {concatMap, filter, map, shareReplay, takeWhile} from 'rxjs/operators';
 import {Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {GuidHelper} from '../../../../projects/sapphiredb/src/lib/helper/guid-helper';
 
 @Component({
   selector: 'app-main',
@@ -24,7 +25,7 @@ export class MainComponent implements OnInit {
   }
 
   execute() {
-    this.rangeValue$ = this.db.execute<string, number>('example', 'AsyncDelay').pipe(
+    this.rangeValue$ = this.db.execute<string, number>('example.AsyncDelay').pipe(
       concatMap(r => {
         if (r.type === ExecuteResponseType.End) {
           return of(r, null);
@@ -39,7 +40,7 @@ export class MainComponent implements OnInit {
   }
 
   executeStream() {
-    const result$ = this.db.execute<number, string>('example', 'AsyncEnumerableTest').pipe(
+    const result$ = this.db.execute<number, string>('example.AsyncEnumerableTest').pipe(
       shareReplay()
     );
 
@@ -56,7 +57,7 @@ export class MainComponent implements OnInit {
 
   executeUpStream() {
     const subject$ = new ReplaySubject<string>();
-    this.streamValueResponse$ = this.db.execute<string>('example', 'StreamTest', subject$).pipe(
+    this.streamValueResponse$ = this.db.execute<string>('example.StreamTest', subject$).pipe(
       filter(r => !!r.result),
       map(r => r.result)
     );

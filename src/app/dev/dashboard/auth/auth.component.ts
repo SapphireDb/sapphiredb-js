@@ -16,11 +16,11 @@ export class AuthComponent implements OnInit {
   }
 
   testConnection() {
-    this.db.execute('db', 'testConnection', this.dbName).subscribe(console.log);
+    this.db.execute('db.testConnection', this.dbName).subscribe(console.log);
   }
 
   saveConnection() {
-    this.db.execute('db', 'updateSettings', this.dbName).subscribe(console.log);
+    this.db.execute('db.updateSettings', this.dbName).subscribe(console.log);
   }
 }
 

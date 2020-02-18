@@ -1,14 +1,12 @@
 import {CommandBase} from '../command-base';
 
 export class ExecuteCommand extends CommandBase {
-  actionHandlerName: string;
-  actionName: string;
+  action: string;
   parameters: any[];
 
-  constructor(actionHandlerName: string, actionName: string, parameters: any[]) {
+  constructor(action: string, parameters: any[]) {
     super('ExecuteCommand');
-    this.actionHandlerName = actionHandlerName;
-    this.actionName = actionName;
+    this.action = action;
     this.parameters = parameters;
   }
 }

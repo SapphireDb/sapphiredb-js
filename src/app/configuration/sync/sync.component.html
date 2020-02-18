@@ -17,7 +17,9 @@
     \f:(json:appsettings.json)
     "SapphireDb": {\n
       \t"Sync": {\n
-    \t\t"ConnectionString": "<Redis connection string>"\n
+    \t\t"ConnectionString": "<Redis connection string>"\n\n
+    \t\t// (optional) Only useful, if you want to use the same redis cache for multiple independent SapphireDb applications\n
+    \t\t"Prefix": "<Custom channel prefix>"\n
     \t}\n
     },
 
@@ -31,7 +33,7 @@
 </app-doc>
 
 <div class="remark success">
-  Also works with <a href="https://azure.microsoft.com/de-de/services/cache/" target="_blank" rel="noreferrer" title="Azure Cache for Redis">Azure Cache for Redis</a> and is pretty easy to setup.
+  Also works with <a href="https://azure.microsoft.com/de-de/services/cache/" target="_blank" rel="noreferrer" title="Azure Cache for Redis">Azure Cache for Redis</a> and therefor pretty easy to setup.
 </div>
 
 <h2>Simple sync (Http sync)</h2>

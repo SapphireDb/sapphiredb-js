@@ -11,7 +11,7 @@ export class UserStateService {
   constructor(private db: SapphireDbService) { }
 
   public login(username: string, password: string) {
-    this.db.execute('user', 'login', username, password).subscribe(response => {
+    this.db.execute('user.login', username, password).subscribe(response => {
       this.db.setAuthToken(<string>response.result).pipe(take(1)).subscribe((result) => {
         if (result === AuthTokenState.valid) {
           this.currentUser$.next(username);

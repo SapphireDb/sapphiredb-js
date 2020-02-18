@@ -70,11 +70,10 @@ export class SapphireDb {
 
   /**
    * Execute an action on the server
-   * @param handlerName The name of the handler
-   * @param actionName The name of the action
+   * @param action The action to call. Action handler and action name separated with a dot (handler.action)
    * @param parameters Parameters for the action
    */
-  public execute<TResponseType = null, TNotificationType = null>(handlerName: string, actionName: string, ...parameters: any[])
+  public execute<TResponseType = null, TNotificationType = null>(action: string, ...parameters: any[])
     : Observable<ActionResult<TResponseType, TNotificationType>> {
     let sendObservable$: Observable<ResponseBase>;
 
@@ -86,7 +85,7 @@ export class SapphireDb {
         const subject$: ReplaySubject<any> = parameters[subjectIndex];
         parameters[subjectIndex] = null;
 
-        sendObservable$ = this.connectionManager.sendCommand(new ExecuteCommand(handlerName, actionName, parameters), true);
+        sendObservable$ = this.connectionManager.sendCommand(new ExecuteCommand(action, parameters), true);
 
         sendObservable$.pipe(
           filter(r => r.responseType === 'InitStreamResponse'),
@@ -103,7 +102,7 @@ export class SapphireDb {
     }
 
     if (!sendObservable$) {
-      sendObservable$ = this.connectionManager.sendCommand(new ExecuteCommand(handlerName, actionName, parameters), true);
+      sendObservable$ = this.connectionManager.sendCommand(new ExecuteCommand(action, parameters), true);
     }
 
     return sendObservable$.pipe(
