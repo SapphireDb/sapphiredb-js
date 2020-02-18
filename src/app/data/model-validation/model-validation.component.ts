@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {DefaultCollection} from 'sapphiredb';
+import {DefaultCollection, CommandResults} from 'sapphiredb';
 import { SapphireDbService } from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {FormControl, FormGroup} from '@angular/forms';
-import {CommandResult} from '../../../../projects/sapphiredb/src/lib/models/command-result';
 import {take} from 'rxjs/operators';
 import {M4FormGroup} from 'ng-metro4';
 
@@ -53,7 +52,7 @@ export class ModelValidationComponent implements OnInit {
   store() {
     const rawFormValue = this.form.getRawValue();
 
-    let result$: Observable<CommandResult<any>>;
+    let result$: Observable<CommandResults<any>>;
 
     if (!!rawFormValue.id) {
       result$ = this.collection.update(rawFormValue);
@@ -62,10 +61,11 @@ export class ModelValidationComponent implements OnInit {
       result$ = this.collection.add(rawFormValue);
     }
 
-    result$.pipe(take(1)).subscribe((result: CommandResult<any>) => {
-      if (result.hasSuccess()) {
+    result$.pipe(take(1)).subscribe((results: CommandResults<any>) => {
+      if (results.hasSuccess()) {
         this.resetForm();
       } else {
+        const result = results.results[0];
         Object.keys(result.validationResults).forEach(key => {
           const errors = {};
           result.validationResults[key].forEach(error => errors[error] = true);
