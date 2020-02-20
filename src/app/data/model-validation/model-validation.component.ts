@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {DefaultCollection, CommandResults} from 'sapphiredb';
-import { SapphireDbService } from 'ng-sapphiredb';
+import {DefaultCollection} from 'sapphiredb';
+import { SapphireDbService, CreateResponse, UpdateResponse } from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {FormControl, FormGroup} from '@angular/forms';
 import {take} from 'rxjs/operators';
@@ -52,7 +52,7 @@ export class ModelValidationComponent implements OnInit {
   store() {
     const rawFormValue = this.form.getRawValue();
 
-    let result$: Observable<CommandResults<any>>;
+    let result$: Observable<CreateResponse|UpdateResponse>;
 
     if (!!rawFormValue.id) {
       result$ = this.collection.update(rawFormValue);
@@ -61,7 +61,7 @@ export class ModelValidationComponent implements OnInit {
       result$ = this.collection.add(rawFormValue);
     }
 
-    result$.pipe(take(1)).subscribe((results: CommandResults<any>) => {
+    result$.pipe(take(1)).subscribe((results: CreateResponse|UpdateResponse) => {
       if (results.hasSuccess()) {
         this.resetForm();
       } else {
