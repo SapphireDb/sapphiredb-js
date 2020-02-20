@@ -10,11 +10,13 @@ import {ThenOrderByPrefilter} from './prefilter/then-order-by-prefilter';
 import {ConnectionManager} from '../connection/connection-manager';
 import {ClassType} from '../models/types';
 import {SapphireClassTransformer} from '../helper/sapphire-class-transformer';
+import {OfflineManager} from '../modules/offline/offline-manager';
 
 export class CollectionManager {
   constructor(private connectionManager: ConnectionManager,
               private collectionInformation: CollectionInformationManager,
-              private classTransformer: SapphireClassTransformer) {}
+              private classTransformer: SapphireClassTransformer,
+              private offlineManager: OfflineManager) {}
 
   public getCollection<T>(collectionName: string, prefilters: IPrefilter<any, any>[],
                           newPrefilter?: IPrefilter<any, any>, classType?: ClassType<T>): CollectionBase<T, any> {
@@ -30,7 +32,8 @@ export class CollectionManager {
         collectionName,
         this.connectionManager,
         this.collectionInformation.getCollectionInformation(collectionName),
-        this);
+        this,
+        this.offlineManager);
     } else if (newPrefilter instanceof OrderByPrefilter || newPrefilter instanceof ThenOrderByPrefilter) {
       newCollection = new OrderedCollection<any>(
         collectionName,
@@ -38,7 +41,8 @@ export class CollectionManager {
         this.collectionInformation.getCollectionInformation(collectionName,),
         this,
         classType,
-        this.classTransformer);
+        this.classTransformer,
+        this.offlineManager);
     } else {
       newCollection = new DefaultCollection<any>(
         collectionName,
@@ -46,7 +50,8 @@ export class CollectionManager {
         this.collectionInformation.getCollectionInformation(collectionName),
         this,
         classType,
-        this.classTransformer);
+        this.classTransformer,
+        this.offlineManager);
     }
 
     newCollection.prefilters = newPrefilters;

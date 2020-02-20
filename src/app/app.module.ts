@@ -11,7 +11,7 @@ import csharp from 'highlight.js/lib/languages/cs';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import { SapphireDbOptions, SapphireClassTransformer, ClassType} from 'sapphiredb';
+import { SapphireDbOptions, SapphireClassTransformer, ClassType, SapphireStorage} from 'sapphiredb';
 import { SAPPHIRE_DB_OPTIONS, SapphireDbModule } from 'ng-sapphiredb';
 import {ReactiveFormsModule} from '@angular/forms';
 import {environment} from '../environments/environment';
@@ -21,6 +21,7 @@ import {LegalDisclosureComponent} from './shared/legal-disclosure/legal-disclosu
 import {PrivacyComponent} from './shared/privacy/privacy.component';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {classToPlain, plainToClass} from 'class-transformer';
+import {Observable, of} from 'rxjs';
 
 export function hljsLanguages() {
   return [
@@ -40,7 +41,8 @@ export function createRealtimeOptions(): SapphireDbOptions {
     serverBaseUrl: environment.serverBaseUrl,
     apiSecret: 'pw1234',
     apiKey: 'webapp',
-    connectionType: <any>(localStorage.getItem('connectionType') || 'websocket')
+    connectionType: <any>(localStorage.getItem('connectionType') || 'websocket'),
+    offlineSupport: true
   };
 }
 
@@ -51,6 +53,18 @@ export class CustomClassTransformer extends SapphireClassTransformer {
 
   plainToClass<T>(value: any, classType: ClassType<T>): T[] | T {
     return plainToClass(classType, value);
+  }
+}
+
+export class CustomStorage extends SapphireStorage {
+  get(key: string): Observable<string> {
+    console.log('requested ' + key);
+    return of(localStorage.getItem('sapphiredb' + key));
+  }
+
+  set(key: string, value: string) {
+    console.log('stored ' + key, value);
+    localStorage.setItem('sapphiredb' + key, value);
   }
 }
 
@@ -73,7 +87,8 @@ export class CustomClassTransformer extends SapphireClassTransformer {
   ],
   providers: [
     { provide: SAPPHIRE_DB_OPTIONS, useFactory: createRealtimeOptions },
-    { provide: SapphireClassTransformer, useClass: CustomClassTransformer }
+    { provide: SapphireClassTransformer, useClass: CustomClassTransformer },
+    { provide: SapphireStorage, useClass: CustomStorage }
   ],
   bootstrap: [AppComponent]
 })

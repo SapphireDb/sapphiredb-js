@@ -86,7 +86,7 @@ export class ConnectionManager {
   public sendCommand(command: CommandBase, keep?: boolean, onlySend?: boolean): Observable<ResponseBase> {
     const storedCommand = this.storeSubscribeCommands(command);
 
-    // Only send stored command if connected
+    // Only try to send stored command if connected, because all commands are cached until they are sent
     if (!storedCommand || this.connection.connectionInformation$.value.readyState === ConnectionState.connected) {
       this.connection.send(command, storedCommand);
     }
@@ -198,5 +198,9 @@ export class ConnectionManager {
       }),
       shareReplay()
     );
+  }
+
+  public getConnectionId(): string|null {
+    return this.connection.connectionInformation$.value.connectionId;
   }
 }

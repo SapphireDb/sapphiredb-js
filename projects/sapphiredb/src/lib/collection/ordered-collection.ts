@@ -6,6 +6,7 @@ import {DefaultCollection} from './default-collection';
 import {ConnectionManager} from '../connection/connection-manager';
 import {ClassType, SortDirection} from '../models/types';
 import {SapphireClassTransformer} from '../helper/sapphire-class-transformer';
+import {OfflineManager} from '../modules/offline/offline-manager';
 
 export class OrderedCollection<T> extends DefaultCollection<T> {
   constructor(collectionName: string,
@@ -13,8 +14,9 @@ export class OrderedCollection<T> extends DefaultCollection<T> {
               collectionInformation: Observable<InfoResponse>,
               collectionManagerService: CollectionManager,
               classType: ClassType<T>,
-              classTransformer: SapphireClassTransformer) {
-    super(collectionName, connectionManagerService, collectionInformation, collectionManagerService, classType, classTransformer);
+              classTransformer: SapphireClassTransformer,
+              offlineManager: OfflineManager) {
+    super(collectionName, connectionManagerService, collectionInformation, collectionManagerService, classType, classTransformer, offlineManager);
   }
 
   /**

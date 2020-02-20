@@ -17,6 +17,7 @@ import {ConditionType} from '../helper/condition-types';
 import {IncludePrefilter} from './prefilter/include-prefilter';
 import {ClassType, SortDirection} from '../models/types';
 import {SapphireClassTransformer} from '../helper/sapphire-class-transformer';
+import {OfflineManager} from '../modules/offline/offline-manager';
 
 export class DefaultCollection<T> extends CollectionBase<T, T[]> {
   constructor(collectionName: string,
@@ -24,8 +25,9 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
               collectionInformation: Observable<InfoResponse>,
               collectionManagerService: CollectionManager,
               classType: ClassType<T>,
-              classTransformer: SapphireClassTransformer) {
-    super(collectionName, connectionManagerService, collectionInformation, collectionManagerService, classType, classTransformer);
+              classTransformer: SapphireClassTransformer,
+              offlineManager: OfflineManager) {
+    super(collectionName, connectionManagerService, collectionInformation, collectionManagerService, classType, classTransformer, offlineManager);
   }
 
   /**

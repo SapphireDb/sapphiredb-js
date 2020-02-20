@@ -8,6 +8,7 @@ export * from './lib/sapphire-db';
 export * from './lib/helper/action-helper';
 export * from './lib/helper/condition-types';
 export * from './lib/helper/sapphire-class-transformer';
+export * from './lib/helper/sapphire-storage';
 
 export * from './lib/collection/default-collection';
 export * from './lib/collection/ordered-collection';

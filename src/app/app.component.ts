@@ -1,8 +1,9 @@
 import {Component} from '@angular/core';
 import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
-import {ActivityService, DialogService} from 'ng-metro4';
-import {debounceTime, filter, switchMap} from 'rxjs/operators';
+import {ActivityService, DialogService, ToastService} from 'ng-metro4';
+import {debounceTime, distinctUntilChanged, filter, skip, switchMap} from 'rxjs/operators';
 import {SwUpdate} from '@angular/service-worker';
+import {SapphireDbService} from 'ng-sapphiredb';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,15 @@ export class AppComponent {
   showConsent: boolean;
 
   constructor(public router: Router, private activityService: ActivityService, private swUpdate: SwUpdate,
-              private dialogService: DialogService) {
+              private dialogService: DialogService, private db: SapphireDbService, private toastService: ToastService) {
+    this.db.online().pipe(debounceTime(100), distinctUntilChanged()).subscribe((state) => {
+      if (state) {
+        this.toastService.create('The application is online');
+      } else {
+        this.toastService.create('The application is offline');
+      }
+    });
+
     this.showConsent = !localStorage.getItem('docs_consent_showed');
 
     let activity;

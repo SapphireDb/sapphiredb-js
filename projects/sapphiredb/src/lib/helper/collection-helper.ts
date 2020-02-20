@@ -18,42 +18,45 @@ export class CollectionHelper {
       p => CollectionHelper.afterQueryPrefilters.findIndex(f => p instanceof f) === -1);
   }
 
-  static updateCollection<T>(collectionData$: ReplaySubject<T[]>, info$: Observable<InfoResponse>, changeResponse: ChangeResponse) {
-    info$.pipe(
-      switchMap((info) => collectionData$.pipe(map(values => [info, values]))),
-      take(1)
-    ).subscribe(([info, values]: [InfoResponse, T[]]) => {
-      if (changeResponse.state === ChangeState.Modified) {
-        const index = values.findIndex(
-          FilterFunctions.comparePrimaryKeysFunction(info.primaryKeys, changeResponse.value));
+  static hasAfterQueryPrefilter(prefilters: IPrefilter<any, any>[]) {
+    return prefilters.filter(
+      p => CollectionHelper.afterQueryPrefilters.findIndex(f => p instanceof f) !== -1
+    ).length !== 0;
+  }
 
-        if (index !== -1) {
-          values[index] = changeResponse.value;
-          collectionData$.next(values);
-        }
-      } else if (changeResponse.state === ChangeState.Added) {
-        collectionData$.next(values.concat([changeResponse.value]));
-      } else if (changeResponse.state === ChangeState.Deleted) {
-        const primaryKeys = info.primaryKeys;
+  static getPrefilterHash(prefilters: IPrefilter<any, any>[]) {
+    return prefilters.reduce((prev, current) => prev += current.hash(), '');
+  }
 
-        const index = values.findIndex(c => {
-          let isCorrectElement = true;
+  static updateCollection<T>(info: InfoResponse, values: T[], changeResponse: ChangeResponse) {
+    if (changeResponse.state === ChangeState.Modified) {
+      const index = values.findIndex(
+        FilterFunctions.comparePrimaryKeysFunction(info.primaryKeys, changeResponse.value));
 
-          for (let i = 0; i < primaryKeys.length; i++) {
-            if (c[primaryKeys[i]] !== changeResponse.value[primaryKeys[i]]) {
-              isCorrectElement = false;
-              break;
-            }
-          }
-
-          return isCorrectElement;
-        });
-
-        if (index !== -1) {
-          values.splice(index, 1);
-          collectionData$.next(values);
-        }
+      if (index !== -1) {
+        values[index] = changeResponse.value;
       }
-    });
+    } else if (changeResponse.state === ChangeState.Added) {
+      values.push(changeResponse.value);
+    } else if (changeResponse.state === ChangeState.Deleted) {
+      const primaryKeys = info.primaryKeys;
+
+      const index = values.findIndex(c => {
+        let isCorrectElement = true;
+
+        for (let i = 0; i < primaryKeys.length; i++) {
+          if (c[primaryKeys[i]] !== changeResponse.value[primaryKeys[i]]) {
+            isCorrectElement = false;
+            break;
+          }
+        }
+
+        return isCorrectElement;
+      });
+
+      if (index !== -1) {
+        values.splice(index, 1);
+      }
+    }
   }
 }

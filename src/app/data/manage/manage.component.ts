@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import { SapphireDbService } from 'ng-sapphiredb';
 import {DefaultCollection} from 'sapphiredb';
 import {DialogService} from 'ng-metro4';
+import {GuidHelper} from '../../../../projects/sapphiredb/src/lib/helper/guid-helper';
 
 @Component({
   selector: 'app-manage',
@@ -23,7 +24,8 @@ export class ManageComponent implements OnInit {
   addValue() {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
       this.collection.add({
-        content: v
+        content: v,
+        id: GuidHelper.generateGuid()
       });
     });
   }
@@ -32,10 +34,12 @@ export class ManageComponent implements OnInit {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
       this.collection.add(...[
         {
-          content: '1' + v
+          content: '1' + v,
+          id: GuidHelper.generateGuid()
         },
         {
-          content: '2' + v
+          content: '2' + v,
+          id: GuidHelper.generateGuid()
         }
       ]);
     });

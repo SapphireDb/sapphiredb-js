@@ -1,9 +1,9 @@
 import {Messaging} from './modules/messaging/messaging';
 import {CollectionManager} from './collection/collection-manager';
 import {ConnectionManager} from './connection/connection-manager';
-import {AuthTokenState, ClassType, ConnectionInformation} from './models/types';
+import {AuthTokenState, ClassType, ConnectionInformation, ConnectionState} from './models/types';
 import {DefaultCollection} from './collection/default-collection';
-import {Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {Observable, of, ReplaySubject} from 'rxjs';
 import {ActionResult} from './modules/action/action-result';
 import {ExecuteCommand} from './command/execute/execute-command';
 import {concatMap, filter, map, take, takeWhile} from 'rxjs/operators';
@@ -15,6 +15,8 @@ import {InitStreamResponse} from './command/stream/init-stream-response';
 import {StreamCommand} from './command/stream/stream-command';
 import {CompleteStreamCommand} from './command/stream/complete-stream-command';
 import {ResponseBase} from './command/response-base';
+import {SapphireStorage} from './helper/sapphire-storage';
+import {OfflineManager} from './modules/offline/offline-manager';
 
 export class SapphireDb {
   private collectionManager: CollectionManager;
@@ -25,7 +27,9 @@ export class SapphireDb {
    */
   public messaging: Messaging;
 
-  constructor(private options?: SapphireDbOptions, private classTransformer?: SapphireClassTransformer,
+  constructor(private options?: SapphireDbOptions,
+              private storage?: SapphireStorage,
+              private classTransformer?: SapphireClassTransformer,
               private responseActionInterceptor?: (executeCode: () => void) => void) {
     const windowDefined = typeof window !== 'undefined';
 
@@ -44,6 +48,8 @@ export class SapphireDb {
       }
     }
 
+    this.options.offlineSupport = !!this.options.offlineSupport;
+
     if (!this.options.pollingTime) {
       this.options.pollingTime = 300;
     }
@@ -53,9 +59,15 @@ export class SapphireDb {
     }
 
     this.connectionManager = new ConnectionManager(this.options, this.responseActionInterceptor);
-    const collectionInformation = new CollectionInformationManager(this.connectionManager);
 
-    this.collectionManager = new CollectionManager(this.connectionManager, collectionInformation, this.classTransformer);
+    let offlineManager: OfflineManager = null;
+    if (this.options.offlineSupport) {
+      offlineManager = new OfflineManager(storage, this.connectionManager);
+    }
+
+    const collectionInformation = new CollectionInformationManager(this.connectionManager, offlineManager);
+
+    this.collectionManager = new CollectionManager(this.connectionManager, collectionInformation, this.classTransformer, offlineManager);
     this.messaging = new Messaging(this.connectionManager);
   }
 
@@ -125,8 +137,17 @@ export class SapphireDb {
   /**
    * Returns the connection information (state, id, auth token)
    */
-  public getConnectionInformation$(): Observable<ConnectionInformation> {
+  public getConnectionInformation(): Observable<ConnectionInformation> {
     return this.connectionManager.connection.connectionInformation$.asObservable();
+  }
+
+  /**
+   * Checks if the client is connected to server
+   */
+  public online(): Observable<boolean> {
+    return this.getConnectionInformation().pipe(
+      map(v => v.readyState === ConnectionState.connected)
+    );
   }
 
   /**

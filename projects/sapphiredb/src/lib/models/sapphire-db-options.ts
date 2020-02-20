@@ -5,4 +5,5 @@ export interface SapphireDbOptions {
   apiKey?: string;
   apiSecret?: string;
   pollingTime?: number;
+  offlineSupport?: boolean;
 }

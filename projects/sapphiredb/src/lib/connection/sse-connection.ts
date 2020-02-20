@@ -41,6 +41,8 @@ export class SseConnection extends ConnectionBase {
       };
 
       this.eventSource.onerror = (error) => {
+        this.updateConnectionInformation(ConnectionState.disconnected);
+
         setTimeout(() => {
           this.connect();
         }, 1000);
