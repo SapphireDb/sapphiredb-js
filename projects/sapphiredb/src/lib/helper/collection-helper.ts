@@ -42,20 +42,7 @@ export class CollectionHelper {
     } else if (changeResponse.state === ChangeState.Added) {
       values.push(changeResponse.value);
     } else if (changeResponse.state === ChangeState.Deleted) {
-      const primaryKeys = info.primaryKeys;
-
-      const index = values.findIndex(c => {
-        let isCorrectElement = true;
-
-        for (let i = 0; i < primaryKeys.length; i++) {
-          if (c[primaryKeys[i]] !== changeResponse.value[primaryKeys[i]]) {
-            isCorrectElement = false;
-            break;
-          }
-        }
-
-        return isCorrectElement;
-      });
+      const index = values.findIndex(FilterFunctions.comparePrimaryKeysFunction(info.primaryKeys, changeResponse.value));
 
       if (index !== -1) {
         values.splice(index, 1);
@@ -66,7 +53,6 @@ export class CollectionHelper {
   static getInterpolatedCollectionValue(collectionChanges: CollectionCommandBase[], state: any[],
                                  info$: Observable<InfoResponse>): Observable<any> {
     return info$.pipe(
-      take(1),
       map((info) => {
         if (!collectionChanges) {
           return state;

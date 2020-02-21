@@ -3,7 +3,7 @@ import {CollectionManager} from './collection/collection-manager';
 import {ConnectionManager} from './connection/connection-manager';
 import {AuthTokenState, ClassType, ConnectionInformation, ConnectionState} from './models/types';
 import {DefaultCollection} from './collection/default-collection';
-import {Observable, of, ReplaySubject} from 'rxjs';
+import {EMPTY, Observable, of, ReplaySubject} from 'rxjs';
 import {ActionResult} from './modules/action/action-result';
 import {ExecuteCommand} from './command/execute/execute-command';
 import {concatMap, filter, map, take, takeWhile} from 'rxjs/operators';
@@ -17,10 +17,12 @@ import {CompleteStreamCommand} from './command/stream/complete-stream-command';
 import {ResponseBase} from './command/response-base';
 import {SapphireStorage} from './helper/sapphire-storage';
 import {OfflineManager} from './modules/offline/offline-manager';
+import {ExecuteCommandsResponse} from './command/execute-commands/execute-commands-response';
 
 export class SapphireDb {
   private collectionManager: CollectionManager;
   private connectionManager: ConnectionManager;
+  private offlineManager: OfflineManager;
 
   /**
    * Sapphire messaging API
@@ -60,14 +62,13 @@ export class SapphireDb {
 
     this.connectionManager = new ConnectionManager(this.options, this.responseActionInterceptor);
 
-    let offlineManager: OfflineManager = null;
     if (this.options.offlineSupport) {
-      offlineManager = new OfflineManager(storage, this.connectionManager);
+      this.offlineManager = new OfflineManager(storage, this.connectionManager);
     }
 
-    const collectionInformation = new CollectionInformationManager(this.connectionManager, offlineManager);
+    const collectionInformation = new CollectionInformationManager(this.connectionManager, this.offlineManager);
 
-    this.collectionManager = new CollectionManager(this.connectionManager, collectionInformation, this.classTransformer, offlineManager);
+    this.collectionManager = new CollectionManager(this.connectionManager, collectionInformation, this.classTransformer, this.offlineManager);
     this.messaging = new Messaging(this.connectionManager);
   }
 
@@ -161,7 +162,22 @@ export class SapphireDb {
   /**
    * Reset the current session. Useful if you want to reset when the current user logged out.
    */
-  public reset() {
+  public reset(resetOfflineManager = false) {
     this.connectionManager.reset();
+
+    if (resetOfflineManager) {
+      this.offlineManager.reset();
+    }
+  }
+
+  /**
+   * Get transfer results of offline changes (Primarily for merge conflict handling)
+   */
+  public offlineTransferResults(): Observable<ExecuteCommandsResponse|null> {
+    if (this.offlineManager) {
+      return this.offlineManager.offlineTransferResults$.asObservable();
+    }
+
+    return EMPTY;
   }
 }

@@ -272,6 +272,10 @@ export abstract class CollectionBase<T, Y> {
       switchMap((state) => {
         return this.tempChangesStorage$.pipe(
           switchMap((changes) => {
+            if (CollectionHelper.hasAfterQueryPrefilter(this.prefilters)) {
+              return of(state);
+            }
+
             return CollectionHelper.getInterpolatedCollectionValue(changes, state, this.collectionInformation);
           })
         );

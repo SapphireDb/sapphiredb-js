@@ -58,12 +58,12 @@ export class CustomClassTransformer extends SapphireClassTransformer {
 
 export class CustomStorage extends SapphireStorage {
   get(key: string): Observable<string> {
-    console.log('requested ' + key);
+    // console.log('requested ' + key);
     return of(localStorage.getItem('sapphiredb' + key));
   }
 
   set(key: string, value: string) {
-    console.log('stored ' + key, value);
+    // console.log('stored ' + key, value);
     localStorage.setItem('sapphiredb' + key, value);
   }
 }

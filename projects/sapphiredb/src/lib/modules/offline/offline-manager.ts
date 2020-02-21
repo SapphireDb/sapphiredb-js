@@ -1,6 +1,6 @@
 import {SapphireStorage} from '../../helper/sapphire-storage';
 import {IPrefilter} from '../../collection/prefilter/iprefilter';
-import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject} from 'rxjs';
 import {CollectionHelper} from '../../helper/collection-helper';
 import {filter, map, skip, switchMap, take} from 'rxjs/operators';
 import {InfoResponse} from '../../command/info/info-response';
@@ -20,6 +20,8 @@ export class OfflineManager {
   private disableUpdate = false;
   private changeStorage$: BehaviorSubject<{ [collectionKey: string]: CollectionCommandBase[] }> =
     new BehaviorSubject<{ [p: string]: CollectionCommandBase[] }>({});
+
+  public offlineTransferResults$ = new ReplaySubject<ExecuteCommandsResponse>();
 
   constructor(private storage: SapphireStorage, private connectionManager: ConnectionManager) {
     this.changeStorage$.pipe(skip(2)).subscribe((changes) => {
@@ -44,7 +46,7 @@ export class OfflineManager {
         this.disableUpdate = true;
         this.changeStorage$.next({});
         this.disableUpdate = false;
-        console.log(response);
+        this.offlineTransferResults$.next(response);
       });
 
     this.storage.get(CollectionChangeStorage).subscribe((changeStorage) => {
@@ -55,21 +57,32 @@ export class OfflineManager {
   }
 
   getCollectionInformation(contextName: string, collectionName: string): Observable<InfoResponse> {
-    const offlineKey = `${CollectionInformationStoragePrefix}${contextName}${collectionName}`;
+    const offlineKey = `${CollectionInformationStoragePrefix}${contextName}.${collectionName}`;
     return this.storage.get(offlineKey).pipe(
       map(v => JSON.parse(v))
     );
   }
 
   setCollectionInformation(contextName: string, collectionName: string, collectionInformation: InfoResponse) {
-    const offlineKey = `${CollectionInformationStoragePrefix}${contextName}${collectionName}`;
+    const offlineKey = `${CollectionInformationStoragePrefix}${contextName}.${collectionName}`;
     this.storage.set(offlineKey, JSON.stringify(collectionInformation));
   }
 
   getState(contextName: string, collectionName: string, prefilters: IPrefilter<any, any>[]): Observable<any> {
     const offlineKey = `${CollectionStoragePrefix}${contextName}.${collectionName}.${CollectionHelper.getPrefilterHash(prefilters)}`;
     return this.storage.get(offlineKey).pipe(
-      map(v => JSON.parse(v))
+      map(v => {
+        const result = JSON.parse(v);
+        if (!!result) {
+          return result;
+        }
+
+        if (!CollectionHelper.hasAfterQueryPrefilter(prefilters)) {
+          return [];
+        }
+
+        return null;
+      })
     );
   }
 
@@ -122,6 +135,12 @@ export class OfflineManager {
         return CollectionHelper.getInterpolatedCollectionValue(collectionChanges, state, info$);
       }),
     );
+  }
+
+  reset() {
+    this.disableUpdate = true;
+    this.changeStorage$.next({});
+    this.disableUpdate = false;
   }
 }
 
