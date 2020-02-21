@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {DefaultCollection} from 'sapphiredb';
-import { SapphireDbService, CreateResponse, UpdateResponse } from 'ng-sapphiredb';
+import {DefaultCollection, CreateResponse, UpdateResponse } from 'sapphiredb';
+import { SapphireDbService} from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {FormControl, FormGroup} from '@angular/forms';
 import {take} from 'rxjs/operators';
@@ -55,20 +55,19 @@ export class ModelValidationComponent implements OnInit {
     let result$: Observable<CreateResponse|UpdateResponse>;
 
     if (!!rawFormValue.id) {
-      result$ = this.collection.update(rawFormValue);
+      result$ = <Observable<UpdateResponse>>this.collection.update(rawFormValue);
     } else {
       delete rawFormValue.id;
-      result$ = this.collection.add(rawFormValue);
+      result$ = <Observable<CreateResponse>>this.collection.add(rawFormValue);
     }
 
     result$.pipe(take(1)).subscribe((results: CreateResponse|UpdateResponse) => {
-      if (results.hasSuccess()) {
+      if (!results.error && !results.validationResults) {
         this.resetForm();
       } else {
-        const result = results.results[0];
-        Object.keys(result.validationResults).forEach(key => {
+        Object.keys(results.validationResults).forEach(key => {
           const errors = {};
-          result.validationResults[key].forEach(error => errors[error] = true);
+          results.validationResults[key].forEach(error => errors[error] = true);
           this.form.get(key).setErrors(errors);
         });
       }

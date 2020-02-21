@@ -2,21 +2,14 @@ import {SapphireStorage} from '../../helper/sapphire-storage';
 import {IPrefilter} from '../../collection/prefilter/iprefilter';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {CollectionHelper} from '../../helper/collection-helper';
-import {filter, map, switchMap, take} from 'rxjs/operators';
+import {filter, map, switchMap} from 'rxjs/operators';
 import {InfoResponse} from '../../command/info/info-response';
 import {CollectionCommandBase} from '../../command/collection-command-base';
-import {ChangeResponse, ChangeState} from '../../command/subscribe/change-response';
-import {CreateCommand} from '../../command/create/create-command';
-import {CreateRangeCommand} from '../../command/create-range/create-range-command';
 import {ConnectionManager} from '../../connection/connection-manager';
 import {ValidatedResponseBase} from '../../command/validated-response-base';
 import {ConnectionState} from '../../models/types';
 import {ExecuteCommandsCommand} from '../../command/execute-commands/execute-commands-command';
 import {ExecuteCommandsResponse} from '../../command/execute-commands/execute-commands-response';
-import {DeleteCommand} from '../../command/delete/delete-command';
-import {UpdateCommand} from '../../command/update/update-command';
-import {UpdateRangeCommand} from '../../command/update-range/update-range-command';
-import {DeleteRangeCommand} from '../../command/delete-range/delete-range-command';
 
 const CollectionStoragePrefix = 'sapphiredb.collection.';
 const CollectionInformationStoragePrefix = 'sapphiredb.collectioninformation.';
@@ -63,14 +56,14 @@ export class OfflineManager {
   }
 
   getState(contextName: string, collectionName: string, prefilters: IPrefilter<any, any>[]): Observable<any> {
-    const offlineKey = this.getCollectionKey(contextName, collectionName, prefilters);
+    const offlineKey = `${CollectionStoragePrefix}${contextName}.${collectionName}.${CollectionHelper.getPrefilterHash(prefilters)}`;
     return this.storage.get(offlineKey).pipe(
       map(v => JSON.parse(v))
     );
   }
 
   setState(contextName: string, collectionName: string, prefilters: IPrefilter<any, any>[], state: any) {
-    const offlineKey = this.getCollectionKey(contextName, collectionName, prefilters);
+    const offlineKey = `${CollectionStoragePrefix}${contextName}.${collectionName}.${CollectionHelper.getPrefilterHash(prefilters)}`;
     return this.storage.set(offlineKey, JSON.stringify(state));
   }
 
@@ -105,71 +98,11 @@ export class OfflineManager {
           return of(state);
         }
 
-        return info$.pipe(
-          take(1),
-          map((info) => {
-            const collectionChanges = changeStorage[collectionKey];
-            if (!collectionChanges) {
-              return state;
-            }
+        const collectionChanges = changeStorage[collectionKey];
 
-            const stateCopy = state.slice(0);
-
-            collectionChanges.map(change => {
-              const changesToApply: ChangeResponse[] = [];
-
-              if (change.commandType === 'CreateCommand') {
-                changesToApply.push(<any>{
-                  value: (<CreateCommand>change).value,
-                  state: ChangeState.Added
-                });
-              } else if (change.commandType === 'CreateRange') {
-                for (const value of (<CreateRangeCommand><any>change).values) {
-                  changesToApply.push(<any>{
-                    value: value,
-                    state: ChangeState.Added
-                  });
-                }
-              } else if (change.commandType === 'UpdateCommand') {
-                changesToApply.push(<any>{
-                  value: (<UpdateCommand>change).updateValue,
-                  state: ChangeState.Modified
-                });
-              } else if (change.commandType === 'UpdateRangeCommand') {
-                for (const value of (<UpdateRangeCommand><any>change).updateValues) {
-                  changesToApply.push(<any>{
-                    value: value,
-                    state: ChangeState.Modified
-                  });
-                }
-              } else if (change.commandType === 'DeleteCommand') {
-                changesToApply.push(<any>{
-                  value: (<DeleteCommand>change).primaryKeys,
-                  state: ChangeState.Deleted
-                });
-              } else if (change.commandType === 'DeleteRangeCommand') {
-                for (const value of (<DeleteRangeCommand><any>change).primaryKeyList) {
-                  changesToApply.push(<any>{
-                    value: value,
-                    state: ChangeState.Deleted
-                  });
-                }
-              }
-
-              return changesToApply;
-            }).reduce((a, b) => a.concat(b), []).forEach(change => {
-              CollectionHelper.updateCollection(info, stateCopy, change);
-            });
-
-            return stateCopy;
-          })
-        );
+        return CollectionHelper.getInterpolatedCollectionValue(collectionChanges, state, info$);
       }),
     );
-  }
-
-  private getCollectionKey(contextName: string, collectionName: string, prefilters: IPrefilter<any, any>[]): string {
-    return `${CollectionStoragePrefix}${contextName}.${collectionName}.${CollectionHelper.getPrefilterHash(prefilters)}`;
   }
 }
 

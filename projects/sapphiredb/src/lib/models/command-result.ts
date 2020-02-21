@@ -13,9 +13,9 @@ export class CommandResult<T> {
     this.validationResults = response.validationResults;
 
     if (response.responseType === 'CreateResponse') {
-      this.value = (<CreateResponse>response).newObject;
+      this.value = (<CreateResponse>response).value;
     } else if (response.responseType === 'UpdateResponse') {
-      this.value = (<UpdateResponse>response).updatedObject;
+      this.value = (<UpdateResponse>response).value;
     }
   }
 

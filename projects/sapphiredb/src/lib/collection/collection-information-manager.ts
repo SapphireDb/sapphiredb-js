@@ -36,7 +36,9 @@ export class CollectionInformationManager {
         }),
         take(1)
       ).subscribe((info: InfoResponse) => {
-        this.offlineManager.setCollectionInformation(contextName, collectionName, info);
+        if (!!this.offlineManager) {
+          this.offlineManager.setCollectionInformation(contextName, collectionName, info);
+        }
         subject$.next(info);
       }, (error) => {
         subject$.error(error);

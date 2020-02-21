@@ -1,5 +1,5 @@
 import {InfoResponse} from '../command/info/info-response';
-import {Observable, ReplaySubject} from 'rxjs';
+import {Observable, of, ReplaySubject} from 'rxjs';
 import {ChangeResponse, ChangeState} from '../command/subscribe/change-response';
 import {FilterFunctions} from './filter-functions';
 import {SelectPrefilter} from '../collection/prefilter/select-prefilter';
@@ -8,6 +8,9 @@ import {IPrefilter} from '../collection/prefilter/iprefilter';
 import {map, switchMap, take} from 'rxjs/operators';
 import {FirstPrefilter} from '../collection/prefilter/first-prefilter';
 import {LastPrefilter} from '../collection/prefilter/last-prefilter';
+import {CreateCommand} from '../command/create/create-command';
+import {CreateRangeCommand} from '../command/create-range/create-range-command';
+import {CollectionCommandBase} from '../command/collection-command-base';
 
 // @dynamic
 export class CollectionHelper {
@@ -58,5 +61,47 @@ export class CollectionHelper {
         values.splice(index, 1);
       }
     }
+  }
+
+  static getInterpolatedCollectionValue(collectionChanges: CollectionCommandBase[], state: any[],
+                                 info$: Observable<InfoResponse>): Observable<any> {
+    return info$.pipe(
+      take(1),
+      map((info) => {
+        if (!collectionChanges) {
+          return state;
+        }
+
+        const stateCopy = state.slice(0);
+
+        collectionChanges.map(change => {
+          const changesToApply: ChangeResponse[] = [];
+
+          if (change.commandType === 'CreateCommand' || change.commandType === 'UpdateCommand'
+            || change.commandType === 'DeleteCommand') {
+            changesToApply.push(<any>{
+              value: (<CreateCommand>change).value,
+              state: change.commandType === 'CreateCommand' ? ChangeState.Added :
+                change.commandType === 'UpdateCommand' ? ChangeState.Modified : ChangeState.Deleted
+            });
+          } else if (change.commandType === 'CreateRangeCommand' || change.commandType === 'UpdateRangeCommand'
+            || change.commandType === 'DeleteRangeCommand') {
+            for (const value of (<CreateRangeCommand><any>change).values) {
+              changesToApply.push(<any>{
+                value: value,
+                state: change.commandType === 'CreateRangeCommand' ? ChangeState.Added :
+                  change.commandType === 'UpdateRangeCommand' ? ChangeState.Modified : ChangeState.Deleted
+              });
+            }
+          }
+
+          return changesToApply;
+        }).reduce((a, b) => a.concat(b), []).forEach(change => {
+          CollectionHelper.updateCollection(info, stateCopy, change);
+        });
+
+        return stateCopy;
+      })
+    );
   }
 }

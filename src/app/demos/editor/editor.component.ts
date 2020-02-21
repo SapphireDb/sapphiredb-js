@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {DefaultCollection} from 'sapphiredb';
+import {CreateResponse, DefaultCollection} from 'sapphiredb';
 import {Observable, of, ReplaySubject} from 'rxjs';
 import {debounceTime, filter, map, skip, switchMap} from 'rxjs/operators';
 import { SapphireDbService } from 'ng-sapphiredb';
@@ -49,7 +49,7 @@ export class EditorComponent implements OnInit {
               name: name,
               content: ''
             }).pipe(
-              map((result) => result.results[0].value)
+              map((result: CreateResponse) => result.newObject)
             );
           })
         );
