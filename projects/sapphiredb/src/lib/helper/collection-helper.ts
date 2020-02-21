@@ -5,7 +5,7 @@ import {FilterFunctions} from './filter-functions';
 import {SelectPrefilter} from '../collection/prefilter/select-prefilter';
 import {CountPrefilter} from '../collection/prefilter/count-prefilter';
 import {IPrefilter} from '../collection/prefilter/iprefilter';
-import {map, switchMap, take} from 'rxjs/operators';
+import {map, startWith, switchMap, take} from 'rxjs/operators';
 import {FirstPrefilter} from '../collection/prefilter/first-prefilter';
 import {LastPrefilter} from '../collection/prefilter/last-prefilter';
 import {CreateCommand} from '../command/create/create-command';
@@ -53,8 +53,9 @@ export class CollectionHelper {
   static getInterpolatedCollectionValue(collectionChanges: CollectionCommandBase[], state: any[],
                                  info$: Observable<InfoResponse>): Observable<any> {
     return info$.pipe(
+      startWith(<InfoResponse>null),
       map((info) => {
-        if (!collectionChanges) {
+        if (!collectionChanges || !info) {
           return state;
         }
 
