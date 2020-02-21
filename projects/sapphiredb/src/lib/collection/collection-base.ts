@@ -5,7 +5,7 @@ import {DeleteResponse} from '../command/delete/delete-response';
 import {UpdateCommand} from '../command/update/update-command';
 import {UpdateResponse} from '../command/update/update-response';
 import {DeleteCommand} from '../command/delete/delete-command';
-import {filter, finalize, map, publishReplay, refCount, share, switchMap, take, tap} from 'rxjs/operators';
+import {debounceTime, filter, finalize, map, publishReplay, refCount, share, switchMap, take, tap} from 'rxjs/operators';
 import {InfoResponse} from '../command/info/info-response';
 import {QueryCommand} from '../command/query/query-command';
 import {QueryResponse} from '../command/query/query-response';
@@ -84,7 +84,8 @@ export abstract class CollectionBase<T, Y> {
         }
 
         return result;
-      })
+      }),
+      debounceTime(10)
     );
   }
 
@@ -287,6 +288,7 @@ export abstract class CollectionBase<T, Y> {
 
         return array;
       }),
+      debounceTime(10),
       publishReplay(1),
       refCount()
     );
