@@ -1,4 +1,4 @@
-import {EMPTY, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, EMPTY, Observable, of, Subject} from 'rxjs';
 import {CreateCommand} from '../command/create/create-command';
 import {CreateResponse} from '../command/create/create-response';
 import {DeleteResponse} from '../command/delete/delete-response';
@@ -33,7 +33,8 @@ export abstract class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
   public collectionName: string;
   public contextName: string;
-  protected serverState: Y;
+  private serverState: Y;
+  private tempChangesStorage$ = new BehaviorSubject<CollectionCommandBase[]>([]);
 
   constructor(collectionNameRaw: string,
               protected connectionManagerService: ConnectionManager,
@@ -74,8 +75,8 @@ export abstract class CollectionBase<T, Y> {
           return of(state);
         }
 
-        return this.offlineManager.getInterpolatedCollectionValue(this.contextName, this.collectionName, this.prefilters,
-          state, this.collectionInformation);
+        return this.offlineManager.getInterpolatedCollectionValue(this.contextName, this.collectionName, this.prefilters, state,
+          this.collectionInformation);
       }),
       map((result: Y) => {
         if (this.classType && this.classTransformer) {
@@ -129,7 +130,7 @@ export abstract class CollectionBase<T, Y> {
       command = new CreateRangeCommand(this.collectionName, this.contextName, values);
     }
 
-    return this.offlineManager ? this.offlineManager.sendCommand(command) : <any>this.connectionManagerService.sendCommand(command);
+    return this.sendCommandHot<CreateResponse|CreateRangeResponse|null>(command);
   }
 
   /**
@@ -149,7 +150,7 @@ export abstract class CollectionBase<T, Y> {
       command = new UpdateRangeCommand(this.collectionName, this.contextName, values);
     }
 
-    return this.offlineManager ? this.offlineManager.sendCommand(command) : <any>this.connectionManagerService.sendCommand(command);
+    return this.sendCommandHot<UpdateResponse|UpdateRangeResponse|null>(command);
   }
 
   /**
@@ -163,6 +164,8 @@ export abstract class CollectionBase<T, Y> {
 
     const subject = new Subject<DeleteResponse|DeleteRangeResponse|null>();
 
+    let command: CollectionCommandBase;
+
     this.collectionInformation.pipe(
       switchMap((info: InfoResponse) => {
         const primaryKeyList = values.map((value) => {
@@ -173,19 +176,24 @@ export abstract class CollectionBase<T, Y> {
           return primaryValues;
         });
 
-        let command: CollectionCommandBase;
-
         if (values.length === 1) {
           command = new DeleteCommand(this.collectionName, this.contextName, primaryKeyList[0]);
         } else {
           command = new DeleteRangeCommand(this.collectionName, this.contextName, primaryKeyList);
         }
 
+        this.addToTempChangesStorage(command);
         return this.offlineManager ? this.offlineManager.sendCommand(command) : <any>this.connectionManagerService.sendCommand(command);
       }),
       take(1)
     ).subscribe((response: DeleteResponse|DeleteRangeResponse|null) => {
       subject.next(response);
+      subject.complete();
+      this.removeFromTempChangesStorage(command.referenceId);
+    }, (error) => {
+      subject.error(error);
+      subject.complete();
+      this.removeFromTempChangesStorage(command.referenceId);
     });
 
     return subject;
@@ -259,6 +267,13 @@ export abstract class CollectionBase<T, Y> {
         return this.offlineManager.getInterpolatedCollectionValue(this.contextName, this.collectionName, this.prefilters,
           state, this.collectionInformation);
       }),
+      switchMap((state) => {
+        return this.tempChangesStorage$.pipe(
+          switchMap((changes) => {
+            return CollectionHelper.getInterpolatedCollectionValue(changes, state, this.collectionInformation);
+          })
+        );
+      }),
       map((array: T[]) => {
         if (!CollectionHelper.hasAfterQueryPrefilter(this.prefilters)) {
           for (const prefilter of CollectionHelper.getPrefiltersWithoutAfterQueryPrefilters(this.prefilters)) {
@@ -275,5 +290,34 @@ export abstract class CollectionBase<T, Y> {
       publishReplay(1),
       refCount()
     );
+  }
+
+  private addToTempChangesStorage(command: CollectionCommandBase): void {
+    const value = this.tempChangesStorage$.value;
+    value.push(command);
+    this.tempChangesStorage$.next(value);
+  }
+
+  private removeFromTempChangesStorage(referenceId: string): void {
+    let value = this.tempChangesStorage$.value;
+    value = value.filter(v => v.referenceId !== referenceId);
+    this.tempChangesStorage$.next(value);
+  }
+
+  private sendCommandHot<TResponseType>(command: CollectionCommandBase): Subject<TResponseType> {
+    this.addToTempChangesStorage(command);
+    const subject = new Subject<TResponseType>();
+    const result = this.offlineManager ? this.offlineManager.sendCommand(command) : <any>this.connectionManagerService.sendCommand(command);
+    result.subscribe((response) => {
+      subject.next(response);
+      subject.complete();
+      this.removeFromTempChangesStorage(command.referenceId);
+    }, (error) => {
+      subject.error(error);
+      subject.complete();
+      this.removeFromTempChangesStorage(command.referenceId);
+    });
+
+    return subject;
   }
 }
