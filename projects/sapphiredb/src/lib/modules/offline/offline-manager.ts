@@ -2,7 +2,7 @@ import {SapphireStorage} from '../../helper/sapphire-storage';
 import {IPrefilter} from '../../collection/prefilter/iprefilter';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {CollectionHelper} from '../../helper/collection-helper';
-import {filter, map, switchMap, take} from 'rxjs/operators';
+import {filter, map, skip, switchMap, take} from 'rxjs/operators';
 import {InfoResponse} from '../../command/info/info-response';
 import {CollectionCommandBase} from '../../command/collection-command-base';
 import {ConnectionManager} from '../../connection/connection-manager';
@@ -14,6 +14,7 @@ import {OfflineCommandHelper} from '../../helper/offline-command-helper';
 
 const CollectionStoragePrefix = 'sapphiredb.collection.';
 const CollectionInformationStoragePrefix = 'sapphiredb.collectioninformation.';
+const CollectionChangeStorage = 'sapphiredb.collectionchanges';
 
 export class OfflineManager {
   private disableUpdate = false;
@@ -21,6 +22,10 @@ export class OfflineManager {
     new BehaviorSubject<{ [p: string]: CollectionCommandBase[] }>({});
 
   constructor(private storage: SapphireStorage, private connectionManager: ConnectionManager) {
+    this.changeStorage$.pipe(skip(2)).subscribe((changes) => {
+      this.storage.set(CollectionChangeStorage, JSON.stringify(changes));
+    });
+
     combineLatest([this.connectionManager.connection.connectionInformation$, this.changeStorage$])
       .pipe(
         filter(([information]) => !this.disableUpdate && information.readyState === ConnectionState.connected),
@@ -41,7 +46,12 @@ export class OfflineManager {
         this.disableUpdate = false;
         console.log(response);
       });
-    // TODO: Load stored changes that are not yet transferred
+
+    this.storage.get(CollectionChangeStorage).subscribe((changeStorage) => {
+      if (!!changeStorage) {
+        this.changeStorage$.next(JSON.parse(changeStorage));
+      }
+    });
   }
 
   getCollectionInformation(contextName: string, collectionName: string): Observable<InfoResponse> {
