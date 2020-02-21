@@ -2,7 +2,7 @@ import {SapphireStorage} from '../../helper/sapphire-storage';
 import {IPrefilter} from '../../collection/prefilter/iprefilter';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {CollectionHelper} from '../../helper/collection-helper';
-import {filter, map, switchMap} from 'rxjs/operators';
+import {filter, map, switchMap, take} from 'rxjs/operators';
 import {InfoResponse} from '../../command/info/info-response';
 import {CollectionCommandBase} from '../../command/collection-command-base';
 import {ConnectionManager} from '../../connection/connection-manager';
@@ -10,6 +10,7 @@ import {ValidatedResponseBase} from '../../command/validated-response-base';
 import {ConnectionState} from '../../models/types';
 import {ExecuteCommandsCommand} from '../../command/execute-commands/execute-commands-command';
 import {ExecuteCommandsResponse} from '../../command/execute-commands/execute-commands-response';
+import {OfflineCommandHelper} from '../../helper/offline-command-helper';
 
 const CollectionStoragePrefix = 'sapphiredb.collection.';
 const CollectionInformationStoragePrefix = 'sapphiredb.collectioninformation.';
@@ -67,7 +68,7 @@ export class OfflineManager {
     return this.storage.set(offlineKey, JSON.stringify(state));
   }
 
-  sendCommand(command: CollectionCommandBase): Observable<any> {
+  sendCommand(command: CollectionCommandBase, info$: Observable<InfoResponse>): Observable<any> {
     const connectionState: ConnectionState = this.connectionManager.connection.connectionInformation$.value.readyState;
 
     if (connectionState === ConnectionState.connected) {
@@ -82,8 +83,16 @@ export class OfflineManager {
     }
 
     const collectionChanges = changeStorageValue[collectionKey];
-    collectionChanges.push(command);
-    this.changeStorage$.next(changeStorageValue);
+
+    info$.pipe(
+      take(1)
+    ).subscribe((info: InfoResponse) => {
+      if (OfflineCommandHelper.handleAddCommand(command, info, collectionChanges)) {
+        collectionChanges.push(command);
+      }
+
+      this.changeStorage$.next(changeStorageValue);
+    });
 
     return of(null);
   }

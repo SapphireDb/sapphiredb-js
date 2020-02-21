@@ -184,7 +184,8 @@ export abstract class CollectionBase<T, Y> {
         }
 
         this.addToTempChangesStorage(command);
-        return this.offlineManager ? this.offlineManager.sendCommand(command) : <any>this.connectionManagerService.sendCommand(command);
+        return this.offlineManager ? this.offlineManager.sendCommand(command, this.collectionInformation) :
+          <any>this.connectionManagerService.sendCommand(command);
       }),
       take(1)
     ).subscribe((response: DeleteResponse|DeleteRangeResponse|null) => {
@@ -309,7 +310,8 @@ export abstract class CollectionBase<T, Y> {
   private sendCommandHot<TResponseType>(command: CollectionCommandBase): Subject<TResponseType> {
     this.addToTempChangesStorage(command);
     const subject = new Subject<TResponseType>();
-    const result = this.offlineManager ? this.offlineManager.sendCommand(command) : <any>this.connectionManagerService.sendCommand(command);
+    const result = this.offlineManager ? this.offlineManager.sendCommand(command, this.collectionInformation) :
+      <any>this.connectionManagerService.sendCommand(command);
     result.subscribe((response) => {
       subject.next(response);
       subject.complete();
