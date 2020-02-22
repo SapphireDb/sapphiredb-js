@@ -123,10 +123,13 @@ export class OfflineManager {
       this.changeStorage$.next(changeStorageValue);
     });
 
+    const results = command.commandType === 'UpdateRangeCommand' ? (<UpdateRangeCommand>command).entries.map(e => e.value)
+      : (<CreateRangeCommand>command).values;
+
     return of(<OfflineResponse> {
       referenceId: command.referenceId,
       responseType: 'OfflineResponse',
-      results: (<CreateRangeCommand|UpdateRangeCommand>command).values
+      results: results
         .map((value) => (<CreateResponse|UpdateResponse>{ value: value })),
     });
   }

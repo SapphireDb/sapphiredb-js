@@ -10,6 +10,7 @@ import {FirstPrefilter} from '../collection/prefilter/first-prefilter';
 import {LastPrefilter} from '../collection/prefilter/last-prefilter';
 import {CreateRangeCommand} from '../command/create-range/create-range-command';
 import {CollectionCommandBase} from '../command/collection-command-base';
+import {UpdateRangeCommand} from '../command/update-range/update-range-command';
 
 // @dynamic
 export class CollectionHelper {
@@ -66,7 +67,10 @@ export class CollectionHelper {
 
           if (change.commandType === 'CreateRangeCommand' || change.commandType === 'UpdateRangeCommand'
             || change.commandType === 'DeleteRangeCommand') {
-            for (const value of (<CreateRangeCommand><any>change).values) {
+            const values = change.commandType === 'UpdateRangeCommand' ? (<UpdateRangeCommand><any>change).entries.map(e => e.value)
+              : (<CreateRangeCommand><any>change).values;
+
+            for (const value of values) {
               changesToApply.push(<any>{
                 value: value,
                 state: change.commandType === 'CreateRangeCommand' ? ChangeState.Added :

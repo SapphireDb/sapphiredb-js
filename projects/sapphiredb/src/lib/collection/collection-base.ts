@@ -1,4 +1,4 @@
-import {BehaviorSubject, EMPTY, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {debounceTime, filter, finalize, map, publishReplay, refCount, share, switchMap, take, tap} from 'rxjs/operators';
 import {InfoResponse} from '../command/info/info-response';
 import {QueryCommand} from '../command/query/query-command';
@@ -12,7 +12,7 @@ import {ConnectionManager} from '../connection/connection-manager';
 import {SubscribeCommand} from '../command/subscribe/subscribe-command';
 import {ChangeResponse, ChangesResponse} from '../command/subscribe/change-response';
 import {CreateRangeCommand} from '../command/create-range/create-range-command';
-import {UpdateRangeCommand} from '../command/update-range/update-range-command';
+import {UpdateEntry, UpdateRangeCommand} from '../command/update-range/update-range-command';
 import {DeleteRangeCommand} from '../command/delete-range/delete-range-command';
 import {ClassType} from '../models/types';
 import {SapphireClassTransformer} from '../helper/sapphire-class-transformer';
@@ -23,6 +23,7 @@ import {OfflineManager} from '../modules/offline/offline-manager';
 import {RxjsHelper} from '../helper/rxjs-helper';
 import {CollectionCommandBase} from '../command/collection-command-base';
 import {OfflineResponse} from '../modules/offline/offline-response';
+import {FilterFunctions} from '../helper/filter-functions';
 
 export abstract class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
@@ -118,8 +119,24 @@ export abstract class CollectionBase<T, Y> {
       values = this.classTransformer.classToPlain(values);
     }
 
-    return this.sendCommandHot<CreateRangeResponse|OfflineResponse>(
-      new CreateRangeCommand(this.collectionName, this.contextName, values));
+    const command = new CreateRangeCommand(this.collectionName, this.contextName, values);
+
+    this.addToTempChangesStorage(command);
+    const subject = new ReplaySubject<CreateRangeResponse|OfflineResponse>();
+    const result = this.offlineManager ? this.offlineManager.sendCommand(command, this.collectionInformation) :
+      <any>this.connectionManagerService.sendCommand(command);
+
+    result.subscribe((response) => {
+      subject.next(response);
+      subject.complete();
+      this.removeFromTempChangesStorage(command.referenceId);
+    }, (error) => {
+      subject.error(error);
+      subject.complete();
+      this.removeFromTempChangesStorage(command.referenceId);
+    });
+
+    return subject.pipe(take(1));
   }
 
   /**
@@ -131,8 +148,49 @@ export abstract class CollectionBase<T, Y> {
       values = this.classTransformer.classToPlain(values);
     }
 
-    return this.sendCommandHot<UpdateRangeResponse|OfflineResponse>(
-      new UpdateRangeCommand(this.collectionName, this.contextName, values));
+    const subject = new ReplaySubject<UpdateRangeResponse|OfflineResponse>();
+
+    let result: Observable<UpdateRangeResponse|OfflineResponse>;
+    let command: UpdateRangeCommand;
+
+    if (!CollectionHelper.hasAfterQueryPrefilter(this.prefilters)) {
+      result = combineLatest([this.snapshot(), this.collectionInformation]).pipe(
+        take(1),
+        switchMap(([snapshot, info]: [any, InfoResponse]) => {
+          command = new UpdateRangeCommand(this.collectionName, this.contextName, values.map(value => {
+            const filterFunction = FilterFunctions.comparePrimaryKeysFunction(info.primaryKeys, value);
+            let previousValue = snapshot.find(v => filterFunction(v));
+
+            if (this.classType && this.classTransformer) {
+              previousValue = this.classTransformer.classToPlain(previousValue);
+            }
+
+            return new UpdateEntry(value, previousValue);
+          }));
+          this.addToTempChangesStorage(command);
+          return <Observable<UpdateRangeResponse|OfflineResponse>>(this.offlineManager ?
+            this.offlineManager.sendCommand(command, this.collectionInformation) :
+            <any>this.connectionManagerService.sendCommand(command));
+        })
+      );
+    } else {
+      command = new UpdateRangeCommand(this.collectionName, this.contextName, values.map(v => new UpdateEntry(v)));
+      this.addToTempChangesStorage(command);
+      result = this.offlineManager ? this.offlineManager.sendCommand(command, this.collectionInformation) :
+        <any>this.connectionManagerService.sendCommand(command);
+    }
+
+    result.subscribe((response) => {
+      subject.next(response);
+      subject.complete();
+      this.removeFromTempChangesStorage(command.referenceId);
+    }, (error) => {
+      subject.error(error);
+      subject.complete();
+      this.removeFromTempChangesStorage(command.referenceId);
+    });
+
+    return subject.pipe(take(1));
   }
 
   /**
@@ -287,23 +345,5 @@ export abstract class CollectionBase<T, Y> {
     let value = this.tempChangesStorage$.value;
     value = value.filter(v => v.referenceId !== referenceId);
     this.tempChangesStorage$.next(value);
-  }
-
-  private sendCommandHot<TResponseType>(command: CreateRangeCommand|UpdateRangeCommand): Observable<TResponseType> {
-    this.addToTempChangesStorage(command);
-    const subject = new ReplaySubject<TResponseType>();
-    const result = this.offlineManager ? this.offlineManager.sendCommand(command, this.collectionInformation) :
-      <any>this.connectionManagerService.sendCommand(command);
-    result.subscribe((response) => {
-      subject.next(response);
-      subject.complete();
-      this.removeFromTempChangesStorage(command.referenceId);
-    }, (error) => {
-      subject.error(error);
-      subject.complete();
-      this.removeFromTempChangesStorage(command.referenceId);
-    });
-
-    return subject.pipe(take(1));
   }
 }
