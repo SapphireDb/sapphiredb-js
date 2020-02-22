@@ -1,4 +1,4 @@
-import {BehaviorSubject, EMPTY, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, EMPTY, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {CreateCommand} from '../command/create/create-command';
 import {CreateResponse} from '../command/create/create-response';
 import {DeleteResponse} from '../command/delete/delete-response';
@@ -312,9 +312,9 @@ export abstract class CollectionBase<T, Y> {
     this.tempChangesStorage$.next(value);
   }
 
-  private sendCommandHot<TResponseType>(command: CollectionCommandBase): Subject<TResponseType> {
+  private sendCommandHot<TResponseType>(command: CollectionCommandBase): Observable<TResponseType> {
     this.addToTempChangesStorage(command);
-    const subject = new Subject<TResponseType>();
+    const subject = new ReplaySubject<TResponseType>();
     const result = this.offlineManager ? this.offlineManager.sendCommand(command, this.collectionInformation) :
       <any>this.connectionManagerService.sendCommand(command);
     result.subscribe((response) => {
@@ -327,6 +327,6 @@ export abstract class CollectionBase<T, Y> {
       this.removeFromTempChangesStorage(command.referenceId);
     });
 
-    return subject;
+    return subject.pipe(take(1));
   }
 }

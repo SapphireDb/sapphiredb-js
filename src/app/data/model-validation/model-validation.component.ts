@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {DefaultCollection, CreateResponse, UpdateResponse } from 'sapphiredb';
+import {DefaultCollection, CreateResponse, UpdateResponse, SapphireOfflineEntity} from 'sapphiredb';
 import { SapphireDbService} from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {FormControl, FormGroup} from '@angular/forms';
@@ -17,6 +17,7 @@ export class ModelValidationComponent implements OnInit {
   values$: Observable<any[]>;
 
   form: FormGroup;
+  formEntity: any = null;
 
   constructor(private db: SapphireDbService) { }
 
@@ -25,7 +26,7 @@ export class ModelValidationComponent implements OnInit {
     this.values$ = this.collection.values();
 
     this.form = new M4FormGroup('demo_form', {
-      id: new FormControl(null),
+      id: new FormControl(new SapphireOfflineEntity().id),
       username: new FormControl(''),
       email: new FormControl(''),
       password: new FormControl('')
@@ -33,8 +34,9 @@ export class ModelValidationComponent implements OnInit {
   }
 
   resetForm() {
+    this.formEntity = null;
     this.form.patchValue({
-      id: null,
+      id: new SapphireOfflineEntity().id,
       username: '',
       email: '',
       password: ''
@@ -42,6 +44,7 @@ export class ModelValidationComponent implements OnInit {
   }
 
   setFormValue(value: any) {
+    this.formEntity = value;
     this.form.patchValue(value);
   }
 
@@ -54,10 +57,9 @@ export class ModelValidationComponent implements OnInit {
 
     let result$: Observable<CreateResponse|UpdateResponse>;
 
-    if (!!rawFormValue.id) {
+    if (this.formEntity) {
       result$ = <Observable<UpdateResponse>>this.collection.update(rawFormValue);
     } else {
-      delete rawFormValue.id;
       result$ = <Observable<CreateResponse>>this.collection.add(rawFormValue);
     }
 

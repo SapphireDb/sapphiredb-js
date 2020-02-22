@@ -11,6 +11,11 @@ import {ConnectionState} from '../../models/types';
 import {ExecuteCommandsCommand} from '../../command/execute-commands/execute-commands-command';
 import {ExecuteCommandsResponse} from '../../command/execute-commands/execute-commands-response';
 import {OfflineCommandHelper} from '../../helper/offline-command-helper';
+import {OfflineResponse} from './offline-response';
+import {CreateCommand} from '../../command/create/create-command';
+import {UpdateCommand} from '../../command/update/update-command';
+import {CreateRangeCommand} from '../../command/create-range/create-range-command';
+import {UpdateRangeCommand} from '../../command/update-range/update-range-command';
 
 const CollectionStoragePrefix = 'sapphiredb.collection.';
 const CollectionInformationStoragePrefix = 'sapphiredb.collectioninformation.';
@@ -117,7 +122,13 @@ export class OfflineManager {
       this.changeStorage$.next(changeStorageValue);
     });
 
-    return of(null);
+    return of(<OfflineResponse> {
+      referenceId: command.referenceId,
+      responseType: 'OfflineResponse',
+      value: OfflineCommandHelper.isRangeCommand(command) ? undefined : (<CreateCommand|UpdateCommand>command).value,
+      results: OfflineCommandHelper.isRangeCommand(command) ? (<CreateRangeCommand|UpdateRangeCommand>command).values
+        .map((value) => (<OfflineResponse>{ value: value })) : undefined,
+    });
   }
 
   getInterpolatedCollectionValue(contextName: string, collectionName: string, prefilters: IPrefilter<any, any>[], state: any[],
