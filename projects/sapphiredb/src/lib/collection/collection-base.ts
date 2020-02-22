@@ -1,10 +1,4 @@
 import {BehaviorSubject, EMPTY, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {CreateCommand} from '../command/create/create-command';
-import {CreateResponse} from '../command/create/create-response';
-import {DeleteResponse} from '../command/delete/delete-response';
-import {UpdateCommand} from '../command/update/update-command';
-import {UpdateResponse} from '../command/update/update-response';
-import {DeleteCommand} from '../command/delete/delete-command';
 import {debounceTime, filter, finalize, map, publishReplay, refCount, share, switchMap, take, tap} from 'rxjs/operators';
 import {InfoResponse} from '../command/info/info-response';
 import {QueryCommand} from '../command/query/query-command';
@@ -28,6 +22,7 @@ import {DeleteRangeResponse} from '../command/delete-range/delete-range-response
 import {OfflineManager} from '../modules/offline/offline-manager';
 import {RxjsHelper} from '../helper/rxjs-helper';
 import {CollectionCommandBase} from '../command/collection-command-base';
+import {OfflineResponse} from '../modules/offline/offline-response';
 
 export abstract class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
@@ -118,54 +113,40 @@ export abstract class CollectionBase<T, Y> {
    * Add a value to the collection
    * @param values The object(s) to add to the collection
    */
-  public add(...values: T[]): Observable<CreateResponse|CreateRangeResponse|null> {
+  public add(...values: T[]): Observable<CreateRangeResponse|OfflineResponse> {
     if (this.classType && this.classTransformer) {
       values = this.classTransformer.classToPlain(values);
     }
 
-    let command: CollectionCommandBase;
-
-    if (values.length === 1) {
-      command = new CreateCommand(this.collectionName, this.contextName, values[0]);
-    } else {
-      command = new CreateRangeCommand(this.collectionName, this.contextName, values);
-    }
-
-    return this.sendCommandHot<CreateResponse|CreateRangeResponse|null>(command);
+    return this.sendCommandHot<CreateRangeResponse|OfflineResponse>(
+      new CreateRangeCommand(this.collectionName, this.contextName, values));
   }
 
   /**
    * Update a value of the collection
    * @param values The object(s) to update in the collection
    */
-  public update(...values: T[]): Observable<UpdateResponse|UpdateRangeResponse|null> {
+  public update(...values: T[]): Observable<UpdateRangeResponse|OfflineResponse> {
     if (this.classType && this.classTransformer) {
       values = this.classTransformer.classToPlain(values);
     }
 
-    let command: CollectionCommandBase;
-
-    if (values.length === 1) {
-      command = new UpdateCommand(this.collectionName, this.contextName, values[0]);
-    } else {
-      command = new UpdateRangeCommand(this.collectionName, this.contextName, values);
-    }
-
-    return this.sendCommandHot<UpdateResponse|UpdateRangeResponse|null>(command);
+    return this.sendCommandHot<UpdateRangeResponse|OfflineResponse>(
+      new UpdateRangeCommand(this.collectionName, this.contextName, values));
   }
 
   /**
    * Remove a value from the collection
    * @param values The object(s) to remove from the collection
    */
-  public remove(...values: T[]): Observable<DeleteResponse|DeleteRangeResponse|null> {
+  public remove(...values: T[]): Observable<DeleteRangeResponse|OfflineResponse> {
     if (this.classType && this.classTransformer) {
       values = this.classTransformer.classToPlain(values);
     }
 
-    const subject = new Subject<DeleteResponse|DeleteRangeResponse|null>();
+    const subject = new Subject<DeleteRangeResponse|OfflineResponse>();
 
-    let command: CollectionCommandBase;
+    let command: DeleteRangeCommand;
 
     this.collectionInformation.pipe(
       switchMap((info: InfoResponse) => {
@@ -178,18 +159,14 @@ export abstract class CollectionBase<T, Y> {
           return primaryValues;
         });
 
-        if (values.length === 1) {
-          command = new DeleteCommand(this.collectionName, this.contextName, primaryKeyList[0]);
-        } else {
-          command = new DeleteRangeCommand(this.collectionName, this.contextName, primaryKeyList);
-        }
+        command = new DeleteRangeCommand(this.collectionName, this.contextName, primaryKeyList);
 
         this.addToTempChangesStorage(command);
         return this.offlineManager ? this.offlineManager.sendCommand(command, this.collectionInformation) :
           <any>this.connectionManagerService.sendCommand(command);
       }),
       take(1)
-    ).subscribe((response: DeleteResponse|DeleteRangeResponse|null) => {
+    ).subscribe((response: DeleteRangeResponse|OfflineResponse) => {
       subject.next(response);
       subject.complete();
       this.removeFromTempChangesStorage(command.referenceId);
@@ -312,7 +289,7 @@ export abstract class CollectionBase<T, Y> {
     this.tempChangesStorage$.next(value);
   }
 
-  private sendCommandHot<TResponseType>(command: CollectionCommandBase): Observable<TResponseType> {
+  private sendCommandHot<TResponseType>(command: CreateRangeCommand|UpdateRangeCommand): Observable<TResponseType> {
     this.addToTempChangesStorage(command);
     const subject = new ReplaySubject<TResponseType>();
     const result = this.offlineManager ? this.offlineManager.sendCommand(command, this.collectionInformation) :

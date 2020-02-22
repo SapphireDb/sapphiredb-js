@@ -1,14 +1,13 @@
 import {InfoResponse} from '../command/info/info-response';
-import {Observable, of, ReplaySubject} from 'rxjs';
+import {Observable} from 'rxjs';
 import {ChangeResponse, ChangeState} from '../command/subscribe/change-response';
 import {FilterFunctions} from './filter-functions';
 import {SelectPrefilter} from '../collection/prefilter/select-prefilter';
 import {CountPrefilter} from '../collection/prefilter/count-prefilter';
 import {IPrefilter} from '../collection/prefilter/iprefilter';
-import {map, startWith, switchMap, take} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {FirstPrefilter} from '../collection/prefilter/first-prefilter';
 import {LastPrefilter} from '../collection/prefilter/last-prefilter';
-import {CreateCommand} from '../command/create/create-command';
 import {CreateRangeCommand} from '../command/create-range/create-range-command';
 import {CollectionCommandBase} from '../command/collection-command-base';
 
@@ -65,14 +64,7 @@ export class CollectionHelper {
         collectionChanges.map(change => {
           const changesToApply: ChangeResponse[] = [];
 
-          if (change.commandType === 'CreateCommand' || change.commandType === 'UpdateCommand'
-            || change.commandType === 'DeleteCommand') {
-            changesToApply.push(<any>{
-              value: (<CreateCommand>change).value,
-              state: change.commandType === 'CreateCommand' ? ChangeState.Added :
-                change.commandType === 'UpdateCommand' ? ChangeState.Modified : ChangeState.Deleted
-            });
-          } else if (change.commandType === 'CreateRangeCommand' || change.commandType === 'UpdateRangeCommand'
+          if (change.commandType === 'CreateRangeCommand' || change.commandType === 'UpdateRangeCommand'
             || change.commandType === 'DeleteRangeCommand') {
             for (const value of (<CreateRangeCommand><any>change).values) {
               changesToApply.push(<any>{

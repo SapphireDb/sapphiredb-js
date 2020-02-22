@@ -1,6 +1,9 @@
 import {ResponseBase} from '../response-base';
-import {DeleteResponse} from '../delete/delete-response';
+import {ValidatedResponseBase} from '../validated-response-base';
 
 export interface DeleteRangeResponse extends ResponseBase {
   results: DeleteResponse[];
+}
+
+export interface DeleteResponse extends ValidatedResponseBase {
 }

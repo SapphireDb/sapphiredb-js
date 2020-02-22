@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {DefaultCollection, CreateResponse, UpdateResponse, SapphireOfflineEntity} from 'sapphiredb';
+import {DefaultCollection, CreateRangeResponse, UpdateRangeResponse, SapphireOfflineEntity} from 'sapphiredb';
 import { SapphireDbService} from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {FormControl, FormGroup} from '@angular/forms';
@@ -55,21 +55,22 @@ export class ModelValidationComponent implements OnInit {
   store() {
     const rawFormValue = this.form.getRawValue();
 
-    let result$: Observable<CreateResponse|UpdateResponse>;
+    let result$: Observable<CreateRangeResponse|UpdateRangeResponse>;
 
     if (this.formEntity) {
-      result$ = <Observable<UpdateResponse>>this.collection.update(rawFormValue);
+      result$ = <Observable<UpdateRangeResponse>>this.collection.update(rawFormValue);
     } else {
-      result$ = <Observable<CreateResponse>>this.collection.add(rawFormValue);
+      result$ = <Observable<CreateRangeResponse>>this.collection.add(rawFormValue);
     }
 
-    result$.pipe(take(1)).subscribe((results: CreateResponse|UpdateResponse) => {
-      if (!results.error && !results.validationResults) {
+    result$.pipe(take(1)).subscribe((results: CreateRangeResponse|UpdateRangeResponse) => {
+      const result = results.results[0];
+      if (!result.error && !result.validationResults) {
         this.resetForm();
       } else {
-        Object.keys(results.validationResults).forEach(key => {
+        Object.keys(result.validationResults).forEach(key => {
           const errors = {};
-          results.validationResults[key].forEach(error => errors[error] = true);
+          result.validationResults[key].forEach(error => errors[error] = true);
           this.form.get(key).setErrors(errors);
         });
       }

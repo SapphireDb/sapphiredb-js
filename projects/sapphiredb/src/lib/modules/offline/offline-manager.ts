@@ -12,10 +12,11 @@ import {ExecuteCommandsCommand} from '../../command/execute-commands/execute-com
 import {ExecuteCommandsResponse} from '../../command/execute-commands/execute-commands-response';
 import {OfflineCommandHelper} from '../../helper/offline-command-helper';
 import {OfflineResponse} from './offline-response';
-import {CreateCommand} from '../../command/create/create-command';
-import {UpdateCommand} from '../../command/update/update-command';
 import {CreateRangeCommand} from '../../command/create-range/create-range-command';
 import {UpdateRangeCommand} from '../../command/update-range/update-range-command';
+import {UpdateResponse} from '../../command/update-range/update-range-response';
+import {CreateResponse} from '../../command/create-range/create-range-response';
+import {DeleteRangeCommand} from '../../command/delete-range/delete-range-command';
 
 const CollectionStoragePrefix = 'sapphiredb.collection.';
 const CollectionInformationStoragePrefix = 'sapphiredb.collectioninformation.';
@@ -96,7 +97,7 @@ export class OfflineManager {
     return this.storage.set(offlineKey, JSON.stringify(state));
   }
 
-  sendCommand(command: CollectionCommandBase, info$: Observable<InfoResponse>): Observable<any> {
+  sendCommand(command: CreateRangeCommand|UpdateRangeCommand|DeleteRangeCommand, info$: Observable<InfoResponse>): Observable<any> {
     const connectionState: ConnectionState = this.connectionManager.connection.connectionInformation$.value.readyState;
 
     if (connectionState === ConnectionState.connected) {
@@ -125,9 +126,8 @@ export class OfflineManager {
     return of(<OfflineResponse> {
       referenceId: command.referenceId,
       responseType: 'OfflineResponse',
-      value: OfflineCommandHelper.isRangeCommand(command) ? undefined : (<CreateCommand|UpdateCommand>command).value,
-      results: OfflineCommandHelper.isRangeCommand(command) ? (<CreateRangeCommand|UpdateRangeCommand>command).values
-        .map((value) => (<OfflineResponse>{ value: value })) : undefined,
+      results: (<CreateRangeCommand|UpdateRangeCommand>command).values
+        .map((value) => (<CreateResponse|UpdateResponse>{ value: value })),
     });
   }
 
