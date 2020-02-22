@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
 import { SapphireDbService } from 'ng-sapphiredb';
-import {DefaultCollection} from 'sapphiredb';
+import {DefaultCollection, SapphireOfflineEntity} from 'sapphiredb';
 import {DialogService} from 'ng-metro4';
 import {GuidHelper} from '../../../../projects/sapphiredb/src/lib/helper/guid-helper';
 
@@ -24,8 +24,8 @@ export class ManageComponent implements OnInit {
   addValue() {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
       this.collection.add({
+        ...new SapphireOfflineEntity(),
         content: v,
-        id: GuidHelper.generateGuid()
       });
     });
   }
@@ -34,12 +34,12 @@ export class ManageComponent implements OnInit {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
       this.collection.add(...[
         {
+          ...new SapphireOfflineEntity(),
           content: '1' + v,
-          id: GuidHelper.generateGuid()
         },
         {
-          content: '2' + v,
-          id: GuidHelper.generateGuid()
+          ...new SapphireOfflineEntity(),
+          content: '2' + v
         }
       ]);
     });

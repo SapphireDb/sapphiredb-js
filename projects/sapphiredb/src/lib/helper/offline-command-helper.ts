@@ -57,11 +57,12 @@ export class OfflineCommandHelper {
       if (commandWithSameValue.commandType === 'CreateRangeCommand' || commandWithSameValue.commandType === 'UpdateRangeCommand') {
         const commandWithSameValueRangeCommand = <CreateRangeCommand|UpdateRangeCommand>commandWithSameValue;
         const valueIndex = commandWithSameValueRangeCommand.values.findIndex(v => filterFunction(v));
-        commandWithSameValueRangeCommand.values[valueIndex] = value;
+        commandWithSameValueRangeCommand.values[valueIndex] = Object.assign(commandWithSameValueRangeCommand.values[valueIndex], value);
       }
     } else {
       if (commandWithSameValue.commandType === 'CreateCommand' || commandWithSameValue.commandType === 'UpdateCommand') {
-        (<CreateCommand|UpdateCommand>commandWithSameValue).value = value;
+        (<CreateCommand|UpdateCommand>commandWithSameValue).value = Object.assign((<CreateCommand|UpdateCommand>commandWithSameValue).value,
+          value);
       }
     }
   }

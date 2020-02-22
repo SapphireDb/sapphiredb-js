@@ -15,12 +15,12 @@ export * from './lib/collection/ordered-collection';
 export * from './lib/collection/reduced-collection';
 
 export * from './lib/modules/messaging/messaging';
-export * from './lib/models/command-result';
-export * from './lib/models/command-results';
 export * from './lib/modules/action/action-result';
-export * from './lib/command/connection/connection-response';
 
 export * from './lib/models/types';
+export * from './lib/models/sapphire-offline-entity';
+
+export * from './lib/command/connection/connection-response';
 
 export * from './lib/command/execute/execute-response';
 export * from './lib/command/execute/execute-response';
