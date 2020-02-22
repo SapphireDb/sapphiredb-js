@@ -38,6 +38,8 @@ export class CollectionHelper {
 
       if (index !== -1) {
         values[index] = changeResponse.value;
+      } else {
+        values.push(changeResponse.value);
       }
     } else if (changeResponse.state === ChangeState.Added) {
       values.push(changeResponse.value);

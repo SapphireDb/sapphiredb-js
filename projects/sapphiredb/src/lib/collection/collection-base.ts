@@ -174,6 +174,7 @@ export abstract class CollectionBase<T, Y> {
           info.primaryKeys.forEach(pk => {
             primaryValues[pk] = value[pk];
           });
+          primaryValues['modifiedOn'] = value['modifiedOn'];
           return primaryValues;
         });
 

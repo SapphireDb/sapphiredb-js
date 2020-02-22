@@ -26,7 +26,8 @@ export class OfflineCommandHelper {
     return command.commandType.indexOf('Range') !== -1;
   }
 
-  static handleAddDeleteCommand(value: any, changes: CollectionCommandBase[], commandIndex: number, filterFunction: (any) => boolean): boolean {
+  static handleAddDeleteCommand(value: any, changes: CollectionCommandBase[], commandIndex: number, filterFunction: (any) => boolean)
+    : boolean {
     const commandWithSameValue = changes[commandIndex];
 
     if (OfflineCommandHelper.isRangeCommand(commandWithSameValue)) {

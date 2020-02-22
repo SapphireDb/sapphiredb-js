@@ -3,7 +3,6 @@ import {Observable} from 'rxjs';
 import { SapphireDbService } from 'ng-sapphiredb';
 import {DefaultCollection, SapphireOfflineEntity} from 'sapphiredb';
 import {DialogService} from 'ng-metro4';
-import {GuidHelper} from '../../../../projects/sapphiredb/src/lib/helper/guid-helper';
 
 @Component({
   selector: 'app-manage',

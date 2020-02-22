@@ -1,9 +1,8 @@
 import {GuidHelper} from '../helper/guid-helper';
 
 export class SapphireOfflineEntity {
-  id: string;
-  createdOn: Date;
-  updatedOn: Date;
+  public id: string;
+  protected modifiedOn: Date;
 
   constructor() {
     this.id = GuidHelper.generateGuid();
