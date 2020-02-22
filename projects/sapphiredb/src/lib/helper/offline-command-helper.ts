@@ -76,7 +76,8 @@ export class OfflineCommandHelper {
 
         if (commandIndexWithSameValue !== -1) {
           if (rangeCommand.commandType === 'DeleteRangeCommand') {
-            const removeCommand = OfflineCommandHelper.handleAddDeleteCommand(value, collectionChanges, commandIndexWithSameValue, filterFunction);
+            const removeCommand = OfflineCommandHelper.handleAddDeleteCommand(value, collectionChanges, commandIndexWithSameValue,
+              filterFunction);
 
             if (removeCommand) {
               rangeCommand.values = rangeCommand.values.filter(v => !filterFunction(v));
@@ -102,7 +103,8 @@ export class OfflineCommandHelper {
 
       if (commandIndexWithSameValue !== -1) {
         if (singleCommand.commandType === 'DeleteCommand') {
-          return !OfflineCommandHelper.handleAddDeleteCommand(singleCommand.value, collectionChanges, commandIndexWithSameValue, filterFunction);
+          return !OfflineCommandHelper.handleAddDeleteCommand(singleCommand.value, collectionChanges, commandIndexWithSameValue,
+            filterFunction);
         } else if (singleCommand.commandType === 'UpdateCommand') {
           OfflineCommandHelper.handleAddUpdateCommand(singleCommand.value, collectionChanges, commandIndexWithSameValue, filterFunction);
           return false;

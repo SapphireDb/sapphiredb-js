@@ -53,9 +53,8 @@ export class CollectionHelper {
   static getInterpolatedCollectionValue(collectionChanges: CollectionCommandBase[], state: any[],
                                  info$: Observable<InfoResponse>): Observable<any> {
     return info$.pipe(
-      startWith(<InfoResponse>null),
       map((info) => {
-        if (!collectionChanges || !info) {
+        if (!collectionChanges) {
           return state;
         }
 

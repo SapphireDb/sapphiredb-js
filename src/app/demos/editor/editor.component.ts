@@ -49,7 +49,7 @@ export class EditorComponent implements OnInit {
               name: name,
               content: ''
             }).pipe(
-              map((result: CreateResponse) => result.newObject)
+              map((result: CreateResponse) => result.value)
             );
           })
         );

@@ -1,7 +1,7 @@
 import {Observable, of, ReplaySubject} from 'rxjs';
 import {InfoResponse} from '../command/info/info-response';
 import {InfoCommand} from '../command/info/info-command';
-import {switchMap, take} from 'rxjs/operators';
+import {startWith, switchMap, tap} from 'rxjs/operators';
 import {ConnectionManager} from '../connection/connection-manager';
 import {OfflineManager} from '../modules/offline/offline-manager';
 
@@ -32,21 +32,22 @@ export class CollectionInformationManager {
             return of(info);
           }
 
-          return this.connectionManagerService.sendCommand(new InfoCommand(collectionName, contextName));
+          return this.connectionManagerService.sendCommand(new InfoCommand(collectionName, contextName)).pipe(
+            tap((response: InfoResponse) => {
+              if (!!this.offlineManager) {
+                this.offlineManager.setCollectionInformation(contextName, collectionName, response);
+              }
+            }),
+            startWith(<InfoResponse>{ primaryKeys: ['id'] })
+          );
         }),
-        take(1)
       ).subscribe((info: InfoResponse) => {
-        if (!!this.offlineManager) {
-          this.offlineManager.setCollectionInformation(contextName, collectionName, info);
-        }
         subject$.next(info);
       }, (error) => {
         subject$.error(error);
       });
     }
 
-    return this.collectionInformation[`${contextName}:${collectionName}`].pipe(
-      take(1)
-    );
+    return this.collectionInformation[`${contextName}:${collectionName}`];
   }
 }
