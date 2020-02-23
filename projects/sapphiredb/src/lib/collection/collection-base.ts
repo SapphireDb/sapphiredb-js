@@ -306,6 +306,7 @@ export abstract class CollectionBase<T, Y> {
         this.connectionManagerService.sendCommand(
           new UnsubscribeCommand(this.collectionName, this.contextName, collectionValue.referenceId), false, true);
         collectionValue.socketSubscription.unsubscribe();
+        this.collectionObservable$ = undefined;
       }),
       switchMap((state) => {
         if (!this.offlineManager) {
