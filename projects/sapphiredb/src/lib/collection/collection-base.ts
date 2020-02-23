@@ -32,6 +32,8 @@ export abstract class CollectionBase<T, Y> {
   private serverState: Y;
   private tempChangesStorage$ = new BehaviorSubject<CollectionCommandBase[]>([]);
 
+  private collectionObservable$: Observable<Y>;
+
   constructor(collectionNameRaw: string,
               protected connectionManagerService: ConnectionManager,
               protected collectionInformation: Observable<InfoResponse>,
@@ -89,9 +91,14 @@ export abstract class CollectionBase<T, Y> {
    * Get the values of the collection and also get updates if the collection has changed
    */
   public values(): Observable<Y> {
-    const collectionValue = this.createValuesSubscription(this.collectionName, this.contextName,
-      this.collectionInformation, this.prefilters);
-    return this.createCollectionObservable$(collectionValue);
+    if (!this.collectionObservable$) {
+      const collectionValue = this.createValuesSubscription(this.collectionName, this.contextName,
+        this.collectionInformation, this.prefilters);
+
+      this.collectionObservable$ = this.createCollectionObservable$(collectionValue);
+    }
+
+    return this.collectionObservable$;
   }
 
   /**
@@ -154,7 +161,10 @@ export abstract class CollectionBase<T, Y> {
     let command: UpdateRangeCommand;
 
     if (!CollectionHelper.hasAfterQueryPrefilter(this.prefilters)) {
-      result = combineLatest([this.snapshot(), this.collectionInformation]).pipe(
+      result = combineLatest([
+        this.collectionObservable$ ? this.collectionObservable$ : this.snapshot(),
+        this.collectionInformation
+      ]).pipe(
         take(1),
         switchMap(([snapshot, info]: [any, InfoResponse]) => {
           command = new UpdateRangeCommand(this.collectionName, this.contextName, values.map(value => {

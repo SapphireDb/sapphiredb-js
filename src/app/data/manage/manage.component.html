@@ -5,9 +5,13 @@
 <h2>Create data</h2>
 
 <app-doc>
-  {{ values$ | async | json }}<br>
-  <button m4-button (click)="addValue()">Add value</button>
-  <button m4-button (click)="addValues()">Add values</button>
+  <ng-container *m4Let="values$ | async; let values">
+    <div class="row">
+      <div class="cell-4" *ngFor="let v of values">{{ v | json}}</div>
+    </div>
+    <button m4-button (click)="addValue()">Add value</button>
+    <button m4-button (click)="addValues()">Add values</button>
+  </ng-container>
   <div lang>
     <![CDATA[
     \f:(typescript:demo.component.ts)
