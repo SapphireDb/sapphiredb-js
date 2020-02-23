@@ -30,7 +30,7 @@ export class ModelValidationComponent implements OnInit {
       username: new FormControl(''),
       email: new FormControl(''),
       password: new FormControl(''),
-      modifiedOn: new FormControl(),
+      modifiedOn: new FormControl(new Date()),
     });
   }
 

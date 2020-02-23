@@ -6,5 +6,6 @@ export class SapphireOfflineEntity {
 
   constructor() {
     this.id = GuidHelper.generateGuid();
+    this.modifiedOn = new Date();
   }
 }
