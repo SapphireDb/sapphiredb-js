@@ -29,7 +29,8 @@ export class ModelValidationComponent implements OnInit {
       id: new FormControl(new SapphireOfflineEntity().id),
       username: new FormControl(''),
       email: new FormControl(''),
-      password: new FormControl('')
+      password: new FormControl(''),
+      modifiedOn: new FormControl(),
     });
   }
 
@@ -39,7 +40,8 @@ export class ModelValidationComponent implements OnInit {
       id: new SapphireOfflineEntity().id,
       username: '',
       email: '',
-      password: ''
+      password: '',
+      modifiedOn: undefined
     });
   }
 
