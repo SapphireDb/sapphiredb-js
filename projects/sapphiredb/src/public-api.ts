@@ -16,6 +16,7 @@ export * from './lib/collection/reduced-collection';
 
 export * from './lib/modules/messaging/messaging';
 export * from './lib/modules/action/action-result';
+export * from './lib/modules/offline/offline-response';
 
 export * from './lib/models/types';
 export * from './lib/models/sapphire-offline-entity';
