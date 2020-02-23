@@ -17,6 +17,7 @@ import {UpdateRangeCommand} from '../../command/update-range/update-range-comman
 import {UpdateResponse} from '../../command/update-range/update-range-response';
 import {CreateResponse} from '../../command/create-range/create-range-response';
 import {DeleteRangeCommand} from '../../command/delete-range/delete-range-command';
+import {DeleteResponse} from '../../command/delete-range/delete-range-response';
 
 const CollectionStoragePrefix = 'sapphiredb.collection.';
 const CollectionInformationStoragePrefix = 'sapphiredb.collectioninformation.';
@@ -130,7 +131,7 @@ export class OfflineManager {
       referenceId: command.referenceId,
       responseType: 'OfflineResponse',
       results: results
-        .map((value) => (<CreateResponse|UpdateResponse>{ value: value })),
+        .map((value) => (<CreateResponse|UpdateResponse|DeleteResponse>{ value: value })),
     });
   }
 

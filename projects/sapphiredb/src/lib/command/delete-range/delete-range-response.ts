@@ -6,4 +6,5 @@ export interface DeleteRangeResponse extends ResponseBase {
 }
 
 export interface DeleteResponse extends ValidatedResponseBase {
+  value: any;
 }
