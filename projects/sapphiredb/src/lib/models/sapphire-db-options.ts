@@ -4,6 +4,5 @@ export interface SapphireDbOptions {
   useSsl?: boolean;
   apiKey?: string;
   apiSecret?: string;
-  pollingTime?: number;
   offlineSupport?: boolean;
 }

@@ -11,8 +11,6 @@ import {AxiosError, AxiosResponse, default as axios} from 'axios';
 export class PollConnection extends ConnectionBase {
   private headers: { key: string, secret: string, Authorization?: string, connectionId?: string };
 
-  private pollingTime: number;
-
   private pollConnectionString: string;
   private apiConnectionString: string;
 
@@ -50,7 +48,6 @@ export class PollConnection extends ConnectionBase {
     const load$ = new BehaviorSubject(null);
 
     const whenToRefresh$ = of(null).pipe(
-      delay(this.pollingTime),
       tap(() => load$.next(null)),
       skip(1),
     );
@@ -60,7 +57,7 @@ export class PollConnection extends ConnectionBase {
         const request$ = from(axios.get(this.pollConnectionString, {
           headers: this.headers
         })).pipe(
-          map((response: AxiosResponse<ResponseBase[]>) => response.data)
+          map((response: AxiosResponse<ResponseBase[]>) => response && response.data)
         );
 
         return concat(request$, whenToRefresh$);
@@ -73,7 +70,15 @@ export class PollConnection extends ConnectionBase {
     );
 
     poll$.subscribe((responses: ResponseBase[]) => {
-      responses.forEach(response => this.messageHandler(response));
+      if (responses) {
+        responses.forEach(response => this.messageHandler(response));
+      } else {
+        this.updateConnectionInformation(ConnectionState.disconnected);
+
+        setTimeout(() => {
+          this.connect();
+        }, 1000);
+      }
     }, (error) => {
       if (error.status === 404) {
         return;
@@ -101,13 +106,15 @@ export class PollConnection extends ConnectionBase {
     const url = `${this.apiConnectionString}${command.commandType}`;
 
     axios.post(url, command, {
-      headers: this.headers
+      headers: this.headers,
     }).then((axiosResponse: AxiosResponse<ResponseBase>) => {
       if (!!axiosResponse.data) {
         this.messageHandler(axiosResponse.data);
       }
     }).catch((error: AxiosError<ResponseBase>) => {
-      this.messageHandler(error.response.data);
+      if (error.response) {
+        this.messageHandler(error.response.data);
+      }
     });
   }
 
@@ -118,8 +125,6 @@ export class PollConnection extends ConnectionBase {
     this.apiConnectionString = `${options.useSsl ? 'https' : 'http'}://${options.serverBaseUrl}/sapphire/api/`;
 
     this.updateConnectionInformation(ConnectionState.disconnected);
-
-    this.pollingTime = options.pollingTime;
 
     this.headers = {
       key: options.apiKey ? options.apiKey : '',

@@ -52,10 +52,6 @@ export class SapphireDb {
 
     this.options.offlineSupport = !!this.options.offlineSupport;
 
-    if (!this.options.pollingTime) {
-      this.options.pollingTime = 300;
-    }
-
     if (!this.responseActionInterceptor) {
       this.responseActionInterceptor = (executeCode: () => void) => executeCode();
     }
