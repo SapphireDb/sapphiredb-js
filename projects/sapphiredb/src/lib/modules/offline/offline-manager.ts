@@ -1,4 +1,4 @@
-import {SapphireStorage} from '../../helper/sapphire-storage';
+import {SapphireNoopStorage, SapphireStorage} from '../../helper/sapphire-storage';
 import {IPrefilter} from '../../collection/prefilter/iprefilter';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject} from 'rxjs';
 import {CollectionHelper} from '../../helper/collection-helper';
@@ -31,6 +31,11 @@ export class OfflineManager {
   public offlineTransferResults$ = new ReplaySubject<ExecuteCommandsResponse>();
 
   constructor(private storage: SapphireStorage, private connectionManager: ConnectionManager) {
+    if (!this.storage) {
+      console.warn('No storage was configured. Using SapphireNoopStorage and will not store things locally.');
+      this.storage = new SapphireNoopStorage();
+    }
+
     this.changeStorage$.pipe(skip(2)).subscribe((changes) => {
       this.storage.set(CollectionChangeStorage, JSON.stringify(changes));
     });

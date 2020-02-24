@@ -14,6 +14,7 @@ import {ChangesComponent} from './changes/changes.component';
 import {IncludeComponent} from './include/include.component';
 import {ClassTransformerComponent} from './class-transformer/class-transformer.component';
 import {ModelValidationComponent} from './model-validation/model-validation.component';
+import {OfflineComponent} from './offline/offline.component';
 
 
 const routes: Routes = [
@@ -31,6 +32,7 @@ const routes: Routes = [
   { path: 'include', component: IncludeComponent },
   { path: 'class-transformer', component: ClassTransformerComponent },
   { path: 'model-validation', component: ModelValidationComponent },
+  { path: 'offline', component: OfflineComponent },
   { path: '', redirectTo: 'query', pathMatch: 'full' }
 ];
 

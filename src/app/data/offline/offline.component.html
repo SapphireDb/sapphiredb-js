@@ -1,0 +1,133 @@
+<h1>Offline support</h1>
+
+<p>
+  SapphireDb support offline usage and can store and load data from a local storage.<br>
+  Changes made offline and online will be synced and automatically merged.
+</p>
+
+<h2>Basic setup</h2>
+
+<div class="remark success">
+  To enable offline support just activate the option <code>offlineSupport</code> in your client application
+</div>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(typescript:main.ts)
+    var sapphiredb = require('sapphiredb');\n\n
+
+    var db = new sapphiredb.SapphireDb({\n
+      \tofflineSupport: true\n
+    });
+    ]]>
+  </div>
+</app-doc>
+
+<h3>Setup storage</h3>
+
+<div class="remark info">
+  To store data locally and benefit from offline support you have to provide a storage. For normal browsers you can use
+  <code>SapphireLocalStorage</code>. For other environments you should implement a custom storage provider.
+</div>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(typescript:main.ts)
+    var sapphiredb = require('sapphiredb');\n\n
+
+    var db = new sapphiredb.SapphireDb({\n
+      \tofflineSupport: true\n
+    }, new sapphiredb.SapphireLocalStorage());
+    ]]>
+  </div>
+</app-doc>
+
+<div class="remark info">
+  In angular you can provide the custom storage as <code>SapphireStorage</code> in providers of your module
+</div>
+
+<h2>Prepare models</h2>
+
+<div class="remark info">
+  Without configuring anything SapphireDb can already store collection state and local operations. But it will not be possible to create
+  new values in a collection and update them without going online again. <br>
+  To use that you have to generate some sort of id on client side when creating new values. (UUIDs/GUIDs are ideal for that)
+</div>
+
+<div class="remark success">
+  Use the class <code>SapphireOfflineEntity</code> in every model that should work offline. It has an auto generated
+  id property and a timestamp for concurrency conflict detection.
+</div>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:Entry.cs)
+    // Server side usage\n
+    public class DemoEntry : SapphireOfflineEntity\n
+    {\n
+      \tpublic string Content { get; set; }\n
+    }
+
+    \f:(typescript:client.ts)
+    // Client side usage\n
+    class Entry extends SapphireOfflineEntity {\n\n
+
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Conflict handling</h2>
+
+<div class="remark success">
+  SapphireDb will handle all conflicts that can happen automatically when using <code>SapphireOfflineEntity</code>.<br>
+  You can optionally control how SapphireDb should behave in case of a merge conflict.
+</div>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:Entry.cs)
+    public class DemoEntry : SapphireOfflineEntity\n
+    {\n
+      \t[MergeConflictResolutionMode(MergeConflictResolutionMode.ConflictMarkers)]\n
+      \tpublic string Content { get; set; }\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<div class="remark info">
+  Available merge conflict resolution modes are:
+  <ul>
+    <li><b>Database: </b> Take the value that is already stored in database</li>
+    <li><b>Last: </b> Take the value of the conflicting operation</li>
+    <li><b>ConflictMarkers: </b> Take both values and add GIT-Merge markers (only works with strings)</li>
+  </ul>
+</div>
+
+<h2>Note</h2>
+
+<div class="remark info">
+  <ul>
+    <li>
+      Server side model validation will only get executed on server side. It is possible to insert invalid values on client side that are rejected later.<br>
+      Add additional client side validation to avoid that
+    </li>
+    <li>
+      Some prefilters like First, Last, Count etc. will online work limited offline. The state before going offline will
+      get stored but operations on the collection will first take effect when going online again.
+    </li>
+    <li>
+      The prefilters Skip and Take will have no effect when offline. If you add new values they are always displayed by the prefilter.
+    </li>
+    <li>
+      Every collection value with different prefilters is stored in a different storage. That can result in sometimes
+      different values when using different prefilters. To avoid that only use one combination of prefilters in one
+      scope of the application.
+    </li>
+  </ul>
+</div>

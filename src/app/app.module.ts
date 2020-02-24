@@ -22,6 +22,7 @@ import {PrivacyComponent} from './shared/privacy/privacy.component';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {classToPlain, plainToClass} from 'class-transformer';
 import {Observable, of} from 'rxjs';
+import {SapphireLocalStorage} from '../../projects/sapphiredb/src/lib/helper/sapphire-storage';
 
 export function hljsLanguages() {
   return [
@@ -56,18 +57,6 @@ export class CustomClassTransformer extends SapphireClassTransformer {
   }
 }
 
-export class CustomStorage extends SapphireStorage {
-  get(key: string): Observable<string> {
-    // console.log('requested ' + key);
-    return of(localStorage.getItem('sapphiredb' + key));
-  }
-
-  set(key: string, value: string) {
-    // console.log('stored ' + key, value);
-    localStorage.setItem('sapphiredb' + key, value);
-  }
-}
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -88,7 +77,7 @@ export class CustomStorage extends SapphireStorage {
   providers: [
     { provide: SAPPHIRE_DB_OPTIONS, useFactory: createRealtimeOptions },
     { provide: SapphireClassTransformer, useClass: CustomClassTransformer },
-    { provide: SapphireStorage, useClass: CustomStorage }
+    { provide: SapphireStorage, useClass: SapphireLocalStorage }
   ],
   bootstrap: [AppComponent]
 })

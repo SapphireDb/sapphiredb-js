@@ -16,10 +16,11 @@ import {ChangesComponent} from './changes/changes.component';
 import {IncludeComponent} from './include/include.component';
 import { ClassTransformerComponent } from './class-transformer/class-transformer.component';
 import { ModelValidationComponent } from './model-validation/model-validation.component';
+import { OfflineComponent } from './offline/offline.component';
 
 
 @NgModule({
-  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent, EventsComponent, QueryFunctionComponent, ChangesComponent, IncludeComponent, ClassTransformerComponent, ModelValidationComponent],
+  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent, EventsComponent, QueryFunctionComponent, ChangesComponent, IncludeComponent, ClassTransformerComponent, ModelValidationComponent, OfflineComponent],
   imports: [
     SharedModule,
     DataRoutingModule
