@@ -11,17 +11,13 @@
           "/index.html",
           "/manifest.webmanifest",
           "/*.css",
-          "/*.js"
-        ]
-      }
-    }, {
-      "name": "assets",
-      "installMode": "lazy",
-      "updateMode": "prefetch",
-      "resources": {
-        "files": [
-          "/assets/**",
-          "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
+          "/*.js",
+          "/metro*",
+          "/assets/icon/logo.svg"
+        ],
+        "urls": [
+          "https://upload.wikimedia.org/wikipedia/commons/**/*.svg",
+          "https://c5.patreon.com/external/logo/become_a_patron_button@2x.png"
         ]
       }
     }
