@@ -70,7 +70,9 @@ export class SseConnection extends ConnectionBase {
         this.messageHandler(axiosResponse.data);
       }
     }).catch((error: AxiosError<ResponseBase>) => {
-      this.messageHandler(error.response.data);
+      if (error.response) {
+        this.messageHandler(error.response.data);
+      }
     });
   }
 
