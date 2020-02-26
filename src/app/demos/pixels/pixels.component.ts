@@ -26,8 +26,8 @@ export class PixelsComponent implements OnInit {
   public pixels$: Observable<Pixel[]>;
 
   constructor(private db: SapphireDbService) {
-    this.collection = this.db.collection<Pixel>('demo.pixels');
-    this.pixels$ = this.collection.orderBy('x').thenOrderBy('y').values();
+    this.collection = this.db.collection<Pixel>('demo.pixels').orderBy('x').thenOrderBy('y');
+    this.pixels$ = this.collection.values();
   }
 
   changeColor(pixel: Pixel, change: number) {
