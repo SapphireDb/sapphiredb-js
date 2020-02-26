@@ -10,13 +10,31 @@
 
 <div class="pl-2 mr-2">
   <ul data-role="tabs" data-expand-point="sm">
-    <li *ngFor="let lang of languages">
-      <a [href]="'#_target_' + lang.nameNormalized">{{ lang.name ? lang.name : lang.lang }}</a>
-    </li>
+    <ng-container *ngFor="let contentGroup of contents">
+      <ng-container *ngIf="!contentGroup._linq4js_.GroupValue; else contentGroupTemplate">
+        <li *ngFor="let content of contentGroup">
+          <a [href]="'#_target_' + content.nameNormalized">{{ content.name ? content.name : content.lang }}</a>
+        </li>
+      </ng-container>
+
+      <ng-template #contentGroupTemplate>
+        <li>
+          <a href="#" class="dropdown-toggle">{{ contentGroup._linq4js_.GroupValue }}</a>
+          <ul class="d-menu" data-role="dropdown">
+            <li *ngFor="let content of contentGroup">
+              <a [href]="'#_target_' + content.nameNormalized">{{ content.name ? content.name : content.lang }}</a>
+            </li>
+          </ul>
+        </li>
+      </ng-template>
+    </ng-container>
+
   </ul>
   <div class="border bd-default no-border-top p-2">
-    <div [id]="'_target_' + lang.nameNormalized" *ngFor="let lang of languages">
-      <pre><code [highlight]="lang.content" [languages]="[ lang.lang ]"></code></pre>
-    </div>
+    <ng-container *ngFor="let contentGroup of contents">
+      <div [id]="'_target_' + content.nameNormalized" *ngFor="let content of contentGroup">
+        <pre><code [highlight]="content.content" [languages]="[ content.lang ]"></code></pre>
+      </div>
+    </ng-container>
   </div>
 </div>
