@@ -28,7 +28,7 @@ export class CollectionHelper {
   }
 
   static getPrefilterHash(prefilters: IPrefilter<any, any>[]) {
-    return prefilters.reduce((prev, current) => prev += current.hash(), '');
+    return prefilters.map(p => p.hash()).join(';');
   }
 
   static updateCollection<T>(info: InfoResponse, values: T[], changeResponse: ChangeResponse) {
@@ -38,8 +38,6 @@ export class CollectionHelper {
 
       if (index !== -1) {
         values[index] = changeResponse.value;
-      } else {
-        values.push(changeResponse.value);
       }
     } else if (changeResponse.state === ChangeState.Added) {
       values.push(changeResponse.value);

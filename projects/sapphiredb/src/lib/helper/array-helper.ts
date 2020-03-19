@@ -1,5 +1,3 @@
-import {IPrefilter} from '../collection/prefilter/iprefilter';
-
 Object.defineProperty(Array.prototype, '_sapphire_', {
   value: { sorting: [] },
   enumerable: false
@@ -7,16 +5,6 @@ Object.defineProperty(Array.prototype, '_sapphire_', {
 
 // @dynamic
 export class ArrayHelper {
-  static isAnyRolePresent(neededRoles: string[], presentRoles: string[]): boolean {
-    for (const neededRole of neededRoles) {
-      if (presentRoles.indexOf(neededRole) !== -1) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   static orderBy<T>(array: T[], valueSelector: (item: T) => any, descending: boolean): T[] {
     if (!(<any>array)._sapphire_) {
       (<any>array)._sapphire_ = {};
@@ -47,10 +35,6 @@ export class ArrayHelper {
 
       return 0;
     });
-  }
-
-  static createPrefilterHash(prefilters: IPrefilter<any, any>[]): string {
-    return prefilters.map(p => p.hash()).join(',');
   }
 
   private static stringCompare(value_a: string, value_b: string, invert: boolean): number {
