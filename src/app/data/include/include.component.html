@@ -48,7 +48,7 @@
       \tprivate userCollection: DefaultCollection<User>;\n
       \tpublic users$: Observable<User[]>;\n\n
 
-      \tconstructor(private db: SapphireDb) {\n
+      \tconstructor(private db: SapphireDbService) {\n
         \t\tthis.userCollection = this.db.collection('Users').include('entries');\n
         \t\tthis.users$ = this.userCollection.values();\n
       \t}\n
@@ -123,7 +123,7 @@
     \tprivate userCollection: DefaultCollection<User>;\n
     \tpublic users$: Observable<User[]>;\n\n
 
-    \tconstructor(private db: SapphireDb) {\n
+    \tconstructor(private db: SapphireDbService) {\n
     \t\tthis.userCollection = this.db.collection('Users').include('entries');\n
     \t\tthis.users$ = this.userCollection.values();\n
     \t}\n
@@ -179,7 +179,7 @@
     \tcollection: DefaultCollection<Entry>;
     \tvalues$: Observable<Entry[]>;\n\n
 
-    \tconstructor(private db: SapphireDb) { }\n\n
+    \tconstructor(private db: SapphireDbService) { }\n\n
 
     \tngOnInit() {\n
     \t\tthis.collection = this.db.collection('Entries').include('user');\n

@@ -9,7 +9,7 @@
         \tprivate collection: DefaultCollection<Pixel>;\n
         \tpublic pixels$: Observable<Pixel[]>;\n\n
 
-        \tconstructor(private db: SapphireDb) {\n
+        \tconstructor(private db: SapphireDbService) {\n
           \t\tthis.collection = this.db.collection<Pixel>('pixels');\n
           \t\t// Load all pixels from collection\n
           \t\tthis.pixels$ = this.collection.orderBy('x').thenOrderBy('y').values();\n

@@ -38,7 +38,7 @@
 
         \tform: FormGroup;\n\n
 
-        \tconstructor(private db: SapphireDb) { }\n\n
+        \tconstructor(private db: SapphireDbService) { }\n\n
 
         \tngOnInit() {\n
           \t\tthis.collection = this.db.collection('demo.validationDemos');\n

@@ -19,7 +19,7 @@
       \tcollection: DefaultCollection<Entry>;\n
       \tvalues$: Observable<Entry[]>;\n\n
 
-      \tconstructor(private db: SapphireDb) { }\n\n
+      \tconstructor(private db: SapphireDbService) { }\n\n
 
       \tngOnInit() {\n
         \t\t// Use a collection object to easily access the methods of a collection\n
@@ -93,7 +93,7 @@
     export class DemoComponent implements OnInit {\n
       \tcollection: DefaultCollection<Entry>;\n
 
-      \tconstructor(private db: SapphireDb) { }\n\n
+      \tconstructor(private db: SapphireDbService) { }\n\n
 
       \tngOnInit() {\n
         \t\tthis.collection = this.db.collection<Entry>('entries', 'demo');\n
@@ -130,7 +130,7 @@
     export class DemoComponent implements OnInit {\n
       \tcollection: DefaultCollection<Entry>;\n
 
-      \tconstructor(private db: SapphireDb) { }\n\n
+      \tconstructor(private db: SapphireDbService) { }\n\n
 
       \tngOnInit() {\n
         \t\tthis.collection = this.db.collection<Entry>('demo.entries');\n

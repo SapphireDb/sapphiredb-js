@@ -27,7 +27,7 @@
     export class DemoComponent implements OnInit {\n
       \tvalues$: Observable<any>;\n
 
-      \tconstructor(private db: SapphireDb) { }\n\n
+      \tconstructor(private db: SapphireDbService) { }\n\n
 
       \tngOnInit() {\n
         \t\tthis.values$ = this.db.collection<any>('entries')\n
@@ -53,7 +53,7 @@
     export class DemoComponent implements OnInit {\n
       \tvalues$: Observable<Entry[]>;\n
 
-      \tconstructor(private db: SapphireDb) { }\n\n
+      \tconstructor(private db: SapphireDbService) { }\n\n
 
       \tngOnInit() {\n
     \t\tthis.values$ = this.db.collection<Entry>('entries')\n
@@ -82,7 +82,7 @@
       \tvalueFirst$: Observable<Entry>;\n
       \tvalueLast$: Observable<Entry>;\n
 
-      \tconstructor(private db: SapphireDb) { }\n\n
+      \tconstructor(private db: SapphireDbService) { }\n\n
 
       \tngOnInit() {\n
     \t\tthis.valueFirst$ = this.db.collection<Entry>('entries')\n

@@ -55,7 +55,7 @@
       export class QueryAuthComponent implements OnInit {\n
         \tvalues$: Observable<any>;\n\n
 
-        \tconstructor(private db: SapphireDb) {}\n\n
+        \tconstructor(private db: SapphireDbService) {}\n\n
 
         \tngOnInit() {\n
           \t\tthis.values$ = this.db.collection('AuthDemo.RequiresAuthForQueryDemos').values();\n
@@ -104,7 +104,7 @@
       export class QueryAuthComponent implements OnInit {\n
         \tvalues$: Observable<any>;\n\n
 
-        \tconstructor(private db: SapphireDb) {}\n\n
+        \tconstructor(private db: SapphireDbService) {}\n\n
 
         \tngOnInit() {\n
       \t\tthis.values$ = this.db.collection('AuthDemo.RequiresAdminForQueryDemos').values();\n
@@ -155,7 +155,7 @@
       export class QueryAuthComponent implements OnInit {\n
         \tvalues$: Observable<any>;\n\n
 
-        \tconstructor(private db: SapphireDb) {}\n\n
+        \tconstructor(private db: SapphireDbService) {}\n\n
 
         \tngOnInit() {\n
       \t\tthis.values$ = this.db.collection('AuthDemo.CustomFunctionForQueryDemos').values();\n
@@ -215,7 +215,7 @@
       export class QueryAuthComponent implements OnInit {\n
         \tvalues$: Observable<any>;\n\n
 
-        \tconstructor(private db: SapphireDb) {}\n\n
+        \tconstructor(private db: SapphireDbService) {}\n\n
 
         \tngOnInit() {\n
       \t\tthis.values$ = this.db.collection('CustomFunctionPerEntryForQueryDemos', 'AuthDemo').values();\n
@@ -267,7 +267,7 @@
       export class QueryAuthComponent implements OnInit {\n
         \tvalues$: Observable<any>;\n\n
 
-        \tconstructor(private db: SapphireDb) {}\n\n
+        \tconstructor(private db: SapphireDbService) {}\n\n
 
         \tngOnInit() {\n
       \t\tthis.values$ = this.db.collection('AuthDemo.QueryFieldDemos').values();\n
