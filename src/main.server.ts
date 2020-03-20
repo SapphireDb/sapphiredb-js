@@ -1,4 +1,5 @@
 import {enableProdMode} from '@angular/core';
+import 'linq4js';
 
 enableProdMode();
 
