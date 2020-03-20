@@ -53,7 +53,27 @@
   <app-doc [showContent]="false">
     <div lang>
       <![CDATA[
-      \f:(csharp:Model.cs)
+      \f:(typescript:Angular)
+      export class QueryAuthComponent implements OnInit {\n
+        \tvalues$: Observable<any>;\n\n
+
+        \tconstructor(private db: SapphireDbService) {}\n\n
+
+        \tngOnInit() {\n
+      \t\tthis.values$ = this.db.collection('AuthDemo.UpdateExamples').values();\n
+      \t}\n\n
+
+        \tupdate(collection$: Observable<DefaultCollection<any>>, value: any) {\n
+      \t\tthis.db.collection('AuthDemo.UpdateExamples').update({\n
+            \t\t\t...value,\n
+            \t\t\trequiresUser: 'No',\n
+            \t\t\tcustomFunction: 'test 123',\n
+            \t\t\trequiresAdmin: 'Updated'\n
+          \t\t});\n
+      \t}\n
+      }
+
+      \f:(csharp:Model.cs:Server)
       [Updatable]\n
       [UpdateAuth("requireUser")]\n
       public class UpdateExample : Base\n
@@ -72,7 +92,7 @@
         \tpublic string RequiresAdmin { get; set; }\n
       }
 
-      \f:(csharp:Startup.cs)
+      \f:(csharp:Startup.cs:Server)
       public void ConfigureServices(IServiceCollection services)\n
       {\n
         \tservices.AddAuthorization(config =>\n
@@ -80,26 +100,6 @@
           \t\tconfig.AddPolicy("requireAdmin", b => b.RequireRole("admin"));\n
           \t\tconfig.AddPolicy("requireUser", b => b.RequireRole("user"));\n
       \t});\n
-      }
-
-      \f:(typescript:example.component.ts)
-      export class QueryAuthComponent implements OnInit {\n
-        \tvalues$: Observable<any>;\n\n
-
-        \tconstructor(private db: SapphireDbService) {}\n\n
-
-        \tngOnInit() {\n
-      \t\tthis.values$ = this.db.collection('AuthDemo.UpdateExamples').values();\n
-      \t}\n\n
-
-        \tupdate(collection$: Observable<DefaultCollection<any>>, value: any) {\n
-          \t\tthis.db.collection('AuthDemo.UpdateExamples').update({\n
-            \t\t\t...value,\n
-            \t\t\trequiresUser: 'No',\n
-            \t\t\tcustomFunction: 'test 123',\n
-            \t\t\trequiresAdmin: 'Updated'\n
-          \t\t});\n
-        \t}\n
       }
       ]]>
     </div>

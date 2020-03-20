@@ -43,7 +43,7 @@
 
   <div lang>
     <![CDATA[
-    \f:(typescript:demo.component.ts)
+    \f:(typescript:Angular)
     export class DemoComponent implements OnInit {\n
       \tprivate userCollection: DefaultCollection<User>;\n
       \tpublic users$: Observable<User[]>;\n\n
@@ -54,7 +54,7 @@
       \t}\n
     }
 
-    \f:(csharp:User.cs)
+    \f:(csharp:User.cs:Server)
     public class User\n
     {\n
       \t[Key]\n
@@ -65,7 +65,7 @@
       \tpublic string Name { get; set; }\n
     }
 
-    \f:(csharp:Entry.cs)
+    \f:(csharp:Entry.cs:Server)
     public class Entry\n
     {\n
       \t[Key]\n
@@ -79,7 +79,7 @@
       \tpublic string Content { get; set; }\n
     }
 
-    \f:(csharp:DatabaseContext.cs)
+    \f:(csharp:DatabaseContext.cs:Server)
     public class DemoContext : SapphireDbContext\n
     {\n
       \tpublic DemoContext(DbContextOptions<DemoContext> options, SapphireDatabaseNotifier notifier) : base(options, notifier) {}\n\n
@@ -118,7 +118,7 @@
 
   <div lang>
     <![CDATA[
-    \f:(typescript:demo.component.ts)
+    \f:(typescript:Angular)
     export class DemoComponent implements OnInit {\n
     \tprivate userCollection: DefaultCollection<User>;\n
     \tpublic users$: Observable<User[]>;\n\n
@@ -129,7 +129,7 @@
     \t}\n
     }
 
-    \f:(csharp:User.cs)
+    \f:(csharp:User.cs:Server)
     public class User\n
     {\n
       \t[Key]\n
@@ -142,7 +142,7 @@
       \tpublic string Name { get; set; }\n
     }
 
-    \f:(csharp:UserDisabled.cs)
+    \f:(csharp:UserDisabled.cs:Server)
     public class User\n
     {\n
       \t[Key]\n
@@ -174,7 +174,7 @@
 
   <div lang>
     <![CDATA[
-    \f:(typescript:demo.component.ts)
+    \f:(typescript:Angular)
     export class DemoComponent implements OnInit {\n
     \tcollection: DefaultCollection<Entry>;
     \tvalues$: Observable<Entry[]>;\n\n

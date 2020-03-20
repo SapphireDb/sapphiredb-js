@@ -11,10 +11,11 @@
   To enable offline support just activate the option <code>offlineSupport</code> in your client application
 </div>
 
+<!-- TODO: Angular -->
 <app-doc [showContent]="false">
   <div lang>
     <![CDATA[
-    \f:(typescript:main.ts)
+    \f:(typescript:JS)
     var sapphiredb = require('sapphiredb');\n\n
 
     var db = new sapphiredb.SapphireDb({\n
@@ -34,7 +35,7 @@
 <app-doc [showContent]="false">
   <div lang>
     <![CDATA[
-    \f:(typescript:main.ts)
+    \f:(typescript:JS)
     var sapphiredb = require('sapphiredb');\n\n
 
     var db = new sapphiredb.SapphireDb({\n
@@ -71,7 +72,7 @@
       \tpublic string Content { get; set; }\n
     }
 
-    \f:(typescript:client.ts)
+    \f:(typescript:entry.ts)
     // Client side usage\n
     class Entry extends SapphireOfflineEntity {\n\n
 

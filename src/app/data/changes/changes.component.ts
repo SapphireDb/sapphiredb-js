@@ -2,7 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import { SapphireDbService } from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {DialogService} from 'ng-metro4';
-import {filter, scan, shareReplay} from 'rxjs/operators';
+import {filter, map, scan, shareReplay} from 'rxjs/operators';
+import {ChangesResponse} from 'sapphiredb';
 
 @Component({
   selector: 'app-changes',
@@ -21,7 +22,8 @@ export class ChangesComponent implements OnInit {
 
     this.changes$ = this.db.collection('demo.entries').changes().pipe(
       filter(v => v.responseType !== 'QueryResponse'),
-      scan((arr, v) => [...arr, v].Reverse().Take(10).Reverse(), [])
+      map((r: ChangesResponse) => r.changes),
+      scan((arr, v) => [...arr, ...v].Reverse().Take(10).Reverse(), [])
     );
   }
 

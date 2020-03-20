@@ -21,7 +21,11 @@
 <app-doc [showContent]="false">
   <div lang>
     <![CDATA[
-    \f:(csharp:ExampleActions.cs)
+    \f:(typescript:Angular)
+    this.db.execute('example.MethodWithParameters', 'parameter1', 'parameter2')\n
+    \t.subscribe(console.log);
+
+    \f:(csharp:ExampleActions.cs:Server)
     public class ExampleActions : ActionHandlerBase\n
     {\n
       \tprivate readonly ExampleDb db;\n\n
@@ -51,10 +55,6 @@
         \t\tConsole.WriteLine("This is a test");\n
       \t}\n
     }
-
-    \f:(typescript:actions.component.ts)
-    this.db.execute('example.MethodWithParameters', 'parameter1', 'parameter2')\n
-      \t.subscribe(console.log);
     ]]>
   </div>
 </app-doc>
@@ -77,7 +77,19 @@
 
   <div lang>
     <![CDATA[
-    \f:(csharp:AsyncActions.cs)
+    \f:(typescript:Angular)
+    this.db.execute('example.MethodWithParameters', 'parameter1', 'parameter2')\n
+    \t.subscribe(ActionHelper.result<string, number>(\n
+    \t\t(result) => {\n
+          \t\t\talert(result);\n
+        \t\t},\n
+    \t\t(notification) => {\n
+          \t\t\tconsole.log(notification);\n
+        \t\t}\n
+    \t)\n
+    );
+
+    \f:(csharp:AsyncActions.cs:Server)
     public class AsyncActions : ActionHandlerBase\n
     {\n
       \tpublic async Task<string> AsyncDelay()\n
@@ -91,18 +103,6 @@
         \t\treturn "complete";\n
       \t}\n
     }
-
-    \f:(typescript:async-actions.component.ts)
-    this.db.execute('example.MethodWithParameters', 'parameter1', 'parameter2')\n
-      \t.subscribe(ActionHelper.result<string, number>(\n
-        \t\t(result) => {\n
-          \t\t\talert(result);\n
-        \t\t},\n
-        \t\t(notification) => {\n
-          \t\t\tconsole.log(notification);\n
-        \t\t}\n
-      \t)\n
-    );
     ]]>
   </div>
 </app-doc>
@@ -120,7 +120,31 @@
 
   <div lang>
     <![CDATA[
-    \f:(csharp:AsyncActions.cs)
+    \f:(typescript:Angular)
+    this.db.execute('example.AsyncEnumerableTest').subscribe(\n
+    \tActionHelper.result(\n
+    \t\t() => console.log('complete'),\n
+    \t\t(value) => console.log(value),\n
+    \t\t(notification) => console.warn(notification)\n
+    \t));\n
+    );\n\n
+
+    // The code of the above example\n
+    const result$ = this.db.execute<number, string>('example.AsyncEnumerableTest').pipe(\n
+    \tshareReplay()\n
+    );\n\n
+
+    this.rangeValueStream$ = result$.pipe(\n
+    \tfilter(v => v.type === ExecuteResponseType.Async),\n
+    \tmap(v => v.result)\n
+    );\n\n
+
+    this.rangeValueStatus$ = result$.pipe(\n
+    \tfilter(v => v.type === ExecuteResponseType.Notify),\n
+    \tmap(v => v.notification)\n
+    );
+
+    \f:(csharp:AsyncActions.cs:Server)
     public class AsyncActions : ActionHandlerBase\n
     {\n
       \tpublic async IAsyncEnumerable<string> AsyncEnumerableTest()\n
@@ -138,30 +162,6 @@
         \t\t}\n
       \t}\n
     }
-
-    \f:(typescript:async-actions.component.ts)
-    this.db.execute('example.AsyncEnumerableTest').subscribe(\n
-      \tActionHelper.result(\n
-        \t\t() => console.log('complete'),\n
-        \t\t(value) => console.log(value),\n
-        \t\t(notification) => console.warn(notification)\n
-      \t));\n
-    );\n\n
-
-    // The code of the above example\n
-    const result$ = this.db.execute<number, string>('example.AsyncEnumerableTest').pipe(\n
-      \tshareReplay()\n
-    );\n\n
-
-    this.rangeValueStream$ = result$.pipe(\n
-      \tfilter(v => v.type === ExecuteResponseType.Async),\n
-      \tmap(v => v.result)\n
-    );\n\n
-
-    this.rangeValueStatus$ = result$.pipe(\n
-      \tfilter(v => v.type === ExecuteResponseType.Notify),\n
-      \tmap(v => v.notification)\n
-    );
     ]]>
   </div>
 </app-doc>
@@ -178,7 +178,13 @@
 
   <div lang>
     <![CDATA[
-    \f:(csharp:AsyncActions.cs)
+    \f:(typescript:Angular)
+    const subject$ = new ReplaySubject<string>();\n
+    this.streamValueResponse$ = this.db.execute<string>('example.StreamTest', subject$);\n
+      subject$.next('value');\n
+      subject$.complete();
+
+    \f:(csharp:AsyncActions.cs:Server)
     public class AsyncActions : ActionHandlerBase\n
     {\n
       \tpublic async IAsyncEnumerable<string> StreamTest(IAsyncEnumerable<string> inputStream)\n
@@ -189,12 +195,6 @@
         \t\t}\n
       \t}\n
     }
-
-    \f:(typescript:async-actions.component.ts)
-    const subject$ = new ReplaySubject<string>();\n
-    this.streamValueResponse$ = this.db.execute<string>('example.StreamTest', subject$);\n
-    subject$.next('value');\n
-    subject$.complete();
     ]]>
   </div>
 </app-doc>

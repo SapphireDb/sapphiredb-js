@@ -15,6 +15,11 @@
 <app-doc [showContent]="false">
   <div lang>
     <![CDATA[
+    \f:(typescript:Angular)
+    providers: [\n
+    \t{ provide: SapphireClassTransformer, useClass: CustomClassTransformer }\n
+    ]
+
     \f:(typescript:transformer.ts)
     export class CustomClassTransformer extends SapphireClassTransformer {\n
       \tclassToPlain<T>(value: T[] | T): any {\n
@@ -25,11 +30,6 @@
     \t\treturn plainToClass(classType, value);\n
     \t}\n
     }
-
-    \f:(typescript:app.module.ts)
-    providers: [\n
-    \t{ provide: SapphireClassTransformer, useClass: CustomClassTransformer }\n
-    ]
     ]]>
   </div>
 </app-doc>
@@ -49,7 +49,7 @@
 
   <div lang>
     <![CDATA[
-    \f:(typescript:example.component.ts)
+    \f:(typescript:Angular)
     export class ClassTransformerComponent implements OnInit {\n
       \tcollection: DefaultCollection<ExampleEntry>;\n
       \tvalues$: Observable<ExampleEntry[]>;\n\n

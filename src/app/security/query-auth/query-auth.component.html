@@ -44,14 +44,7 @@
   <app-doc [showContent]="false">
     <div lang>
       <![CDATA[
-      \f:(csharp:Model.cs)
-      [QueryAuth]\n
-      public class RequiresAuthForQuery : Base\n
-      {\n
-        \tpublic string Content { get; set; }\n
-      }
-
-      \f:(typescript:example.component.ts)
+      \f:(typescript:Angular)
       export class QueryAuthComponent implements OnInit {\n
         \tvalues$: Observable<any>;\n\n
 
@@ -60,6 +53,13 @@
         \tngOnInit() {\n
           \t\tthis.values$ = this.db.collection('AuthDemo.RequiresAuthForQueryDemos').values();\n
         \t}\n
+      }
+
+      \f:(csharp:Model.cs:Server)
+      [QueryAuth]\n
+      public class RequiresAuthForQuery : Base\n
+      {\n
+        \tpublic string Content { get; set; }\n
       }
       ]]>
     </div>
@@ -84,23 +84,7 @@
   <app-doc [showContent]="false">
     <div lang>
       <![CDATA[
-      \f:(csharp:Model.cs)
-      [QueryAuth("requireAdmin")]\n
-      public class RequiresAdminForQuery : Base\n
-      {\n
-        \tpublic string Content { get; set; }\n
-      }
-
-      \f:(csharp:Startup.cs)
-      public void ConfigureServices(IServiceCollection services)\n
-      {\n
-        \tservices.AddAuthorization(config =>\n
-        \t{\n
-          \t\tconfig.AddPolicy("requireAdmin", b => b.RequireRole("admin"));\n
-        \t});\n
-      }
-
-      \f:(typescript:example.component.ts)
+      \f:(typescript:Angular)
       export class QueryAuthComponent implements OnInit {\n
         \tvalues$: Observable<any>;\n\n
 
@@ -109,6 +93,22 @@
         \tngOnInit() {\n
       \t\tthis.values$ = this.db.collection('AuthDemo.RequiresAdminForQueryDemos').values();\n
       \t}\n
+      }
+
+      \f:(csharp:Model.cs:Server)
+      [QueryAuth("requireAdmin")]\n
+      public class RequiresAdminForQuery : Base\n
+      {\n
+        \tpublic string Content { get; set; }\n
+      }
+
+      \f:(csharp:Startup.cs:Server)
+      public void ConfigureServices(IServiceCollection services)\n
+      {\n
+        \tservices.AddAuthorization(config =>\n
+        \t{\n
+          \t\tconfig.AddPolicy("requireAdmin", b => b.RequireRole("admin"));\n
+        \t});\n
       }
       ]]>
     </div>
@@ -133,7 +133,18 @@
   <app-doc [showContent]="false">
     <div lang>
       <![CDATA[
-      \f:(csharp:Model.cs)
+      \f:(typescript:Angular)
+      export class QueryAuthComponent implements OnInit {\n
+        \tvalues$: Observable<any>;\n\n
+
+        \tconstructor(private db: SapphireDbService) {}\n\n
+
+        \tngOnInit() {\n
+      \t\tthis.values$ = this.db.collection('AuthDemo.CustomFunctionForQueryDemos').values();\n
+      \t}\n
+      }
+
+      \f:(csharp:Model.cs:Server)
       [QueryAuth(functionName: "CanQuery")]\n
       [QueryAuth(functionName: "CanQuery2")]\n
       public class CustomFunctionForQuery : Base\n
@@ -149,17 +160,6 @@
         \t}\n\n
 
         \tpublic string Content { get; set; }\n
-      }
-
-      \f:(typescript:example.component.ts)
-      export class QueryAuthComponent implements OnInit {\n
-        \tvalues$: Observable<any>;\n\n
-
-        \tconstructor(private db: SapphireDbService) {}\n\n
-
-        \tngOnInit() {\n
-      \t\tthis.values$ = this.db.collection('AuthDemo.CustomFunctionForQueryDemos').values();\n
-      \t}\n
       }
       ]]>
     </div>
@@ -193,7 +193,18 @@
   <app-doc [showContent]="false">
     <div lang>
       <![CDATA[
-      \f:(csharp:Model.cs)
+      \f:(typescript:Angular)
+      export class QueryAuthComponent implements OnInit {\n
+        \tvalues$: Observable<any>;\n\n
+
+        \tconstructor(private db: SapphireDbService) {}\n\n
+
+        \tngOnInit() {\n
+      \t\tthis.values$ = this.db.collection('CustomFunctionPerEntryForQueryDemos', 'AuthDemo').values();\n
+      \t}\n
+      }
+
+      \f:(csharp:Model.cs:Server)
       [QueryEntryAuth(functionName: "CanQuery")]\n
       [QueryEntryAuth(functionName: "CanQuery2")]\n
       public class CustomFunctionPerEntryForQuery : Base\n
@@ -209,17 +220,6 @@
         \t}\n\n
 
         \tpublic string Content { get; set; }\n
-      }
-
-      \f:(typescript:example.component.ts)
-      export class QueryAuthComponent implements OnInit {\n
-        \tvalues$: Observable<any>;\n\n
-
-        \tconstructor(private db: SapphireDbService) {}\n\n
-
-        \tngOnInit() {\n
-      \t\tthis.values$ = this.db.collection('CustomFunctionPerEntryForQueryDemos', 'AuthDemo').values();\n
-      \t}\n
       }
       ]]>
     </div>
@@ -245,7 +245,18 @@
   <app-doc [showContent]="false">
     <div lang>
       <![CDATA[
-      \f:(csharp:Model.cs)
+      \f:(typescript:Angular)
+      export class QueryAuthComponent implements OnInit {\n
+        \tvalues$: Observable<any>;\n\n
+
+        \tconstructor(private db: SapphireDbService) {}\n\n
+
+        \tngOnInit() {\n
+      \t\tthis.values$ = this.db.collection('AuthDemo.QueryFieldDemos').values();\n
+      \t}\n
+      }
+
+      \f:(csharp:Model.cs:Server)
       public class QueryFields : Base
       {\n
         \t[QueryAuth]\n
@@ -261,17 +272,6 @@
         \t{\n
           \t\treturn Content == "Test 1";\n
         \t}\n
-      }
-
-      \f:(typescript:example.component.ts)
-      export class QueryAuthComponent implements OnInit {\n
-        \tvalues$: Observable<any>;\n\n
-
-        \tconstructor(private db: SapphireDbService) {}\n\n
-
-        \tngOnInit() {\n
-      \t\tthis.values$ = this.db.collection('AuthDemo.QueryFieldDemos').values();\n
-      \t}\n
       }
       ]]>
     </div>

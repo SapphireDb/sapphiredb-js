@@ -10,7 +10,71 @@
   <app-doc [showContent]="false">
     <div lang>
       <![CDATA[
-      \f:(csharp:ValidationDemo.cs)
+      \f:(typescript:Angular)
+      export class ModelValidationComponent implements OnInit {\n
+        \tcollection: DefaultCollection<any>;\n
+        \tvalues$: Observable<any[]>;\n\n
+
+        \tform: FormGroup;\n\n
+
+        \tconstructor(private db: SapphireDbService) { }\n\n
+
+        \tngOnInit() {\n
+      \t\tthis.collection = this.db.collection('demo.validationDemos');\n
+      \t\tthis.values$ = this.collection.values();\n\n
+
+      \t\tthis.form = new M4FormGroup('demo_form', {\n
+            \t\t\tid: new FormControl(null),\n
+            \t\t\tusername: new FormControl(''),\n
+            \t\t\temail: new FormControl(''),\n
+            \t\t\tpassword: new FormControl('')\n
+          \t\t});\n
+      \t}\n\n
+
+        \tresetForm() {\n
+      \t\tthis.form.patchValue({\n
+            \t\t\tid: null,\n
+            \t\t\tusername: '',\n
+            \t\t\temail: '',\n
+            \t\t\tpassword: ''\n
+          \t\t});\n
+      \t}\n\n
+
+        \tsetFormValue(value: any) {\n
+      \t\tthis.form.patchValue(value);\n
+      \t}\n\n
+
+        \tremove(value: any) {\n
+      \t\tthis.collection.remove(value);\n
+      \t}\n\n
+
+        \tstore() {\n
+      \t\tconst rawFormValue = this.form.getRawValue();\n\n
+
+      \t\tlet result$: Observable<CommandResult<any>>;\n\n
+
+      \t\tif (!!rawFormValue.id) {\n
+            \t\t\tresult$ = this.collection.update(rawFormValue);\n
+          \t\t} else {\n
+            \t\t\tdelete rawFormValue.id;\n
+            \t\t\tresult$ = this.collection.add(rawFormValue);\n
+          \t\t}\n\n
+
+      \t\tresult$.pipe(take(1)).subscribe((result: CommandResult<any>) => {\n
+            \t\t\tif (result.hasSuccess()) {\n
+        \t\t\t\tthis.resetForm();\n
+        \t\t\t} else {\n
+        \t\t\t\tObject.keys(result.validationResults).forEach(key => {\n
+              \t\t\t\tconst errors = {};\n
+                \t\t\t\t\tresult.validationResults[key].forEach(error => errors[error] = true);\n
+                \t\t\t\t\tthis.form.get(key).setErrors(errors);\n
+              \t\t\t\t});\n
+        \t\t\t}\n
+          \t\t});\n
+        \t}\n
+        }
+
+      \f:(csharp:ValidationDemo.cs:Server)
       public class ValidationDemo\n
       {\n
         \t[Key]\n
@@ -29,70 +93,6 @@
         \t[Required(ErrorMessage = "password is required")]\n
         \t[MinLength(5, ErrorMessage = "password min length not reached")]\n
         \tpublic string Password { get; set; }\n
-      }
-
-      \f:(typescript:ModelValidationComponent.ts)
-      export class ModelValidationComponent implements OnInit {\n
-        \tcollection: DefaultCollection<any>;\n
-        \tvalues$: Observable<any[]>;\n\n
-
-        \tform: FormGroup;\n\n
-
-        \tconstructor(private db: SapphireDbService) { }\n\n
-
-        \tngOnInit() {\n
-          \t\tthis.collection = this.db.collection('demo.validationDemos');\n
-          \t\tthis.values$ = this.collection.values();\n\n
-
-          \t\tthis.form = new M4FormGroup('demo_form', {\n
-            \t\t\tid: new FormControl(null),\n
-            \t\t\tusername: new FormControl(''),\n
-            \t\t\temail: new FormControl(''),\n
-            \t\t\tpassword: new FormControl('')\n
-          \t\t});\n
-        \t}\n\n
-
-        \tresetForm() {\n
-          \t\tthis.form.patchValue({\n
-            \t\t\tid: null,\n
-            \t\t\tusername: '',\n
-            \t\t\temail: '',\n
-            \t\t\tpassword: ''\n
-          \t\t});\n
-        \t}\n\n
-
-        \tsetFormValue(value: any) {\n
-          \t\tthis.form.patchValue(value);\n
-        \t}\n\n
-
-        \tremove(value: any) {\n
-          \t\tthis.collection.remove(value);\n
-        \t}\n\n
-
-        \tstore() {\n
-          \t\tconst rawFormValue = this.form.getRawValue();\n\n
-
-          \t\tlet result$: Observable<CommandResult<any>>;\n\n
-
-          \t\tif (!!rawFormValue.id) {\n
-            \t\t\tresult$ = this.collection.update(rawFormValue);\n
-          \t\t} else {\n
-            \t\t\tdelete rawFormValue.id;\n
-            \t\t\tresult$ = this.collection.add(rawFormValue);\n
-          \t\t}\n\n
-
-          \t\tresult$.pipe(take(1)).subscribe((result: CommandResult<any>) => {\n
-            \t\t\tif (result.hasSuccess()) {\n
-              \t\t\t\tthis.resetForm();\n
-            \t\t\t} else {\n
-              \t\t\t\tObject.keys(result.validationResults).forEach(key => {\n
-              \t\t\t\tconst errors = {};\n
-                \t\t\t\t\tresult.validationResults[key].forEach(error => errors[error] = true);\n
-                \t\t\t\t\tthis.form.get(key).setErrors(errors);\n
-              \t\t\t\t});\n
-            \t\t\t}\n
-          \t\t});\n
-        \t}\n
       }
       ]]>
     </div>
