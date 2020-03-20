@@ -29,5 +29,6 @@ export * from './lib/command/query-connections/query-connections-response';
 export * from './lib/command/create-range/create-range-response';
 export * from './lib/command/update-range/update-range-response';
 export * from './lib/command/delete-range/delete-range-response';
+export * from './lib/command/subscribe/change-response';
 
 export * from './lib/command/query/query-response';
