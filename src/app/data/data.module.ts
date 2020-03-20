@@ -11,7 +11,6 @@ import {LimitComponent} from './limit/limit.component';
 import {SelectComponent} from './select/select.component';
 import {CountComponent} from './count/count.component';
 import {EventsComponent} from './events/events.component';
-import {QueryFunctionComponent} from './query-function/query-function.component';
 import {ChangesComponent} from './changes/changes.component';
 import {IncludeComponent} from './include/include.component';
 import { ClassTransformerComponent } from './class-transformer/class-transformer.component';
@@ -20,7 +19,7 @@ import { OfflineComponent } from './offline/offline.component';
 
 
 @NgModule({
-  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent, EventsComponent, QueryFunctionComponent, ChangesComponent, IncludeComponent, ClassTransformerComponent, ModelValidationComponent, OfflineComponent],
+  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent, EventsComponent, ChangesComponent, IncludeComponent, ClassTransformerComponent, ModelValidationComponent, OfflineComponent],
   imports: [
     SharedModule,
     DataRoutingModule

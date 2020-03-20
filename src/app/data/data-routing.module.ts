@@ -9,7 +9,6 @@ import {LimitComponent} from './limit/limit.component';
 import {SelectComponent} from './select/select.component';
 import {CountComponent} from './count/count.component';
 import {EventsComponent} from './events/events.component';
-import {QueryFunctionComponent} from './query-function/query-function.component';
 import {ChangesComponent} from './changes/changes.component';
 import {IncludeComponent} from './include/include.component';
 import {ClassTransformerComponent} from './class-transformer/class-transformer.component';
@@ -28,7 +27,6 @@ const routes: Routes = [
   { path: 'count', component: CountComponent },
   { path: 'changes', component: ChangesComponent },
   { path: 'events', component: EventsComponent },
-  { path: 'query-function', component: QueryFunctionComponent },
   { path: 'include', component: IncludeComponent },
   { path: 'class-transformer', component: ClassTransformerComponent },
   { path: 'model-validation', component: ModelValidationComponent },

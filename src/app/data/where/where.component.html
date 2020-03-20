@@ -8,7 +8,7 @@
 <h2>Basic query</h2>
 
 <p>
-  In this small example only values that start with <code>testValue</code> are queried.
+  In this small example only values that start with <code>testV</code> are queried.
 </p>
 
 <app-doc>
@@ -24,7 +24,7 @@
 
     \tngOnInit() {\n
     \t\tthis.values$ = this.db.collection('entries')}\n
-      \t\t\t.where(['content', 'StartsWith', 'testValue'])\n
+      \t\t\t.where(['content', 'StartsWith', 'testV'])\n
       \t\t\t.values();\n
     \t}\n
     }
