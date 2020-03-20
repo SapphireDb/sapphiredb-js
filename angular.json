@@ -117,8 +117,34 @@
           "builder": "@angular-devkit/build-angular:server",
           "options": {
             "outputPath": "dist/DemoClient/server",
-            "main": "src/main.server.ts",
+            "main": "server.ts",
             "tsConfig": "tsconfig.server.json"
+          }
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "options": {
+            "browserTarget": "DemoClient:build",
+            "serverTarget": "DemoClient:server"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "DemoClient:build:production",
+              "serverTarget": "DemoClient:server:production"
+            }
+          }
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "browserTarget": "DemoClient:build:production",
+            "serverTarget": "DemoClient:server:production",
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {}
           }
         }
       }
