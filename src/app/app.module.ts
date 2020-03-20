@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import { NgModule, Injectable } from '@angular/core';
 
 import typescript from 'highlight.js/lib/languages/typescript';
 import xml from 'highlight.js/lib/languages/xml';
@@ -47,6 +47,7 @@ export function createRealtimeOptions(): SapphireDbOptions {
   };
 }
 
+@Injectable()
 export class CustomClassTransformer extends SapphireClassTransformer {
   classToPlain<T>(value: T[] | T): any {
     return classToPlain(value);

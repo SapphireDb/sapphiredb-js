@@ -10,13 +10,14 @@
       "prefix": "app",
       "schematics": {
         "@schematics/angular:component": {
-          "styleext": "less"
+          "style": "less"
         }
       },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist/DemoClient/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -34,6 +35,12 @@
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -158,7 +165,8 @@
           "configurations": {
             "production": {
               "project": "projects/ng-sapphiredb/ng-package.prod.json"
-            }
+            ,              "tsConfig": "projects/ng-sapphiredb/tsconfig.lib.prod.json"
+}
           }
         },
         "test": {
@@ -195,7 +203,12 @@
             "tsConfig": "projects/sapphiredb/tsconfig.lib.json",
             "project": "projects/sapphiredb/ng-package.json"
           }
-        },
+        ,          "configurations": {
+            "production": {
+              "tsConfig": "projects/sapphiredb/tsconfig.lib.prod.json"
+            }
+          }
+},
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
