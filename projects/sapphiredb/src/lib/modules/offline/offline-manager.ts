@@ -71,7 +71,7 @@ export class OfflineManager {
   getCollectionInformation(contextName: string, collectionName: string): Observable<InfoResponse> {
     const offlineKey = `${CollectionInformationStoragePrefix}${contextName}.${collectionName}`;
     return this.storage.get(offlineKey).pipe(
-      map(v => JSON.parse(v))
+      map(v => !!v ? JSON.parse(v) : null)
     );
   }
 
@@ -84,7 +84,7 @@ export class OfflineManager {
     const offlineKey = `${CollectionStoragePrefix}${contextName}.${collectionName}.${CollectionHelper.getPrefilterHash(prefilters)}`;
     return this.storage.get(offlineKey).pipe(
       map(v => {
-        const result = JSON.parse(v);
+        const result = !!v ? JSON.parse(v) : null;
         if (!!result) {
           return result;
         }
