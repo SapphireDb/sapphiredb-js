@@ -240,6 +240,9 @@ document = <any>{
 
 localStorage = <any>{
   getItem: function () {
-    
+
+  },
+  setItem: function () {
+
   }
 };
