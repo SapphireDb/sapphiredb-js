@@ -1,4 +1,4 @@
-window = {
+window = <any>{
   addEventListener: function () {
 
   },
@@ -21,7 +21,7 @@ window = {
   }
 };
 
-Element = {
+Element = <any>{
   prototype: {
     Matches: function () {
 
@@ -29,7 +29,7 @@ Element = {
   }
 };
 
-Event = {
+Event = <any>{
   prototype: {
     stopPropagation: function () {
 
@@ -37,17 +37,19 @@ Event = {
   }
 };
 
-Document = {
+Document = <any>{
   prototype: {
 
   }
 };
 
-DocumentFragment = {
+DocumentFragment = <any>{
   prototype: {
 
   }
 };
+
+declare let $: any;
 
 $ = function () {
   return {
@@ -73,7 +75,7 @@ $ = function () {
             addClass: function () {
 
             }
-          }
+          };
         },
         checkbox: function () {
           return {
@@ -85,9 +87,9 @@ $ = function () {
                 disable: function () {
 
                 }
-              }
+              };
             }
-          }
+          };
         },
         input: function() {
           return {
@@ -96,27 +98,27 @@ $ = function () {
                 enable: function () {
 
                 }
-              }
+              };
             }
-          }
+          };
         },
         panel: function() {
           return {
             data: function () {
               return {
 
-              }
+              };
             }
-          }
+          };
         },
         progress: function() {
           return {
             data: function () {
               return {
 
-              }
+              };
             }
-          }
+          };
         },
         textarea: function() {
           return {
@@ -128,9 +130,9 @@ $ = function () {
                 resize: function () {
 
                 }
-              }
+              };
             }
-          }
+          };
         },
         one: function () {
 
@@ -155,28 +157,28 @@ $ = function () {
             appendTo: function () {
 
             }
-          }
+          };
         }
-      }
+      };
     },
     parent: function () {
       return {
         append: function () {
 
         }
-      }
+      };
     },
     children: function () {
       return {
         appendTo: function () {
 
         }
-      }
+      };
     }
   };
 };
 
-MutationObserver = function () {
+MutationObserver = <any>function () {
   return {
     observe: function () {
 
@@ -184,8 +186,18 @@ MutationObserver = function () {
     disconnect: function () {
 
     }
-  }
+  };
 };
+
+declare let METRO_ANIMATION_DURATION: any;
+declare let METRO_JQUERY: any;
+declare let METRO_LOCALE: any;
+declare let METRO_WEEK_START: any;
+declare let METRO_DATE_FORMAT: any;
+declare let METRO_TIMEOUT: any;
+declare let METRO_INIT: any;
+declare let jquery_present: any;
+declare let m4q: any;
 
 METRO_ANIMATION_DURATION = {};
 METRO_JQUERY = {};
@@ -201,7 +213,7 @@ m4q = function() {
     on: function () {
 
     }
-  }
+  };
 };
 
 m4q.meta = function () {
@@ -209,7 +221,7 @@ m4q.meta = function () {
     attr: function () {
 
     }
-  }
+  };
 };
 
 m4q.extend = function() {
@@ -218,15 +230,15 @@ m4q.extend = function() {
 
 m4q.fn = {};
 
-navigator = {
+navigator = <any>{
 
 };
 
-document = {
+document = <any>{
 
 };
 
-localStorage = {
+localStorage = <any>{
   getItem: function () {
 
   }

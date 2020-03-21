@@ -60,6 +60,9 @@
               "ngswConfigPath": "ngsw-config.json",
               "assets": [
                 "src/favicon.ico",
+                "src/ads.txt",
+                "src/robots.txt",
+                "src/sitemap.xml",
                 "src/manifest.json",
                 "src/assets"
               ]
@@ -119,32 +122,6 @@
             "outputPath": "dist/DemoClient/server",
             "main": "server.ts",
             "tsConfig": "tsconfig.server.json"
-          }
-        },
-        "serve-ssr": {
-          "builder": "@nguniversal/builders:ssr-dev-server",
-          "options": {
-            "browserTarget": "DemoClient:build",
-            "serverTarget": "DemoClient:server"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "DemoClient:build:production",
-              "serverTarget": "DemoClient:server:production"
-            }
-          }
-        },
-        "prerender": {
-          "builder": "@nguniversal/builders:prerender",
-          "options": {
-            "browserTarget": "DemoClient:build:production",
-            "serverTarget": "DemoClient:server:production",
-            "routes": [
-              "/"
-            ]
-          },
-          "configurations": {
-            "production": {}
           }
         }
       }

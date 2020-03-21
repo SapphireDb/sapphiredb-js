@@ -12,13 +12,8 @@
     "build-sapphiredb": "npm run build -- sapphiredb",
     "build-ng-sapphiredb": "npm run build -- ng-sapphiredb",
     "build-packages": "npm run build-sapphiredb && npm run build-ng-sapphiredb",
-    "build-client": "npm run build-packages && npm run build -- --prod && ng run DemoClient:server",
-    "copy-files": "cpx ./server.js ./dist/DemoClient/ && cpx ./ssr-polyfills.js ./dist/DemoClient/ && cpx ./package.json ./dist/DemoClient/ && cpx ./robots.txt ./dist/DemoClient/browser && cpx ./sitemap.xml ./dist/DemoClient/browser && cpx ./ads.txt ./dist/DemoClient/browser",
-    "publish": "npm run build-client && npm run copy-files",
-    "dev:ssr": "ng run DemoClient:serve-ssr",
-    "serve:ssr": "node dist/DemoClient/server/main.js",
-    "build:ssr": "ng build --prod && ng run DemoClient:server:production",
-    "prerender": "ng run DemoClient:prerender"
+    "build-client": "npm run build -- --prod && ng run DemoClient:server",
+    "publish": "npm run build-packages && npm run build-client"
   },
   "private": true,
   "dependencies": {
