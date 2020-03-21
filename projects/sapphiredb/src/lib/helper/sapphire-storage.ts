@@ -1,5 +1,5 @@
 import {Observable, of} from 'rxjs';
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
 export abstract class SapphireStorage {
   abstract get(key: string): Observable<string>;

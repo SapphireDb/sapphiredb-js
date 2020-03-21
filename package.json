@@ -12,7 +12,7 @@
     "build-sapphiredb": "npm run build -- sapphiredb",
     "build-ng-sapphiredb": "npm run build -- ng-sapphiredb",
     "build-packages": "npm run build-sapphiredb && npm run build-ng-sapphiredb",
-    "build-client": "npm run build -- --prod && ng run DemoClient:server",
+    "build-client": "npm run build -- --prod && ng run docs-client:server --configuration=production",
     "publish": "npm run build-packages && npm run build-client"
   },
   "private": true,

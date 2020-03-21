@@ -65,7 +65,7 @@ export class CustomClassTransformer extends SapphireClassTransformer {
     PrivacyComponent
   ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'DemoClient' }),
+    BrowserModule.withServerTransition({ appId: 'docs-client' }),
     ReactiveFormsModule,
     SapphireDbModule,
     HighlightModule.forRoot({

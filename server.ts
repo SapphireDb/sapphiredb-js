@@ -10,6 +10,8 @@ import { AppServerModule } from './src/main.server';
 import { APP_BASE_HREF } from '@angular/common';
 import { existsSync } from 'fs';
 
+(<any>window).Metro.toast.create = () => null;
+
 // The Express app is exported so that it can be used by serverless Functions.
 export function app() {
   const server = express();
@@ -24,12 +26,15 @@ export function app() {
   server.set('view engine', 'html');
   server.set('views', distFolder);
 
-  // Example Express Rest API endpoints
-  // app.get('/api/**', (req, res) => { });
   // Serve static files from /browser
   server.get('*.*', express.static(distFolder, {
     maxAge: '1y'
   }));
+
+  // Prevent requests to sapphire
+  server.get('/sapphire/*', (req, res) => {
+    res.status(404).send('data requests are not supported');
+  });
 
   // All regular routes use the Universal engine
   server.get('*', (req, res) => {
