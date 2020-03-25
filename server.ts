@@ -10,6 +10,16 @@ import { AppServerModule } from './src/main.server';
 import { APP_BASE_HREF } from '@angular/common';
 import { existsSync } from 'fs';
 
+import { default as axios } from 'axios';
+
+(<any>axios.get) = (url, config) => {
+  if (url.endsWith('poll/init')) {
+    return new Promise((resolve) => resolve({ data: { } }));
+  } else {
+    return new Promise(() => {});
+  }
+};
+
 (<any>window).Metro.toast.create = () => null;
 
 // The Express app is exported so that it can be used by serverless Functions.
@@ -30,11 +40,6 @@ export function app() {
   server.get('*.*', express.static(distFolder, {
     maxAge: '1y'
   }));
-
-  // Prevent requests to sapphire
-  server.get('/sapphire/*', (req, res) => {
-    res.status(404).send('data requests are not supported');
-  });
 
   // All regular routes use the Universal engine
   server.get('*', (req, res) => {

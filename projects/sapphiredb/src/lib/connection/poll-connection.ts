@@ -80,6 +80,7 @@ export class PollConnection extends ConnectionBase {
         }, 1000);
       }
     }, (error) => {
+      // TODO: Check logic -> Only disconnect when 404?, What happens on timeout?
       if (error.status === 404) {
         return;
       }
