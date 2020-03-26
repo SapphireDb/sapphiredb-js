@@ -3,7 +3,7 @@ import {BehaviorSubject, concat, from, of, Subscription} from 'rxjs';
 import {ConnectionState} from '../models/types';
 import {ResponseBase} from '../command/response-base';
 import {CommandBase} from '../command/command-base';
-import {concatMap, delay, filter, map, skip, take, takeUntil, takeWhile, tap} from 'rxjs/operators';
+import {concatMap, filter, map, skip, take, takeUntil, takeWhile, tap} from 'rxjs/operators';
 import {ConnectionBase} from './connection-base';
 import {SapphireDbOptions} from '../models/sapphire-db-options';
 import {AxiosError, AxiosResponse, default as axios} from 'axios';
@@ -80,11 +80,6 @@ export class PollConnection extends ConnectionBase {
         }, 1000);
       }
     }, (error) => {
-      // TODO: Check logic -> Only disconnect when 404?, What happens on timeout?
-      if (error.status === 404) {
-        return;
-      }
-
       this.updateConnectionInformation(ConnectionState.disconnected);
 
       setTimeout(() => {
