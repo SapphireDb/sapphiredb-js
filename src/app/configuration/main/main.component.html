@@ -61,9 +61,8 @@
 </app-doc>
 
 <div class="remark info">
-  This settings are loaded from configuration: <code>ApiConfigurations</code>, <code>EnableAuthCommands</code>,
-  <code>ServerSentEventsInterface</code>, <code>WebsocketInterface</code><br>
-  You have to set all other settings from code directly.
+  All settings are loaded from coniguration files.<br>
+  You only have to set <code>CanExecuteCommand</code> and <code>IsAllowedToSendMessages</code> from code manually.
 </div>
 
 <h3>Strict mode</h3>
@@ -139,33 +138,42 @@
 <p>
   Checks if a connection is allowed to execute a command. Because every action is a command, this method can be used to
   generally control all interactions.<br>
-  Default: Allows to execute <code>Login</code> and <code>Renew</code> when not authenticated. If authenticated everything is allowed.
+  Default: <code>(command, context) => true</code><br>
+  Default (strict): <code>(command, context) => context.User.Identity.IsAuthenticated</code>
 </p>
 
 <h3>IsAllowedToSendMessages</h3>
 
 <p>
   Control if the user is allowed to publish messages.<br>
-  Default: Allowed for every authenticated user
+  Default: <code>(context) => true</code><br>
+  Default (strict): <code>(context) => context.User.Identity.IsAuthenticated</code>
 </p>
 
-<h3>IsAllowedForTopicSubscribe</h3>
+<h3>WebsocketInterface</h3>
 
 <p>
-  Control if the user is allowed to subscribe messages in topic(s).<br>
-  Default: Allowed for every authenticated user
+  Enable websocket interface for connections.<br>
+  Default: <code>true</code>
 </p>
 
-<h3>IsAllowedForTopicPublish</h3>
+<h3>ServerSentEventsInterface</h3>
 
 <p>
-  Control if the user is allowed to publish messages in topic(s).<br>
-  Default: Allowed for every authenticated user
+  Enable SSE interface for connections.<br>
+  Default: <code>true</code>
 </p>
 
-<h3>ServerSentEventsInterface/WebsocketInterface/PollInterface/RestInterface</h3>
+<h3>PollInterface</h3>
 
 <p>
-  You can disable the different interfaces if you dont need them.<br>
+  Enable polling (long polling) interface for connections.<br>
+  Default: <code>true</code>
+</p>
+
+<h3>RestInterface</h3>
+
+<p>
+  Enable rest interface for connections. Always enabled when using long polling or SSE<br>
   Default: <code>true</code>
 </p>
