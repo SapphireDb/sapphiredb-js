@@ -18,6 +18,7 @@ import {ResponseBase} from './command/response-base';
 import {SapphireStorage} from './helper/sapphire-storage';
 import {OfflineManager} from './modules/offline/offline-manager';
 import {ExecuteCommandsResponse} from './command/execute-commands/execute-commands-response';
+import {ActionSender} from './modules/action/action-sender';
 
 export class SapphireDb {
   private collectionManager: CollectionManager;
@@ -64,7 +65,8 @@ export class SapphireDb {
 
     const collectionInformation = new CollectionInformationManager(this.connectionManager, this.offlineManager);
 
-    this.collectionManager = new CollectionManager(this.connectionManager, collectionInformation, this.classTransformer, this.offlineManager);
+    this.collectionManager = new CollectionManager(this.connectionManager, collectionInformation, this.classTransformer,
+      this.offlineManager);
     this.messaging = new Messaging(this.connectionManager);
   }
 
@@ -84,51 +86,7 @@ export class SapphireDb {
    */
   public execute<TResponseType = null, TNotificationType = null>(action: string, ...parameters: any[])
     : Observable<ActionResult<TResponseType, TNotificationType>> {
-    let sendObservable$: Observable<ResponseBase>;
-
-    // Test to run async stream to server
-    if (parameters) {
-      const subjectIndex = parameters.findIndex(p => p instanceof ReplaySubject);
-
-      if (subjectIndex !== -1) {
-        const subject$: ReplaySubject<any> = parameters[subjectIndex];
-        parameters[subjectIndex] = null;
-
-        sendObservable$ = this.connectionManager.sendCommand(new ExecuteCommand(action, parameters), true);
-
-        sendObservable$.pipe(
-          filter(r => r.responseType === 'InitStreamResponse'),
-          take(1)
-        ).subscribe((initStreamResponse: InitStreamResponse) => {
-          let index = 0;
-          subject$.subscribe({
-            complete: () => this.connectionManager.sendCommand(new CompleteStreamCommand(initStreamResponse.id, index++), false, true),
-            error: () => this.connectionManager.sendCommand(new CompleteStreamCommand(initStreamResponse.id, index++, true), false, true),
-            next: (value) => this.connectionManager.sendCommand(new StreamCommand(initStreamResponse.id, value, index++), false, true)
-          });
-        });
-      }
-    }
-
-    if (!sendObservable$) {
-      sendObservable$ = this.connectionManager.sendCommand(new ExecuteCommand(action, parameters), true);
-    }
-
-    return sendObservable$.pipe(
-      filter(r => r.responseType !== 'InitStreamResponse'),
-      concatMap((result: ExecuteResponse) => {
-        if (result.type === ExecuteResponseType.End) {
-          return of(result, null);
-        }
-
-        return of(result);
-      }),
-      takeWhile(v => !!v),
-      map((result: ExecuteResponse) => {
-        return new ActionResult<TResponseType, TNotificationType>(result);
-      })
-    );
-
+    return ActionSender.handleActionExecution$(this.connectionManager, action, parameters);
   }
 
   /**
@@ -169,7 +127,7 @@ export class SapphireDb {
   /**
    * Get transfer results of offline changes (Primarily for merge conflict handling)
    */
-  public offlineTransferResults(): Observable<ExecuteCommandsResponse|null> {
+  public offlineTransferResults(): Observable<ExecuteCommandsResponse | null> {
     if (this.offlineManager) {
       return this.offlineManager.offlineTransferResults$.asObservable();
     }
