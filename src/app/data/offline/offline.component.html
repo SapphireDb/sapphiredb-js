@@ -8,7 +8,13 @@
 <h2>Basic setup</h2>
 
 <div class="remark success">
-  To enable offline support just activate the option <code>offlineSupport</code> in your client application
+  To enable offline support just activate the option <code>offlineSupport</code> in your client application.
+</div>
+
+<div class="remark info">
+  By enabling <code>offlineOptimization</code> operations made offline will be stored in an optimized way.<br>
+  When creating and deleting the same entry without going online nothing is stored.<br>
+  When editing a newly created object the new object will get stored in the creation and no change operation is stored.
 </div>
 
 <app-doc [showContent]="false">
@@ -18,7 +24,8 @@
     var sapphiredb = require('sapphiredb');\n\n
 
     var db = new sapphiredb.SapphireDb({\n
-      \tofflineSupport: true\n
+      \tofflineSupport: true,\n
+      \tofflineOptimization: true\n
     });
     ]]>
   </div>
@@ -38,7 +45,8 @@
     var sapphiredb = require('sapphiredb');\n\n
 
     var db = new sapphiredb.SapphireDb({\n
-      \tofflineSupport: true\n
+      \tofflineSupport: true,\n
+      \tofflineOptimization: true\n
     }, new sapphiredb.SapphireLocalStorage());
     ]]>
   </div>
