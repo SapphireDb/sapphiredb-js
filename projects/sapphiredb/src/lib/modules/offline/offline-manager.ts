@@ -30,7 +30,7 @@ export class OfflineManager {
 
   public offlineTransferResults$ = new ReplaySubject<ExecuteCommandsResponse>();
 
-  constructor(private storage: SapphireStorage, private connectionManager: ConnectionManager) {
+  constructor(private storage: SapphireStorage, private connectionManager: ConnectionManager, private offlineOptimization: boolean) {
     if (!this.storage) {
       console.warn('No storage was configured. Using SapphireNoopStorage and will not store things locally.');
       this.storage = new SapphireNoopStorage();
@@ -122,7 +122,7 @@ export class OfflineManager {
     info$.pipe(
       take(1)
     ).subscribe((info: InfoResponse) => {
-      if (OfflineCommandHelper.handleAddCommand(command, info, collectionChanges)) {
+      if (!this.offlineOptimization || OfflineCommandHelper.handleAddCommand(command, info, collectionChanges)) {
         collectionChanges.push(command);
       }
 
