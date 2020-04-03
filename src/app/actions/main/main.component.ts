@@ -19,9 +19,18 @@ export class MainComponent implements OnInit {
 
   streamValueResponse$: Observable<string>;
 
+  serverResult$: Observable<string>;
+
   constructor(private db: SapphireDbService) { }
 
   ngOnInit() {
+  }
+
+  executeBasic() {
+    this.serverResult$ = this.db.execute<string>('example.TestWithParams', 'parameter1', 'parameter2')
+      .pipe(
+        map(r => r.result)
+      );
   }
 
   execute() {

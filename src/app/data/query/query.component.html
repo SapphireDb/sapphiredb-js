@@ -42,10 +42,12 @@
   \f:(csharp:DemoEntry.cs:Server)
   public class DemoEntry\n
   {\n
-    \t[Key]\n
-    \tpublic int Id { get; set; }\n\n
+  \t[Key]\n
+  \tpublic Guid Id { get; set; }\n\n
 
-    \tpublic string Content { get; set; }\n
+  \tpublic string Content { get; set; }\n\n
+
+  \tpublic int IntegerValue { get; set; } = RandomNumberGenerator.GetInt32(1, 100);\n
   }
   ]]>
   </div>

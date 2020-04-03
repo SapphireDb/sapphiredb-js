@@ -18,7 +18,10 @@
   Every other parameters will be used as parameters for the method.
 </div>
 
-<app-doc [showContent]="false">
+<app-doc>
+  <button class="mb-1" m4-button (click)="executeBasic()">Execute on server</button>
+  <m4-input [ngModel]="serverResult$ | async" prepend="Server result" disabled></m4-input>
+
   <div lang>
     <![CDATA[
     \f:(typescript:Angular)
@@ -53,54 +56,6 @@
       \tpublic void NoReturn()\n
       \t{\n
         \t\tConsole.WriteLine("This is a test");\n
-      \t}\n
-    }
-    ]]>
-  </div>
-</app-doc>
-
-<h2>Notifications</h2>
-
-<div class="remark info">
-  Because SapphireDb allows a bidirectional communication between client and server you can also send data during
-  method execution. This is useful to transfer a state for example.<br>
-  Use the <code>Notify</code>-method in your action handler to achieve that.
-</div>
-
-<div class="remark success">
-  The client side can use the action helper to distinguish between notification and final result.
-</div>
-
-<app-doc>
-  <m4-progress [value]="rangeValue$ | async"></m4-progress><br>
-  <button m4-button (click)="execute()">Execute</button>
-
-  <div lang>
-    <![CDATA[
-    \f:(typescript:Angular)
-    this.db.execute('example.MethodWithParameters', 'parameter1', 'parameter2')\n
-    \t.subscribe(ActionHelper.result<string, number>(\n
-    \t\t(result) => {\n
-          \t\t\talert(result);\n
-        \t\t},\n
-    \t\t(notification) => {\n
-          \t\t\tconsole.log(notification);\n
-        \t\t}\n
-    \t)\n
-    );
-
-    \f:(csharp:AsyncActions.cs:Server)
-    public class AsyncActions : ActionHandlerBase\n
-    {\n
-      \tpublic async Task<string> AsyncDelay()\n
-      \t{\n
-        \t\tfor (int i = 0; i <= 100; i++)\n
-        \t\t{\n
-          \t\t\tawait Task.Delay(10);\n
-          \t\t\tNotify(i);\n
-        \t\t}\n\n
-
-        \t\treturn "complete";\n
       \t}\n
     }
     ]]>
@@ -166,7 +121,7 @@
   </div>
 </app-doc>
 
-<h2>Stream data to server</h2>
+<h2>Stream data to server (and back to client)</h2>
 
 <div class="remark info">
   Streaming data from client to server is also possible. It is also possible to do both.
@@ -194,6 +149,54 @@
           \t\t\tyield return input + " from server";\n
         \t\t}\n
       \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Notifications</h2>
+
+<div class="remark info">
+  Because SapphireDb allows a bidirectional communication between client and server you can also send data during
+  method execution. This is useful to transfer a state for example.<br>
+  Use the <code>Notify</code>-method in your action handler to achieve that.
+</div>
+
+<div class="remark success">
+  The client side can use the action helper to distinguish between notification and final result.
+</div>
+
+<app-doc>
+  <m4-progress [value]="rangeValue$ | async"></m4-progress><br>
+  <button m4-button (click)="execute()">Execute</button>
+
+  <div lang>
+    <![CDATA[
+    \f:(typescript:Angular)
+    this.db.execute('example.MethodWithParameters', 'parameter1', 'parameter2')\n
+    \t.subscribe(ActionHelper.result<string, number>(\n
+    \t\t(result) => {\n
+          \t\t\talert(result);\n
+        \t\t},\n
+    \t\t(notification) => {\n
+          \t\t\tconsole.log(notification);\n
+        \t\t}\n
+    \t)\n
+    );
+
+    \f:(csharp:AsyncActions.cs:Server)
+    public class AsyncActions : ActionHandlerBase\n
+    {\n
+      \tpublic async Task<string> AsyncDelay()\n
+      \t{\n
+    \t\tfor (int i = 0; i <= 100; i++)\n
+    \t\t{\n
+          \t\t\tawait Task.Delay(10);\n
+          \t\t\tNotify(i);\n
+        \t\t}\n\n
+
+    \t\treturn "complete";\n
+    \t}\n
     }
     ]]>
   </div>

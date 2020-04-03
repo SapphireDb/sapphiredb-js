@@ -75,6 +75,27 @@
         SapphireDb should serve as a self hosted alternative to firebase realtime database and firestore on top of .Net.
       </p>
     </div>
+
+    <h4 class="h2 m-10"><span class="reduce-1 enlarge-1-md">Quick example</span></h4>
+    <div class="text-left">
+      <app-doc>
+        {{ values$ | async | json }}
+
+        <div lang>
+          <![CDATA[
+          \f:(typescript:JS)
+          db.collection('entries').values().subscribe(console.table);
+
+          \f:(typescript:Angular)
+          values$: Observable<any>;\n\n
+
+          constructor(private db: SapphireDbService) {\n
+            \tthis.values$ = this.db.collection('entries').values();\n
+          }
+          ]]>
+        </div>
+      </app-doc>
+    </div>
   </div>
 </div>
 
