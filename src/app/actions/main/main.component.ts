@@ -21,6 +21,10 @@ export class MainComponent implements OnInit {
 
   serverResult$: Observable<string>;
 
+  globPattern: string;
+  testInput: string;
+  globResult$: Observable<boolean> = of(false);
+
   constructor(private db: SapphireDbService) { }
 
   ngOnInit() {
@@ -28,6 +32,13 @@ export class MainComponent implements OnInit {
 
   executeBasic() {
     this.serverResult$ = this.db.execute<string>('example.TestWithParams', 'parameter1', 'parameter2')
+      .pipe(
+        map(r => r.result)
+      );
+  }
+
+  matchesGlobPattern() {
+    this.globResult$ = this.db.execute<boolean>('example.MatchesGlobPattern', this.testInput, this.globPattern)
       .pipe(
         map(r => r.result)
       );

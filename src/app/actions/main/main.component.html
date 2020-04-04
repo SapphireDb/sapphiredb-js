@@ -38,29 +38,46 @@
         \tthis.db = db;\n
       \t}\n\n
 
-      \tpublic async Task<int> AsyncTask()\n
-      \t{\n
-        \t\tfor (int i = 0; i <= 100; i++)\n
-        \t\t{\n
-          \t\t\tThread.Sleep(10);\n
-        \t\t}\n\n
-
-        \t\treturn 33;\n
-      \t}\n\n
-
       \tpublic string MethodWithParameters(string param1, string param2)\n
       \t{\n
         \t\treturn param1 + param2;\n
-      \t}\n\n
-
-      \tpublic void NoReturn()\n
-      \t{\n
-        \t\tConsole.WriteLine("This is a test");\n
       \t}\n
     }
     ]]>
   </div>
 </app-doc>
+
+<!--<app-doc>-->
+<!--  <m4-input [(ngModel)]="globPattern" prepend="Glob pattern"></m4-input>-->
+<!--  <m4-input [(ngModel)]="testInput" prepend="Test string"></m4-input>-->
+
+<!--  <button class="mb-1" m4-button (click)="matchesGlobPattern()">Test for match</button>-->
+<!--  <m4-input [ngModel]="globResult$ | async" prepend="Matches (server result)" disabled></m4-input>-->
+
+<!--  <div lang>-->
+<!--    <![CDATA[-->
+<!--    \f:(typescript:Angular)-->
+<!--    this.db.execute('example.MethodWithParameters', 'parameter1', 'parameter2')\n-->
+<!--    \t.subscribe(console.log);-->
+
+<!--    \f:(csharp:ExampleActions.cs:Server)-->
+<!--    public class ExampleActions : ActionHandlerBase\n-->
+<!--    {\n-->
+<!--      \tprivate readonly ExampleDb db;\n\n-->
+
+<!--      \tpublic ExampleActions(ExampleDb db)\n-->
+<!--      \t{\n-->
+<!--    \tthis.db = db;\n-->
+<!--    \t}\n\n-->
+
+<!--      \tpublic string MethodWithParameters(string param1, string param2)\n-->
+<!--      \t{\n-->
+<!--    \t\treturn param1 + param2;\n-->
+<!--    \t}\n-->
+<!--    }-->
+<!--    ]]>-->
+<!--  </div>-->
+<!--</app-doc>-->
 
 <h2>Stream data from server</h2>
 
@@ -157,8 +174,8 @@
 <h2>Notifications</h2>
 
 <div class="remark info">
-  Because SapphireDb allows a bidirectional communication between client and server you can also send data during
-  method execution. This is useful to transfer a state for example.<br>
+  Because SapphireDb allows a bidirectional communication between client and server you can also send additional
+  notifications during method execution. This is useful to transfer a state for example.<br>
   Use the <code>Notify</code>-method in your action handler to achieve that.
 </div>
 

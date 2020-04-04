@@ -30,16 +30,13 @@ export class Messaging {
    * Subscribe to a topic on the server
    * @param topic The topic to subscribe
    */
-  public topic(topic: string): Observable<any> {
+  public topic(topic: string): Observable<TopicResponse> {
     if (!this.topicSubscriptions[topic]) {
       const subscribeCommand = new SubscribeMessageCommand(topic);
       this.topicSubscriptions[topic] = this.connectionManagerService.sendCommand(subscribeCommand, true).pipe(
         finalize(() => {
           this.connectionManagerService.sendCommand(new UnsubscribeMessageCommand(topic, subscribeCommand.referenceId), false, true);
           delete this.topicSubscriptions[topic];
-        }),
-        map((response: TopicResponse) => {
-          return response.message;
         }),
         publishReplay(1),
         refCount()

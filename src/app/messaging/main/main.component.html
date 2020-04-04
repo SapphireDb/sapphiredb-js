@@ -90,7 +90,7 @@
 
 <m4-input prepend="New message" [(ngModel)]="message" [search-button]="true"
           search-button-icon="<span class='mif-paper-plane'><span>" (search-button-click)="publish()"></m4-input>
-<m4-textarea prepend="Hast received topic message" [ngModel]="topic$ | async | json"></m4-textarea>
+<m4-textarea prepend="Last received topic message" [ngModel]="topic$ | async | json"></m4-textarea>
 
 <h3>Listen to messages</h3>
 
@@ -104,6 +104,11 @@
     ]]>
   </div>
 </app-doc>
+
+<div class="remark success">
+  You can also use Glob-Patterns to subscribe topics.<br>
+  For example: <code>admin/**</code> would match any topic starting with <code>admin/</code>
+</div>
 
 <h3>Send messages from server</h3>
 
@@ -171,3 +176,9 @@
     ]]>
   </div>
 </app-doc>
+
+<div class="remark success">
+  You can also use Glob-Patterns to define topic configuraitons.<br>
+  For example: <code>admin/**</code> would match any topic starting with <code>admin/</code>
+</div>
+
