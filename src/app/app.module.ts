@@ -23,6 +23,7 @@ import {ServiceWorkerModule} from '@angular/service-worker';
 import {classToPlain, plainToClass} from 'class-transformer';
 import {Observable, of} from 'rxjs';
 import {SapphireLocalStorage} from '../../projects/sapphiredb/src/lib/helper/sapphire-storage';
+import {HttpClientModule} from '@angular/common/http';
 
 export function hljsLanguages() {
   return [
@@ -68,6 +69,7 @@ export class CustomClassTransformer extends SapphireClassTransformer {
   imports: [
     BrowserModule.withServerTransition({ appId: 'docs-client' }),
     ReactiveFormsModule,
+    HttpClientModule,
     SapphireDbModule,
     HighlightModule.forRoot({
       languages: hljsLanguages

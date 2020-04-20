@@ -9,9 +9,10 @@ import {ImplementationsComponent} from './implementations/implementations.compon
 import { ContributionComponent } from './contribution/contribution.component';
 import { SponsorsComponent } from './sponsors/sponsors.component';
 import { JsComponent } from './js/js.component';
+import { ChangelogComponent } from './changelog/changelog.component';
 
 @NgModule({
-  declarations: [MainComponent, NetCoreComponent, AngularComponent, ImplementationsComponent, ContributionComponent, SponsorsComponent, JsComponent],
+  declarations: [MainComponent, NetCoreComponent, AngularComponent, ImplementationsComponent, ContributionComponent, SponsorsComponent, JsComponent, ChangelogComponent],
   imports: [
     SharedModule,
     StartRoutingModule

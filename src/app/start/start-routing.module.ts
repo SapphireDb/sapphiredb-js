@@ -7,6 +7,7 @@ import {ImplementationsComponent} from './implementations/implementations.compon
 import {ContributionComponent} from './contribution/contribution.component';
 import {SponsorsComponent} from './sponsors/sponsors.component';
 import {JsComponent} from './js/js.component';
+import {ChangelogComponent} from './changelog/changelog.component';
 
 
 const routes: Routes = [
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: 'implementations', component: ImplementationsComponent },
   { path: 'contribution', component: ContributionComponent },
   { path: 'sponsors', component: SponsorsComponent },
+  { path: 'changelog', component: ChangelogComponent },
   { path: '', pathMatch: 'full', redirectTo: 'main' }
 ];
 
