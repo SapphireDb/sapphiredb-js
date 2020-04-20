@@ -42,7 +42,7 @@ export class SapphireDb {
     }
 
     if (!this.options.connectionType && windowDefined) {
-      if (!!window['Websocket']) {
+      if (!!window['WebSocket']) {
         this.options.connectionType = 'websocket';
       } else if (!!window['EventSource']) {
         this.options.connectionType = 'sse';
