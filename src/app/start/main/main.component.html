@@ -79,7 +79,13 @@
     <h4 class="h2 m-10"><span class="reduce-1 enlarge-1-md">Quick example</span></h4>
     <div class="text-left">
       <app-doc>
-        {{ values$ | async | json }}
+        <div class="mb-1" *ngFor="let item of values$ | async">
+          <span [innerHTML]="item | json"></span>
+          <button class="ml-1" m4-button shape="square" (click)="remove(item)"><m4-icon icon="cross"></m4-icon></button>
+        </div>
+
+        <button m4-button shape="square" (click)="add()"><m4-icon icon="plus"></m4-icon></button>
+        <span class="text-muted ml-2">Open in a second window to observe synchronized changes</span>
 
         <div lang>
           <![CDATA[
