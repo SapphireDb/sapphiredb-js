@@ -1,1 +1,9 @@
 <h1>Changelog</h1>
+
+<ul class="step-list">
+  <li *ngFor="let release of releases$ | async">
+    <div>{{ release.tag_name }}</div>
+    <h4>{{ release.published_at | date }}</h4>
+    <p [innerHTML]="release.body | markdown"></p>
+  </li>
+</ul>

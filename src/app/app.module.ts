@@ -24,6 +24,7 @@ import {classToPlain, plainToClass} from 'class-transformer';
 import {Observable, of} from 'rxjs';
 import {SapphireLocalStorage} from '../../projects/sapphiredb/src/lib/helper/sapphire-storage';
 import {HttpClientModule} from '@angular/common/http';
+import {MarkdownModule} from 'ngx-markdown';
 
 export function hljsLanguages() {
   return [
@@ -75,8 +76,9 @@ export class CustomClassTransformer extends SapphireClassTransformer {
       languages: hljsLanguages
     }),
     AppRoutingModule,
+    MarkdownModule.forRoot(),
     SharedModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   providers: [
     { provide: SAPPHIRE_DB_OPTIONS, useFactory: createRealtimeOptions },
