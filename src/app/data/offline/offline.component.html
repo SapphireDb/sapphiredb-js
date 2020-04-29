@@ -91,30 +91,7 @@
 <h2>Conflict handling</h2>
 
 <div class="remark success">
-  SapphireDb will handle all conflicts that can happen automatically when using <code>SapphireOfflineEntity</code>.<br>
-  You can optionally control how SapphireDb should behave in case of a merge conflict.
-</div>
-
-<app-doc [showContent]="false">
-  <div lang>
-    <![CDATA[
-    \f:(csharp:Entry.cs)
-    public class DemoEntry : SapphireOfflineEntity\n
-    {\n
-      \t[MergeConflictResolutionMode(MergeConflictResolutionMode.ConflictMarkers)]\n
-      \tpublic string Content { get; set; }\n
-    }
-    ]]>
-  </div>
-</app-doc>
-
-<div class="remark info">
-  Available merge conflict resolution modes are:
-  <ul>
-    <li><b>Database: </b> Take the value that is already stored in database</li>
-    <li><b>Last: </b> Take the value of the conflicting operation</li>
-    <li><b>ConflictMarkers: </b> Take both values and add GIT-Merge markers (only works with strings)</li>
-  </ul>
+  SapphireDb can handle a lot of conflicts automatically. Check out <a routerLink="../conflict-handling">Conflict handling</a> to learn more.
 </div>
 
 <h2>Note</h2>
