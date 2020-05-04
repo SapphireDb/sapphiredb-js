@@ -60,7 +60,7 @@ export class SapphireDb {
     this.connectionManager = new ConnectionManager(this.options, this.responseActionInterceptor);
 
     if (this.options.offlineSupport) {
-      this.offlineManager = new OfflineManager(storage, this.connectionManager, this.options.offlineOptimization);
+      this.offlineManager = new OfflineManager(storage, this.connectionManager);
     }
 
     const collectionInformation = new CollectionInformationManager(this.connectionManager, this.offlineManager);

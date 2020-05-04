@@ -28,9 +28,4 @@ export interface SapphireDbOptions {
    * Enable offline support and try to store collection data and changes locally when not connected to server.
    */
   offlineSupport?: boolean;
-
-  /**
-   * Enable optimization of offline changes.
-   */
-  offlineOptimization?: boolean;
 }

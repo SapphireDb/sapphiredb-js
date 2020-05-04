@@ -11,25 +11,10 @@ export class UpdateRangeCommand extends CollectionCommandBase {
 
 export class UpdateEntry {
   value: any;
-  previous?: any;
-  // changes: { [key: string]: { from: any, to: any } };
+  updatedProperties: any;
 
-  constructor(value: any, previous?: any) {
+  constructor(value: any, updatedProperties: any, ) {
     this.value = value;
-    this.previous = previous;
-
-    // if (!!prevValue) {
-    //   this.changes = {};
-    //   Object.keys(prevValue).forEach(key => {
-    //     if (prevValue[key] !== value[key]) {
-    //       this.changes[key] = {
-    //         from: prevValue[key],
-    //         to: value[key]
-    //       };
-    //     }
-    //   });
-    //
-    //   console.log(value, prevValue, this.changes);
-    // }
+    this.updatedProperties = updatedProperties;
   }
 }

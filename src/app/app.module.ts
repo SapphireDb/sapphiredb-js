@@ -45,8 +45,7 @@ export function createRealtimeOptions(): SapphireDbOptions {
     apiSecret: 'pw1234',
     apiKey: 'webapp',
     connectionType: <any>(localStorage.getItem('connectionType') || 'websocket'),
-    offlineSupport: true,
-    offlineOptimization: true
+    offlineSupport: true
   };
 }
 

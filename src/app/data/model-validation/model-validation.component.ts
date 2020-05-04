@@ -60,7 +60,7 @@ export class ModelValidationComponent implements OnInit {
     let result$: Observable<CreateRangeResponse|UpdateRangeResponse>;
 
     if (this.formEntity) {
-      result$ = <Observable<UpdateRangeResponse>>this.collection.update(rawFormValue);
+      result$ = <Observable<UpdateRangeResponse>>this.collection.update([this.formEntity, rawFormValue]);
     } else {
       result$ = <Observable<CreateRangeResponse>>this.collection.add(rawFormValue);
     }

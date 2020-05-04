@@ -65,7 +65,8 @@ export class CollectionHelper {
 
           if (change.commandType === 'CreateRangeCommand' || change.commandType === 'UpdateRangeCommand'
             || change.commandType === 'DeleteRangeCommand') {
-            const values = change.commandType === 'UpdateRangeCommand' ? (<UpdateRangeCommand><any>change).entries.map(e => e.value)
+            const values = change.commandType === 'UpdateRangeCommand' ?
+              (<UpdateRangeCommand><any>change).entries.map(e => ({ ...e.value, ...e.updatedProperties }))
               : (<CreateRangeCommand><any>change).values;
 
             for (const value of values) {

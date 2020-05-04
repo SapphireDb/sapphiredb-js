@@ -10,7 +10,6 @@ import {ValidatedResponseBase} from '../../command/validated-response-base';
 import {ConnectionState} from '../../models/types';
 import {ExecuteCommandsCommand} from '../../command/execute-commands/execute-commands-command';
 import {ExecuteCommandsResponse} from '../../command/execute-commands/execute-commands-response';
-import {OfflineCommandHelper} from '../../helper/offline-command-helper';
 import {OfflineResponse} from './offline-response';
 import {CreateRangeCommand} from '../../command/create-range/create-range-command';
 import {UpdateRangeCommand} from '../../command/update-range/update-range-command';
@@ -30,7 +29,7 @@ export class OfflineManager {
 
   public offlineTransferResults$ = new ReplaySubject<ExecuteCommandsResponse>();
 
-  constructor(private storage: SapphireStorage, private connectionManager: ConnectionManager, private offlineOptimization: boolean) {
+  constructor(private storage: SapphireStorage, private connectionManager: ConnectionManager) {
     if (!this.storage) {
       console.warn('No storage was configured. Using SapphireNoopStorage and will not store things locally.');
       this.storage = new SapphireNoopStorage();
@@ -119,15 +118,8 @@ export class OfflineManager {
 
     const collectionChanges = changeStorageValue[collectionKey];
 
-    info$.pipe(
-      take(1)
-    ).subscribe((info: InfoResponse) => {
-      if (!this.offlineOptimization || OfflineCommandHelper.handleAddCommand(command, info, collectionChanges)) {
-        collectionChanges.push(command);
-      }
-
-      this.changeStorage$.next(changeStorageValue);
-    });
+    collectionChanges.push(command);
+    this.changeStorage$.next(changeStorageValue);
 
     const results = command.commandType === 'UpdateRangeCommand' ? (<UpdateRangeCommand>command).entries.map(e => e.value)
       : (<CreateRangeCommand>command).values;

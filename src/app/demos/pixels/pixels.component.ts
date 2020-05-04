@@ -39,26 +39,20 @@ export class PixelsComponent implements OnInit {
       colorIndex = allColors.length - 1;
     }
 
-    this.collection.update({
-      ...pixel,
+    this.collection.update([pixel, {
       color: allColors[colorIndex]
-    });
+    }]);
     return false;
   }
 
   reset(pixels: Pixel[]) {
-    const updateValues: Pixel[] = pixels.map((pixel) => {
-      return {
-        ...pixel,
+    const updateValues: [Pixel, Partial<Pixel>][] = pixels.map((pixel) => {
+      return [pixel, {
         color: 'darkBlue'
-      };
+      }];
     });
 
     this.collection.update(...updateValues);
-  }
-
-  delete(pixels: Pixel[]) {
-    this.collection.remove(...pixels);
   }
 
   ngOnInit() {

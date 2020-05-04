@@ -54,21 +54,17 @@ export class ManageComponent implements OnInit {
 
   updateValue(value: any) {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
-      this.collection.update({
-        ...value,
-        content: v
-      });
+      this.collection.update([value,  { content: v }]);
     });
   }
 
   updateValues(values: any[]) {
     this.dialogService.prompt('Content', 'Please enter a new content').subscribe((v) => {
       this.collection.update(...values.map((value, i) => {
-        return {
-          ...value,
+        return [value, {
           content: `${i}${v}`
-        };
-      }));
+        }];
+      }) as any[]);
     });
   }
 }

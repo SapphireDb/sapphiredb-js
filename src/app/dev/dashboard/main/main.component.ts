@@ -116,10 +116,7 @@ export class MainComponent implements OnInit {
     if (!result) {
       this.db.collection<User>('users').remove(u).subscribe(console.table);
     } else {
-      const userClone = Object.assign({}, u);
-
-      userClone.lastName = result;
-      this.db.collection<User>('users').update(userClone).subscribe(console.table);
+      this.db.collection<User>('users').update([u, { lastName: result }]).subscribe(console.table);
     }
   }
 

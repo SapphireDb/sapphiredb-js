@@ -59,10 +59,9 @@ export class EditorComponent implements OnInit {
   }
 
   updateDocument(document: Document, content: string) {
-    this.collection.update({
-      ...document,
+    this.collection.update([document, {
       content: content
-    });
+    }]);
   }
 
 }

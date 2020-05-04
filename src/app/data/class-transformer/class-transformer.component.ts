@@ -38,9 +38,7 @@ export class ClassTransformerComponent implements OnInit {
   }
 
   update(value: ExampleEntry) {
-    const clone = classToClass(value);
-    clone.content = 34;
-    this.collection.update(clone);
+    this.collection.update([value, { content: 34 }]);
   }
 
   remove(value: ExampleEntry) {

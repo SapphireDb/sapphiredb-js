@@ -150,45 +150,25 @@ export abstract class CollectionBase<T, Y> {
    * Update a value of the collection
    * @param values The object(s) to update in the collection
    */
-  public update(...values: T[]): Observable<UpdateRangeResponse|OfflineResponse> {
+  public update(...values: [Partial<T>, Partial<T>][]): Observable<UpdateRangeResponse|OfflineResponse> {
+
     if (this.classType && this.classTransformer) {
-      values = this.classTransformer.classToPlain(values);
+      values = values.map(([value, newValueProperties]) => [
+        this.classTransformer.classToPlain(value),
+        this.classTransformer.classToPlain(newValueProperties)
+      ]);
     }
+
+    const command: UpdateRangeCommand = new UpdateRangeCommand(this.collectionName, this.contextName,
+      values.map(([value, newValueProperties]) => new UpdateEntry(value, newValueProperties)));
+
+    this.addToTempChangesStorage(command);
+
+    const result: Observable<UpdateRangeResponse|OfflineResponse> = this.offlineManager ?
+      this.offlineManager.sendCommand(command, this.collectionInformation) :
+      <any>this.connectionManagerService.sendCommand(command);
 
     const subject = new ReplaySubject<UpdateRangeResponse|OfflineResponse>();
-
-    let result: Observable<UpdateRangeResponse|OfflineResponse>;
-    let command: UpdateRangeCommand;
-
-    if (!CollectionHelper.hasAfterQueryPrefilter(this.prefilters)) {
-      result = combineLatest([
-        this.collectionObservable$ ? this.collectionObservable$ : this.snapshot(),
-        this.collectionInformation
-      ]).pipe(
-        take(1),
-        switchMap(([snapshot, info]: [any, InfoResponse]) => {
-          command = new UpdateRangeCommand(this.collectionName, this.contextName, values.map(value => {
-            const filterFunction = FilterFunctions.comparePrimaryKeysFunction(info.primaryKeys, value);
-            let previousValue = snapshot.find(v => filterFunction(v));
-
-            if (this.classType && this.classTransformer) {
-              previousValue = this.classTransformer.classToPlain(previousValue);
-            }
-
-            return new UpdateEntry(value, previousValue);
-          }));
-          this.addToTempChangesStorage(command);
-          return <Observable<UpdateRangeResponse|OfflineResponse>>(this.offlineManager ?
-            this.offlineManager.sendCommand(command, this.collectionInformation) :
-            <any>this.connectionManagerService.sendCommand(command));
-        })
-      );
-    } else {
-      command = new UpdateRangeCommand(this.collectionName, this.contextName, values.map(v => new UpdateEntry(v)));
-      this.addToTempChangesStorage(command);
-      result = this.offlineManager ? this.offlineManager.sendCommand(command, this.collectionInformation) :
-        <any>this.connectionManagerService.sendCommand(command);
-    }
 
     result.subscribe((response) => {
       subject.next(response);
