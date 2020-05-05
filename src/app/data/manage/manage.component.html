@@ -136,13 +136,12 @@
       \t}\n\n
 
       \tupdateValue(value: Entry) {\n
-        \t\tthis.collection.update({\n
-          \t\t\t...value,\n
+        \t\tthis.collection.update([value, {\n
           \t\t\tcontent: v\n
-        \t\t});\n
+        \t\t}]);\n
       \t}\n\n
 
-      \tupdateValues(values: Entry[]) {\n
+      \tupdateValues(values: [Entry, Partial<Entry>][]) {\n
         \t\tthis.collection.update(...values);\n
       \t}\n
     }
@@ -161,11 +160,9 @@
 </app-doc>
 
 <div class="remark info">
-  Make sure to include at least the primary keys in the object when calling update or delete.
-</div>
-
-<div class="remark warning">
-  You should use the spread-syntax used in the example. This ensures that all data are included in the model.
+  The api for updates tries to keep immutability. You have to provide a tuple.<br>
+  The first value should contain the original value or at least the primary keys of the object.<br>
+  The second value should contain the changes to apply.
 </div>
 
 <div class="remark success">

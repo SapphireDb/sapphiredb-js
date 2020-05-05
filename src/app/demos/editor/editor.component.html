@@ -47,10 +47,9 @@
         \t}\n\n
 
         \tupdateDocument(document: Document, content: string) {\n
-          \t\tthis.collection.update({\n
-            \t\t\t...document,\n
+          \t\tthis.collection.update([document, {\n
             \t\t\tcontent: content\n
-          \t\t});\n
+          \t\t}]);\n
         \t}\n
       }
 

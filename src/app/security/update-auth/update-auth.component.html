@@ -64,12 +64,11 @@
       \t}\n\n
 
         \tupdate(collection$: Observable<DefaultCollection<any>>, value: any) {\n
-      \t\tthis.db.collection('AuthDemo.UpdateExamples').update({\n
-            \t\t\t...value,\n
+      \t\tthis.db.collection('AuthDemo.UpdateExamples').update([value, {\n
             \t\t\trequiresUser: 'No',\n
             \t\t\tcustomFunction: 'test 123',\n
             \t\t\trequiresAdmin: 'Updated'\n
-          \t\t});\n
+          \t\t}]);\n
       \t}\n
       }
 

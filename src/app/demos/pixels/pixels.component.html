@@ -28,10 +28,9 @@
           \t\t}\n\n
 
           \t\t// The update call\n
-          \t\tthis.collection.update({\n
-            \t\t\t...pixel,\n
+          \t\tthis.collection.update([{pixel, \n
             \t\t\tcolor: allColors[colorIndex]\n
-          \t\t});\n\n
+          \t\t}]);\n\n
 
           \t\t// Return false to prevent context menu showing on right click\n
           \t\treturn false;\n
