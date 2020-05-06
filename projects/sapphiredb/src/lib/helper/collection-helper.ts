@@ -11,6 +11,7 @@ import {LastPrefilter} from '../collection/prefilter/last-prefilter';
 import {CreateRangeCommand} from '../command/create-range/create-range-command';
 import {CollectionCommandBase} from '../command/collection-command-base';
 import {UpdateRangeCommand} from '../command/update-range/update-range-command';
+import {DeleteRangeCommand} from '../command/delete-range/delete-range-command';
 
 // @dynamic
 export class CollectionHelper {
@@ -37,7 +38,11 @@ export class CollectionHelper {
         FilterFunctions.comparePrimaryKeysFunction(info.primaryKeys, changeResponse.value));
 
       if (index !== -1) {
-        values[index] = changeResponse.value;
+        if (changeResponse.changes) {
+          values[index] = { ...values[index], ...changeResponse.changes };
+        } else {
+          values[index] = changeResponse.value;
+        }
       }
     } else if (changeResponse.state === ChangeState.Added) {
       values.push(changeResponse.value);
@@ -63,17 +68,21 @@ export class CollectionHelper {
         collectionChanges.map(change => {
           const changesToApply: ChangeResponse[] = [];
 
-          if (change.commandType === 'CreateRangeCommand' || change.commandType === 'UpdateRangeCommand'
-            || change.commandType === 'DeleteRangeCommand') {
-            const values = change.commandType === 'UpdateRangeCommand' ?
-              (<UpdateRangeCommand><any>change).entries.map(e => ({ ...e.value, ...e.updatedProperties }))
-              : (<CreateRangeCommand><any>change).values;
+          if (change.commandType === 'CreateRangeCommand' || change.commandType === 'DeleteRangeCommand') {
+            const values = (<CreateRangeCommand|DeleteRangeCommand><any>change).values;
 
             for (const value of values) {
-              changesToApply.push(<any>{
+              changesToApply.push(<ChangeResponse>{
                 value: value,
-                state: change.commandType === 'CreateRangeCommand' ? ChangeState.Added :
-                  change.commandType === 'UpdateRangeCommand' ? ChangeState.Modified : ChangeState.Deleted
+                state: change.commandType === 'CreateRangeCommand' ? ChangeState.Added : ChangeState.Deleted
+              });
+            }
+          } else if (change.commandType === 'UpdateRangeCommand') {
+            for (const entry of (<UpdateRangeCommand><any>change).entries) {
+              changesToApply.push(<ChangeResponse>{
+                changes: entry.updatedProperties,
+                value: entry.value,
+                state: ChangeState.Modified
               });
             }
           }

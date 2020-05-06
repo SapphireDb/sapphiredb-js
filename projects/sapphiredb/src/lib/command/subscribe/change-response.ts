@@ -3,6 +3,7 @@ import {ResponseBase} from '../response-base';
 export interface ChangeResponse extends ResponseBase {
   state: ChangeState;
   value: any;
+  changes?: any;
 }
 
 export interface ChangesResponse extends ResponseBase {
