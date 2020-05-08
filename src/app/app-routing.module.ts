@@ -12,8 +12,6 @@ const routes: Routes = [
   { path: 'configuration', loadChildren: () => import('./configuration/configuration.module').then(m => m.ConfigurationModule) },
   { path: 'demos', loadChildren: () => import('./demos/demos.module').then(m => m.DemosModule) },
 
-  { path: 'dev', loadChildren: () => import('./dev/dev.module').then(m => m.DevModule) },
-
   { path: 'legal-details', component: LegalDisclosureComponent },
   { path: 'privacy', component: PrivacyComponent },
 

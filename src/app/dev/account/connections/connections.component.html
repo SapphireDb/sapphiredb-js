@@ -1,7 +1,0 @@
-<p>
-  ConnectionData: {{connectionData$ | async| json}}
-</p>
-
-<div *ngFor="let conn of connections$ | async" (click)="closeConnection(conn)">
-  {{conn | json}}
-</div>
