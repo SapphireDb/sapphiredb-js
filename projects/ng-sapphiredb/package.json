@@ -5,9 +5,7 @@
   "peerDependencies": {
     "@angular/common": "~9.0.7",
     "@angular/core": "~9.0.7",
-    "rxjs": "^6.5.4"
-  },
-  "dependencies": {
+    "rxjs": "^6.5.4",
     "axios": "^0.19.1",
     "sapphiredb": "^2.1.3"
   },
