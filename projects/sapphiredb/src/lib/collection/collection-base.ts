@@ -26,8 +26,6 @@ import {DecoratorHelper} from '../helper/decorator-helper';
 
 export abstract class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
-  public collectionName: string;
-  public contextName: string;
   private serverState: Y;
   private tempChangesStorage$ = new BehaviorSubject<CollectionCommandBase[]>([]);
 
@@ -35,13 +33,12 @@ export abstract class CollectionBase<T, Y> {
 
   protected primaryKeys: string[] = [ 'id' ];
 
-  constructor(collectionNameRaw: string,
+  constructor(protected collectionName: string,
               protected connectionManagerService: ConnectionManager,
               protected collectionManagerService: CollectionManager,
               protected classType: ClassType<T>,
               protected classTransformer: SapphireClassTransformer,
               protected offlineManager: OfflineManager) {
-    const collectionNameParts: string[] = collectionNameRaw.split('.');
 
     if (!!classType) {
       const primaryKeys = DecoratorHelper.getPrimaryKeys(this.classType);
@@ -52,21 +49,18 @@ export abstract class CollectionBase<T, Y> {
 
       this.primaryKeys = primaryKeys;
     }
-
-    this.collectionName = collectionNameParts.length === 1 ? collectionNameParts[0] : collectionNameParts[1];
-    this.contextName = collectionNameParts.length === 2 ? collectionNameParts[0] : 'default';
   }
 
   /**
    * Get a snapshot of the values of the collection
    */
   public snapshot(): Observable<Y> {
-    const queryCommand = new QueryCommand(this.collectionName, this.contextName, this.prefilters);
+    const queryCommand = new QueryCommand(this.collectionName, this.prefilters);
 
     let startWithValue$: Observable<any> = EMPTY;
 
     if (!!this.offlineManager) {
-      startWithValue$ = this.offlineManager.getState(this.contextName, this.collectionName, this.prefilters);
+      startWithValue$ = this.offlineManager.getState(this.collectionName, this.prefilters);
     }
 
     return <Observable<Y>>this.connectionManagerService.sendCommand(queryCommand).pipe(
@@ -74,7 +68,7 @@ export abstract class CollectionBase<T, Y> {
       tap((state) => {
         if (!!this.offlineManager) {
           this.serverState = <Y><any>state;
-          this.offlineManager.setState(this.contextName, this.collectionName, this.prefilters, state);
+          this.offlineManager.setState(this.collectionName, this.prefilters, state);
         }
       }),
       RxjsHelper.startWithObservable(startWithValue$),
@@ -83,8 +77,7 @@ export abstract class CollectionBase<T, Y> {
           return of(state);
         }
 
-        return this.offlineManager.getInterpolatedCollectionValue(this.contextName, this.collectionName, this.prefilters, state,
-          this.primaryKeys);
+        return this.offlineManager.getInterpolatedCollectionValue(this.collectionName, this.prefilters, state, this.primaryKeys);
       }),
       map((result: Y) => {
         if (this.classType && this.classTransformer) {
@@ -102,7 +95,7 @@ export abstract class CollectionBase<T, Y> {
    */
   public values(): Observable<Y> {
     if (!this.collectionObservable$) {
-      const collectionValue = this.createValuesSubscription(this.collectionName, this.contextName, this.prefilters);
+      const collectionValue = this.createValuesSubscription(this.collectionName, this.prefilters);
 
       this.collectionObservable$ = this.createCollectionObservable$(collectionValue);
     }
@@ -114,13 +107,13 @@ export abstract class CollectionBase<T, Y> {
    * Get all changes of a collection
    */
   public changes(): Observable<QueryResponse | ChangeResponse | ChangesResponse> {
-    const subscribeCommand = new SubscribeCommand(this.collectionName, this.contextName, this.prefilters);
+    const subscribeCommand = new SubscribeCommand(this.collectionName, this.prefilters);
     return this.connectionManagerService.sendCommand(subscribeCommand, true)
       .pipe(
         map((response) => <QueryResponse | ChangeResponse | ChangesResponse>response),
         finalize(() => {
           this.connectionManagerService.sendCommand(
-            new UnsubscribeCommand(this.collectionName, this.contextName, subscribeCommand.referenceId), false, true);
+            new UnsubscribeCommand(this.collectionName, subscribeCommand.referenceId), false, true);
         }),
         share()
       );
@@ -135,7 +128,7 @@ export abstract class CollectionBase<T, Y> {
       values = this.classTransformer.classToPlain(values);
     }
 
-    const command = new CreateRangeCommand(this.collectionName, this.contextName, values);
+    const command = new CreateRangeCommand(this.collectionName, values);
 
     this.addToTempChangesStorage(command);
     const subject = new ReplaySubject<CreateRangeResponse|OfflineResponse>();
@@ -168,7 +161,7 @@ export abstract class CollectionBase<T, Y> {
       ]);
     }
 
-    const command: UpdateRangeCommand = new UpdateRangeCommand(this.collectionName, this.contextName,
+    const command: UpdateRangeCommand = new UpdateRangeCommand(this.collectionName,
       values.map(([value, newValueProperties]) => new UpdateEntry(value, newValueProperties)));
 
     this.addToTempChangesStorage(command);
@@ -212,7 +205,7 @@ export abstract class CollectionBase<T, Y> {
       return primaryValues;
     });
 
-    const command: DeleteRangeCommand = new DeleteRangeCommand(this.collectionName, this.contextName, primaryKeyList);
+    const command: DeleteRangeCommand = new DeleteRangeCommand(this.collectionName, primaryKeyList);
 
     this.addToTempChangesStorage(command);
 
@@ -234,8 +227,8 @@ export abstract class CollectionBase<T, Y> {
     return subject;
   }
 
-  private createValuesSubscription(collectionName: string, contextName: string, prefilters: IPrefilter<any, any>[]): CollectionValue<T> {
-    const subscribeCommand = new SubscribeCommand(collectionName, contextName, prefilters);
+  private createValuesSubscription(collectionName: string, prefilters: IPrefilter<any, any>[]): CollectionValue<T> {
+    const subscribeCommand = new SubscribeCommand(collectionName, prefilters);
     const collectionValue = new CollectionValue<T>(subscribeCommand.referenceId);
 
     const wsSubscription = this.connectionManagerService.sendCommand(subscribeCommand, true)
@@ -275,7 +268,7 @@ export abstract class CollectionBase<T, Y> {
     let startWithValue$: Observable<any> = EMPTY;
 
     if (!!this.offlineManager) {
-      startWithValue$ = this.offlineManager.getState(this.contextName, this.collectionName, this.prefilters);
+      startWithValue$ = this.offlineManager.getState(this.collectionName, this.prefilters);
     }
 
     return <Observable<any>>collectionValue.subject.pipe(
@@ -283,13 +276,13 @@ export abstract class CollectionBase<T, Y> {
       tap((state) => {
         if (!!this.offlineManager) {
           this.serverState = <Y><any>state;
-          this.offlineManager.setState(this.contextName, this.collectionName, this.prefilters, state);
+          this.offlineManager.setState(this.collectionName, this.prefilters, state);
         }
       }),
       RxjsHelper.startWithObservable(startWithValue$),
       finalize(() => {
         this.connectionManagerService.sendCommand(
-          new UnsubscribeCommand(this.collectionName, this.contextName, collectionValue.referenceId), false, true);
+          new UnsubscribeCommand(this.collectionName, collectionValue.referenceId), false, true);
         collectionValue.socketSubscription.unsubscribe();
         this.collectionObservable$ = undefined;
       }),
@@ -298,8 +291,7 @@ export abstract class CollectionBase<T, Y> {
           return of(state);
         }
 
-        return this.offlineManager.getInterpolatedCollectionValue(this.contextName, this.collectionName, this.prefilters,
-          state, this.primaryKeys);
+        return this.offlineManager.getInterpolatedCollectionValue(this.collectionName, this.prefilters, state, this.primaryKeys);
       }),
       switchMap((state) => {
         return this.tempChangesStorage$.pipe(

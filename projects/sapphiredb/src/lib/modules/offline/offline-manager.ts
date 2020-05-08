@@ -65,8 +65,8 @@ export class OfflineManager {
     });
   }
 
-  getState(contextName: string, collectionName: string, prefilters: IPrefilter<any, any>[]): Observable<any> {
-    const offlineKey = `${CollectionStoragePrefix}${contextName}.${collectionName}.${CollectionHelper.getPrefilterHash(prefilters)}`;
+  getState(collectionName: string, prefilters: IPrefilter<any, any>[]): Observable<any> {
+    const offlineKey = `${CollectionStoragePrefix}${collectionName}.${CollectionHelper.getPrefilterHash(prefilters)}`;
     return this.storage.get(offlineKey).pipe(
       map(v => {
         const result = !!v ? JSON.parse(v) : null;
@@ -83,8 +83,8 @@ export class OfflineManager {
     );
   }
 
-  setState(contextName: string, collectionName: string, prefilters: IPrefilter<any, any>[], state: any) {
-    const offlineKey = `${CollectionStoragePrefix}${contextName}.${collectionName}.${CollectionHelper.getPrefilterHash(prefilters)}`;
+  setState(collectionName: string, prefilters: IPrefilter<any, any>[], state: any) {
+    const offlineKey = `${CollectionStoragePrefix}${collectionName}.${CollectionHelper.getPrefilterHash(prefilters)}`;
     return this.storage.set(offlineKey, JSON.stringify(state));
   }
 
@@ -95,14 +95,13 @@ export class OfflineManager {
       return <Observable<ValidatedResponseBase>>this.connectionManager.sendCommand(command);
     }
 
-    const collectionKey = `${command.contextName}.${command.collectionName}`;
     const changeStorageValue = this.changeStorage$.value;
 
-    if (!changeStorageValue[collectionKey]) {
-      changeStorageValue[collectionKey] = [];
+    if (!changeStorageValue[command.collectionName]) {
+      changeStorageValue[command.collectionName] = [];
     }
 
-    const collectionChanges = changeStorageValue[collectionKey];
+    const collectionChanges = changeStorageValue[command.collectionName];
 
     collectionChanges.push(command);
     this.changeStorage$.next(changeStorageValue);
@@ -118,17 +117,15 @@ export class OfflineManager {
     });
   }
 
-  getInterpolatedCollectionValue(contextName: string, collectionName: string, prefilters: IPrefilter<any, any>[], state: any[],
+  getInterpolatedCollectionValue(collectionName: string, prefilters: IPrefilter<any, any>[], state: any[],
                                  primaryKeys: string[]): Observable<any> {
-    const collectionKey = `${contextName}.${collectionName}`;
-
     return this.changeStorage$.pipe(
       map((changeStorage) => {
         if (CollectionHelper.hasAfterQueryPrefilter(prefilters)) {
           return state;
         }
 
-        const collectionChanges = changeStorage[collectionKey];
+        const collectionChanges = changeStorage[collectionName];
 
         return CollectionHelper.getInterpolatedCollectionValue(collectionChanges, state, primaryKeys);
       }),

@@ -32,8 +32,7 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param number Number of entries to skip
    */
   public skip(number: number): DefaultCollection<T> {
-    return <any>this.collectionManagerService.getCollection(
-      `${this.contextName}.${this.collectionName}`, this.prefilters, new SkipPrefilter(number));
+    return <any>this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new SkipPrefilter(number));
   }
 
   /**
@@ -41,8 +40,7 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param number Number of entries to take
    */
   public take(number: number): DefaultCollection<T> {
-    return <any>this.collectionManagerService.getCollection(
-      `${this.contextName}.${this.collectionName}`, this.prefilters, new TakePrefilter(number));
+    return <any>this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new TakePrefilter(number));
   }
 
   /**
@@ -50,8 +48,7 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param conditions The array of conditions for the filter operation
    */
   public where(conditions: ConditionType<T>): DefaultCollection<T> {
-    return <any>this.collectionManagerService.getCollection(
-      `${this.contextName}.${this.collectionName}`, this.prefilters, new WherePrefilter(conditions));
+    return <any>this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new WherePrefilter(conditions));
   }
 
   /**
@@ -60,8 +57,7 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param direction The direction of ordering
    */
   public orderBy(property: keyof T, direction: SortDirection = SortDirection.ascending): OrderedCollection<T> {
-    return <any>this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters,
-      new OrderByPrefilter(property, direction));
+    return <any>this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new OrderByPrefilter(property, direction));
   }
 
   /**
@@ -69,8 +65,7 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param properties The properties of the model to select
    */
   public select<Z>(...properties: (keyof T)[]): ReducedCollection<T, Z[]> {
-    return this.collectionManagerService.getCollection(
-      `${this.contextName}.${this.collectionName}`, this.prefilters, new SelectPrefilter(properties));
+    return this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new SelectPrefilter(properties));
   }
 
   /**
@@ -78,28 +73,27 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param include The navigation property string (use EF Core Syntax)
    */
   public include(include: string): DefaultCollection<T> {
-    return <any>this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters,
-      new IncludePrefilter(include));
+    return <any>this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new IncludePrefilter(include));
   }
 
   /**
    * Get the number of elements in the collection
    */
   public count(): ReducedCollection<T, number> {
-    return this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters, new CountPrefilter());
+    return this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new CountPrefilter());
   }
 
   /**
    * Get the first element of the collection. Returns null if nothing was found.
    */
   public first(): ReducedCollection<T, T> {
-    return this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters, new FirstPrefilter());
+    return this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new FirstPrefilter());
   }
 
   /**
    * Get the last element of the collection. Returns null if nothing was found.
    */
   public last(): ReducedCollection<T, T> {
-    return this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters, new LastPrefilter());
+    return this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new LastPrefilter());
   }
 }

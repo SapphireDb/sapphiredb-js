@@ -22,7 +22,6 @@ export class OrderedCollection<T> extends DefaultCollection<T> {
    * @param direction The direction of ordering
    */
   public thenOrderBy(property: keyof T, direction: SortDirection = SortDirection.ascending): OrderedCollection<T> {
-    return <any>this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters,
-      new ThenOrderByPrefilter(property, direction));
+    return <any>this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new ThenOrderByPrefilter(property, direction));
   }
 }

@@ -3,8 +3,8 @@ import {CollectionCommandBase} from '../collection-command-base';
 export class UpdateRangeCommand extends CollectionCommandBase {
   entries: UpdateEntry[];
 
-  constructor(collectionName: string, contextName: string, updateEntries: UpdateEntry[]) {
-    super('UpdateRangeCommand', collectionName, contextName);
+  constructor(collectionName: string, updateEntries: UpdateEntry[]) {
+    super('UpdateRangeCommand', collectionName);
     this.entries = updateEntries;
   }
 }
