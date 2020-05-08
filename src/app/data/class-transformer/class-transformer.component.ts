@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {DefaultCollection, primaryKey} from 'sapphiredb';
+import {DefaultCollection, PrimaryKey} from 'sapphiredb';
 import {SapphireDbService} from 'ng-sapphiredb';
 import {Observable} from 'rxjs';
 import {Transform} from 'class-transformer';
 
 class ExampleEntry {
-  @primaryKey()
+  @PrimaryKey()
   id?: string;
 
   @Transform((v: string) => parseInt(v, null), { toClassOnly: true })
