@@ -1,8 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
 import { SapphireDbService } from 'ng-sapphiredb';
-import {DefaultCollection, SapphireOfflineEntity} from 'sapphiredb';
+import {DefaultCollection, primaryKey, SapphireOfflineEntity} from 'sapphiredb';
 import {DialogService} from 'ng-metro4';
+
+export class Test extends SapphireOfflineEntity {
+  // @primaryKey()
+  id2: string;
+}
+
+export class Test2 extends Test {
+  // @primaryKey()
+  id3: string;
+}
+
+export class Test3 {
+  // @primaryKey()
+  id4: string;
+}
+
 
 @Component({
   selector: 'app-manage',
@@ -13,7 +29,7 @@ export class ManageComponent implements OnInit {
   collection: DefaultCollection<any>;
   values$: Observable<any>;
 
-  constructor(private db: SapphireDbService, private dialogService: DialogService) { }
+  constructor(private db: SapphireDbService, private dialogService: DialogService) {}
 
   ngOnInit() {
     this.collection = this.db.collection('demo.entries');

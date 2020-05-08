@@ -1,6 +1,5 @@
-import {BehaviorSubject, combineLatest, EMPTY, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, EMPTY, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {debounceTime, filter, finalize, map, publishReplay, refCount, share, switchMap, take, tap} from 'rxjs/operators';
-import {InfoResponse} from '../command/info/info-response';
 import {QueryCommand} from '../command/query/query-command';
 import {QueryResponse} from '../command/query/query-response';
 import {CollectionValue, CollectionValueContainer} from './collection-value';
@@ -23,7 +22,7 @@ import {OfflineManager} from '../modules/offline/offline-manager';
 import {RxjsHelper} from '../helper/rxjs-helper';
 import {CollectionCommandBase} from '../command/collection-command-base';
 import {OfflineResponse} from '../modules/offline/offline-response';
-import {FilterFunctions} from '../helper/filter-functions';
+import {DecoratorHelper} from '../helper/decorator-helper';
 
 export abstract class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
@@ -34,14 +33,25 @@ export abstract class CollectionBase<T, Y> {
 
   private collectionObservable$: Observable<Y>;
 
+  protected primaryKeys: string[] = [ 'id' ];
+
   constructor(collectionNameRaw: string,
               protected connectionManagerService: ConnectionManager,
-              protected collectionInformation: Observable<InfoResponse>,
               protected collectionManagerService: CollectionManager,
               protected classType: ClassType<T>,
               protected classTransformer: SapphireClassTransformer,
               protected offlineManager: OfflineManager) {
     const collectionNameParts: string[] = collectionNameRaw.split('.');
+
+    if (!!classType) {
+      const primaryKeys = DecoratorHelper.getPrimaryKeys(this.classType);
+
+      if (primaryKeys.length === 0) {
+        throw Error('No primary keys for model were found');
+      }
+
+      this.primaryKeys = primaryKeys;
+    }
 
     this.collectionName = collectionNameParts.length === 1 ? collectionNameParts[0] : collectionNameParts[1];
     this.contextName = collectionNameParts.length === 2 ? collectionNameParts[0] : 'default';
@@ -74,7 +84,7 @@ export abstract class CollectionBase<T, Y> {
         }
 
         return this.offlineManager.getInterpolatedCollectionValue(this.contextName, this.collectionName, this.prefilters, state,
-          this.collectionInformation);
+          this.primaryKeys);
       }),
       map((result: Y) => {
         if (this.classType && this.classTransformer) {
@@ -92,8 +102,7 @@ export abstract class CollectionBase<T, Y> {
    */
   public values(): Observable<Y> {
     if (!this.collectionObservable$) {
-      const collectionValue = this.createValuesSubscription(this.collectionName, this.contextName,
-        this.collectionInformation, this.prefilters);
+      const collectionValue = this.createValuesSubscription(this.collectionName, this.contextName, this.prefilters);
 
       this.collectionObservable$ = this.createCollectionObservable$(collectionValue);
     }
@@ -130,7 +139,7 @@ export abstract class CollectionBase<T, Y> {
 
     this.addToTempChangesStorage(command);
     const subject = new ReplaySubject<CreateRangeResponse|OfflineResponse>();
-    const result = this.offlineManager ? this.offlineManager.sendCommand(command, this.collectionInformation) :
+    const result = this.offlineManager ? this.offlineManager.sendCommand(command) :
       <any>this.connectionManagerService.sendCommand(command);
 
     result.subscribe((response) => {
@@ -165,7 +174,7 @@ export abstract class CollectionBase<T, Y> {
     this.addToTempChangesStorage(command);
 
     const result: Observable<UpdateRangeResponse|OfflineResponse> = this.offlineManager ?
-      this.offlineManager.sendCommand(command, this.collectionInformation) :
+      this.offlineManager.sendCommand(command) :
       <any>this.connectionManagerService.sendCommand(command);
 
     const subject = new ReplaySubject<UpdateRangeResponse|OfflineResponse>();
@@ -194,25 +203,23 @@ export abstract class CollectionBase<T, Y> {
 
     const subject = new Subject<DeleteRangeResponse|OfflineResponse>();
 
-    let command: DeleteRangeCommand;
+    const primaryKeyList = values.map((value) => {
+      const primaryValues = {};
+      this.primaryKeys.forEach(pk => {
+        primaryValues[pk] = value[pk];
+      });
+      primaryValues['modifiedOn'] = value['modifiedOn'];
+      return primaryValues;
+    });
 
-    this.collectionInformation.pipe(
-      switchMap((info: InfoResponse) => {
-        const primaryKeyList = values.map((value) => {
-          const primaryValues = {};
-          info.primaryKeys.forEach(pk => {
-            primaryValues[pk] = value[pk];
-          });
-          primaryValues['modifiedOn'] = value['modifiedOn'];
-          return primaryValues;
-        });
+    const command: DeleteRangeCommand = new DeleteRangeCommand(this.collectionName, this.contextName, primaryKeyList);
 
-        command = new DeleteRangeCommand(this.collectionName, this.contextName, primaryKeyList);
+    this.addToTempChangesStorage(command);
 
-        this.addToTempChangesStorage(command);
-        return this.offlineManager ? this.offlineManager.sendCommand(command, this.collectionInformation) :
-          <any>this.connectionManagerService.sendCommand(command);
-      }),
+    const result$ = this.offlineManager ? this.offlineManager.sendCommand(command) :
+      <any>this.connectionManagerService.sendCommand(command);
+
+    result$.pipe(
       take(1)
     ).subscribe((response: DeleteRangeResponse|OfflineResponse) => {
       subject.next(response);
@@ -227,8 +234,7 @@ export abstract class CollectionBase<T, Y> {
     return subject;
   }
 
-  private createValuesSubscription(collectionName: string, contextName: string, collectionInformation: Observable<InfoResponse>,
-                                   prefilters: IPrefilter<any, any>[]): CollectionValue<T> {
+  private createValuesSubscription(collectionName: string, contextName: string, prefilters: IPrefilter<any, any>[]): CollectionValue<T> {
     const subscribeCommand = new SubscribeCommand(collectionName, contextName, prefilters);
     const collectionValue = new CollectionValue<T>(subscribeCommand.referenceId);
 
@@ -240,17 +246,16 @@ export abstract class CollectionBase<T, Y> {
             connectionId: this.connectionManagerService.getConnectionId()
           });
         } else if (response.responseType === 'ChangeResponse' || response.responseType === 'ChangesResponse') {
-          collectionInformation.pipe(
-            switchMap((info) => collectionValue.subject.pipe(map(values => [info, values]))),
-            filter(([, values]: [null, CollectionValueContainer<T>]) =>
+          collectionValue.subject.pipe(
+            filter((values: CollectionValueContainer<T>) =>
               !!values && values.connectionId === this.connectionManagerService.getConnectionId()),
             take(1)
-          ).subscribe(([info, container]: [InfoResponse, CollectionValueContainer<T>]) => {
+          ).subscribe((container: CollectionValueContainer<T>) => {
             if (response.responseType === 'ChangeResponse') {
-              CollectionHelper.updateCollection<T>(info, container.values, <ChangeResponse>response);
+              CollectionHelper.updateCollection<T>(this.primaryKeys, container.values, <ChangeResponse>response);
             } else {
               (<ChangesResponse>response).changes.forEach(change => {
-                CollectionHelper.updateCollection<T>(info, container.values, change);
+                CollectionHelper.updateCollection<T>(this.primaryKeys, container.values, change);
               });
             }
 
@@ -294,16 +299,16 @@ export abstract class CollectionBase<T, Y> {
         }
 
         return this.offlineManager.getInterpolatedCollectionValue(this.contextName, this.collectionName, this.prefilters,
-          state, this.collectionInformation);
+          state, this.primaryKeys);
       }),
       switchMap((state) => {
         return this.tempChangesStorage$.pipe(
-          switchMap((changes) => {
+          map((changes) => {
             if (CollectionHelper.hasAfterQueryPrefilter(this.prefilters)) {
-              return of(state);
+              return state;
             }
 
-            return CollectionHelper.getInterpolatedCollectionValue(changes, state, this.collectionInformation);
+            return CollectionHelper.getInterpolatedCollectionValue(changes, state, this.primaryKeys);
           })
         );
       }),

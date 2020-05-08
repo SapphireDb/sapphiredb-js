@@ -32,10 +32,10 @@ export class CollectionHelper {
     return prefilters.map(p => p.hash()).join(';');
   }
 
-  static updateCollection<T>(info: InfoResponse, values: T[], changeResponse: ChangeResponse) {
+  static updateCollection<T>(primaryKeys: string[], values: T[], changeResponse: ChangeResponse) {
     if (changeResponse.state === ChangeState.Modified) {
       const index = values.findIndex(
-        FilterFunctions.comparePrimaryKeysFunction(info.primaryKeys, changeResponse.value));
+        FilterFunctions.comparePrimaryKeysFunction(primaryKeys, changeResponse.value));
 
       if (index !== -1) {
         if (changeResponse.changes) {
@@ -47,7 +47,7 @@ export class CollectionHelper {
     } else if (changeResponse.state === ChangeState.Added) {
       values.push(changeResponse.value);
     } else if (changeResponse.state === ChangeState.Deleted) {
-      const index = values.findIndex(FilterFunctions.comparePrimaryKeysFunction(info.primaryKeys, changeResponse.value));
+      const index = values.findIndex(FilterFunctions.comparePrimaryKeysFunction(primaryKeys, changeResponse.value));
 
       if (index !== -1) {
         values.splice(index, 1);
@@ -55,45 +55,40 @@ export class CollectionHelper {
     }
   }
 
-  static getInterpolatedCollectionValue(collectionChanges: CollectionCommandBase[], state: any[],
-                                 info$: Observable<InfoResponse>): Observable<any> {
-    return info$.pipe(
-      map((info) => {
-        if (!collectionChanges) {
-          return state;
+  static getInterpolatedCollectionValue(collectionChanges: CollectionCommandBase[], state: any[], primaryKeys: string[]): any {
+    if (!collectionChanges) {
+      return state;
+    }
+
+    const stateCopy = state.slice(0);
+
+    collectionChanges.map(change => {
+      const changesToApply: ChangeResponse[] = [];
+
+      if (change.commandType === 'CreateRangeCommand' || change.commandType === 'DeleteRangeCommand') {
+        const values = (<CreateRangeCommand|DeleteRangeCommand><any>change).values;
+
+        for (const value of values) {
+          changesToApply.push(<ChangeResponse>{
+            value: value,
+            state: change.commandType === 'CreateRangeCommand' ? ChangeState.Added : ChangeState.Deleted
+          });
         }
+      } else if (change.commandType === 'UpdateRangeCommand') {
+        for (const entry of (<UpdateRangeCommand><any>change).entries) {
+          changesToApply.push(<ChangeResponse>{
+            changes: entry.updatedProperties,
+            value: entry.value,
+            state: ChangeState.Modified
+          });
+        }
+      }
 
-        const stateCopy = state.slice(0);
+      return changesToApply;
+    }).reduce((a, b) => a.concat(b), []).forEach(change => {
+      CollectionHelper.updateCollection(primaryKeys, stateCopy, change);
+    });
 
-        collectionChanges.map(change => {
-          const changesToApply: ChangeResponse[] = [];
-
-          if (change.commandType === 'CreateRangeCommand' || change.commandType === 'DeleteRangeCommand') {
-            const values = (<CreateRangeCommand|DeleteRangeCommand><any>change).values;
-
-            for (const value of values) {
-              changesToApply.push(<ChangeResponse>{
-                value: value,
-                state: change.commandType === 'CreateRangeCommand' ? ChangeState.Added : ChangeState.Deleted
-              });
-            }
-          } else if (change.commandType === 'UpdateRangeCommand') {
-            for (const entry of (<UpdateRangeCommand><any>change).entries) {
-              changesToApply.push(<ChangeResponse>{
-                changes: entry.updatedProperties,
-                value: entry.value,
-                state: ChangeState.Modified
-              });
-            }
-          }
-
-          return changesToApply;
-        }).reduce((a, b) => a.concat(b), []).forEach(change => {
-          CollectionHelper.updateCollection(info, stateCopy, change);
-        });
-
-        return stateCopy;
-      })
-    );
+    return stateCopy;
   }
 }

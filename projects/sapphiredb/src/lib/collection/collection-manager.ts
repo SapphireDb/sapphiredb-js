@@ -1,4 +1,3 @@
-import {CollectionInformationManager} from './collection-information-manager';
 import {CollectionBase} from './collection-base';
 import {DefaultCollection} from './default-collection';
 import {IPrefilter} from './prefilter/iprefilter';
@@ -14,7 +13,6 @@ import {OfflineManager} from '../modules/offline/offline-manager';
 
 export class CollectionManager {
   constructor(private connectionManager: ConnectionManager,
-              private collectionInformation: CollectionInformationManager,
               private classTransformer: SapphireClassTransformer,
               private offlineManager: OfflineManager) {}
 
@@ -31,14 +29,12 @@ export class CollectionManager {
       newCollection = new ReducedCollection<any, any>(
         collectionName,
         this.connectionManager,
-        this.collectionInformation.getCollectionInformation(collectionName),
         this,
         this.offlineManager);
     } else if (newPrefilter instanceof OrderByPrefilter || newPrefilter instanceof ThenOrderByPrefilter) {
       newCollection = new OrderedCollection<any>(
         collectionName,
         this.connectionManager,
-        this.collectionInformation.getCollectionInformation(collectionName,),
         this,
         classType,
         this.classTransformer,
@@ -47,7 +43,6 @@ export class CollectionManager {
       newCollection = new DefaultCollection<any>(
         collectionName,
         this.connectionManager,
-        this.collectionInformation.getCollectionInformation(collectionName),
         this,
         classType,
         this.classTransformer,

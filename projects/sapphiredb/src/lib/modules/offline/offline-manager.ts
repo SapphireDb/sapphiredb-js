@@ -2,8 +2,7 @@ import {SapphireNoopStorage, SapphireStorage} from '../../helper/sapphire-storag
 import {IPrefilter} from '../../collection/prefilter/iprefilter';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject} from 'rxjs';
 import {CollectionHelper} from '../../helper/collection-helper';
-import {filter, map, skip, switchMap, take} from 'rxjs/operators';
-import {InfoResponse} from '../../command/info/info-response';
+import {filter, map, skip, switchMap} from 'rxjs/operators';
 import {CollectionCommandBase} from '../../command/collection-command-base';
 import {ConnectionManager} from '../../connection/connection-manager';
 import {ValidatedResponseBase} from '../../command/validated-response-base';
@@ -19,7 +18,6 @@ import {DeleteRangeCommand} from '../../command/delete-range/delete-range-comman
 import {DeleteResponse} from '../../command/delete-range/delete-range-response';
 
 const CollectionStoragePrefix = 'sapphiredb.collection.';
-const CollectionInformationStoragePrefix = 'sapphiredb.collectioninformation.';
 const CollectionChangeStorage = 'sapphiredb.collectionchanges';
 
 export class OfflineManager {
@@ -67,18 +65,6 @@ export class OfflineManager {
     });
   }
 
-  getCollectionInformation(contextName: string, collectionName: string): Observable<InfoResponse> {
-    const offlineKey = `${CollectionInformationStoragePrefix}${contextName}.${collectionName}`;
-    return this.storage.get(offlineKey).pipe(
-      map(v => !!v ? JSON.parse(v) : null)
-    );
-  }
-
-  setCollectionInformation(contextName: string, collectionName: string, collectionInformation: InfoResponse) {
-    const offlineKey = `${CollectionInformationStoragePrefix}${contextName}.${collectionName}`;
-    this.storage.set(offlineKey, JSON.stringify(collectionInformation));
-  }
-
   getState(contextName: string, collectionName: string, prefilters: IPrefilter<any, any>[]): Observable<any> {
     const offlineKey = `${CollectionStoragePrefix}${contextName}.${collectionName}.${CollectionHelper.getPrefilterHash(prefilters)}`;
     return this.storage.get(offlineKey).pipe(
@@ -102,7 +88,7 @@ export class OfflineManager {
     return this.storage.set(offlineKey, JSON.stringify(state));
   }
 
-  sendCommand(command: CreateRangeCommand|UpdateRangeCommand|DeleteRangeCommand, info$: Observable<InfoResponse>): Observable<any> {
+  sendCommand(command: CreateRangeCommand|UpdateRangeCommand|DeleteRangeCommand): Observable<any> {
     const connectionState: ConnectionState = this.connectionManager.connection.connectionInformation$.value.readyState;
 
     if (connectionState === ConnectionState.connected) {
@@ -133,18 +119,18 @@ export class OfflineManager {
   }
 
   getInterpolatedCollectionValue(contextName: string, collectionName: string, prefilters: IPrefilter<any, any>[], state: any[],
-                                 info$: Observable<InfoResponse>): Observable<any> {
+                                 primaryKeys: string[]): Observable<any> {
     const collectionKey = `${contextName}.${collectionName}`;
 
     return this.changeStorage$.pipe(
-      switchMap((changeStorage) => {
+      map((changeStorage) => {
         if (CollectionHelper.hasAfterQueryPrefilter(prefilters)) {
-          return of(state);
+          return state;
         }
 
         const collectionChanges = changeStorage[collectionKey];
 
-        return CollectionHelper.getInterpolatedCollectionValue(collectionChanges, state, info$);
+        return CollectionHelper.getInterpolatedCollectionValue(collectionChanges, state, primaryKeys);
       }),
     );
   }

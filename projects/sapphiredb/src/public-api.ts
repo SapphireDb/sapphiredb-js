@@ -9,6 +9,7 @@ export * from './lib/helper/action-helper';
 export * from './lib/helper/condition-types';
 export * from './lib/helper/sapphire-class-transformer';
 export * from './lib/helper/sapphire-storage';
+export * from './lib/helper/decorators/primary-key';
 
 export * from './lib/collection/default-collection';
 export * from './lib/collection/ordered-collection';
@@ -19,7 +20,7 @@ export * from './lib/modules/action/action-result';
 export * from './lib/modules/offline/offline-response';
 
 export * from './lib/models/types';
-export * from './lib/models/sapphire-offline-entity';
+export * from './lib/modules/offline/sapphire-offline-entity';
 
 export * from './lib/command/connection/connection-response';
 

@@ -1,5 +1,3 @@
-import {Observable} from 'rxjs';
-import {InfoResponse} from '../command/info/info-response';
 import {WherePrefilter} from './prefilter/where-prefilter';
 import {SkipPrefilter} from './prefilter/skip-prefilter';
 import {TakePrefilter} from './prefilter/take-prefilter';
@@ -22,12 +20,11 @@ import {OfflineManager} from '../modules/offline/offline-manager';
 export class DefaultCollection<T> extends CollectionBase<T, T[]> {
   constructor(collectionName: string,
               connectionManagerService: ConnectionManager,
-              collectionInformation: Observable<InfoResponse>,
               collectionManagerService: CollectionManager,
               classType: ClassType<T>,
               classTransformer: SapphireClassTransformer,
               offlineManager: OfflineManager) {
-    super(collectionName, connectionManagerService, collectionInformation, collectionManagerService, classType, classTransformer, offlineManager);
+    super(collectionName, connectionManagerService, collectionManagerService, classType, classTransformer, offlineManager);
   }
 
   /**
@@ -81,7 +78,8 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
    * @param include The navigation property string (use EF Core Syntax)
    */
   public include(include: string): DefaultCollection<T> {
-    return <any>this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters, new IncludePrefilter(include));
+    return <any>this.collectionManagerService.getCollection(`${this.contextName}.${this.collectionName}`, this.prefilters,
+      new IncludePrefilter(include));
   }
 
   /**

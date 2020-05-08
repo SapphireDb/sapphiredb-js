@@ -16,3 +16,8 @@ export enum SortDirection {
 }
 
 export type ClassType<T> = new (...args: any[]) => T;
+
+export interface PrimaryKeyEntry {
+  type: Function;
+  primaryKeys: string[];
+}

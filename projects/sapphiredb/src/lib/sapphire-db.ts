@@ -3,18 +3,11 @@ import {CollectionManager} from './collection/collection-manager';
 import {ConnectionManager} from './connection/connection-manager';
 import {AuthTokenState, ClassType, ConnectionInformation, ConnectionState} from './models/types';
 import {DefaultCollection} from './collection/default-collection';
-import {EMPTY, Observable, of, ReplaySubject} from 'rxjs';
+import {EMPTY, Observable} from 'rxjs';
 import {ActionResult} from './modules/action/action-result';
-import {ExecuteCommand} from './command/execute/execute-command';
-import {concatMap, filter, map, take, takeWhile} from 'rxjs/operators';
-import {ExecuteResponse, ExecuteResponseType} from './command/execute/execute-response';
+import {map} from 'rxjs/operators';
 import {SapphireDbOptions} from './models/sapphire-db-options';
-import {CollectionInformationManager} from './collection/collection-information-manager';
 import {SapphireClassTransformer} from './helper/sapphire-class-transformer';
-import {InitStreamResponse} from './command/stream/init-stream-response';
-import {StreamCommand} from './command/stream/stream-command';
-import {CompleteStreamCommand} from './command/stream/complete-stream-command';
-import {ResponseBase} from './command/response-base';
 import {SapphireStorage} from './helper/sapphire-storage';
 import {OfflineManager} from './modules/offline/offline-manager';
 import {ExecuteCommandsResponse} from './command/execute-commands/execute-commands-response';
@@ -63,10 +56,7 @@ export class SapphireDb {
       this.offlineManager = new OfflineManager(storage, this.connectionManager);
     }
 
-    const collectionInformation = new CollectionInformationManager(this.connectionManager, this.offlineManager);
-
-    this.collectionManager = new CollectionManager(this.connectionManager, collectionInformation, this.classTransformer,
-      this.offlineManager);
+    this.collectionManager = new CollectionManager(this.connectionManager, this.classTransformer, this.offlineManager);
     this.messaging = new Messaging(this.connectionManager);
   }
 
