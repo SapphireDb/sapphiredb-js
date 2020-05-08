@@ -164,7 +164,7 @@
   <div class="mt-2 border bd-blue" *ngFor="let entry of entries$ | async">
     Id: {{ entry.id }}, Content: {{ entry.content }}<br>
     <div class="m-2 border bd-green">
-      User: {{ entry.user.name }}
+      User: {{ entry.user?.name }}
     </div>
     <div class="text-right-sm p-2">
       <button m4-button class="mr-1" (click)="updateEntry(entry)">Update entry</button>

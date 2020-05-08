@@ -46,15 +46,13 @@ export class IncludeComponent implements OnInit {
   }
 
   updateUser(value: any) {
-    this.userCollection.update({
-      ...value,
+    this.userCollection.update([value, {
       name: 'Updated username'
-    });
+    }]);
   }
 
   updateEntriesThroughUser(user: any) {
-    this.userCollection.update({
-      ...user,
+    this.userCollection.update([user, {
       entries: [
         ...user.entries.map(e => {
           e.content = 'Updated through user';
@@ -64,14 +62,13 @@ export class IncludeComponent implements OnInit {
           content: 'New entry created through user'
         }
       ]
-    });
+    }]);
   }
 
   updateEntry(value: any) {
-    this.entryCollection.update({
-      ...value,
+    this.entryCollection.update([value, {
       content: 'Updated entry content'
-    });
+    }]);
   }
 
   deleteEntry(value: any) {
