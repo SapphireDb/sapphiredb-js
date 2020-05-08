@@ -29,10 +29,9 @@ export class EventsComponent implements OnInit {
   }
 
   update(value: any) {
-    this.collection.update({
-      ...value,
+    this.collection.update([value, {
       content: 'Updated content'
-    });
+    }]);
   }
 
   remove(value: any) {

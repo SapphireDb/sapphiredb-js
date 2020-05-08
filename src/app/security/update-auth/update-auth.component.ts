@@ -40,12 +40,11 @@ export class UpdateAuthComponent implements OnInit {
 
   update(collection$: Observable<DefaultCollection<any>>, value: any) {
     collection$.pipe(take(1)).subscribe(collection => {
-      collection.update({
-        ...value,
+      collection.update([value, {
         requiresUser: 'No',
         customFunction: 'test 123',
         requiresAdmin: 'Updated'
-      });
+      }]);
     });
   }
 
