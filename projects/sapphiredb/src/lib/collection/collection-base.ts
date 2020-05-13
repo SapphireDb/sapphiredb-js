@@ -132,7 +132,7 @@ export abstract class CollectionBase<T, Y> {
 
     this.addToTempChangesStorage(command);
     const subject = new ReplaySubject<CreateRangeResponse|OfflineResponse>();
-    const result = this.offlineManager ? this.offlineManager.sendCommand(command) :
+    const result = this.offlineManager ? this.offlineManager.sendCommand(command, this.primaryKeys) :
       <any>this.connectionManagerService.sendCommand(command);
 
     result.subscribe((response) => {
@@ -167,7 +167,7 @@ export abstract class CollectionBase<T, Y> {
     this.addToTempChangesStorage(command);
 
     const result: Observable<UpdateRangeResponse|OfflineResponse> = this.offlineManager ?
-      this.offlineManager.sendCommand(command) :
+      this.offlineManager.sendCommand(command, this.primaryKeys) :
       <any>this.connectionManagerService.sendCommand(command);
 
     const subject = new ReplaySubject<UpdateRangeResponse|OfflineResponse>();
@@ -209,7 +209,7 @@ export abstract class CollectionBase<T, Y> {
 
     this.addToTempChangesStorage(command);
 
-    const result$ = this.offlineManager ? this.offlineManager.sendCommand(command) :
+    const result$ = this.offlineManager ? this.offlineManager.sendCommand(command, this.primaryKeys) :
       <any>this.connectionManagerService.sendCommand(command);
 
     result$.pipe(

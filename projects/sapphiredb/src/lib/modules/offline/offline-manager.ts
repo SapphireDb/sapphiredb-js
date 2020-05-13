@@ -16,6 +16,7 @@ import {UpdateResponse} from '../../command/update-range/update-range-response';
 import {CreateResponse} from '../../command/create-range/create-range-response';
 import {DeleteRangeCommand} from '../../command/delete-range/delete-range-command';
 import {DeleteResponse} from '../../command/delete-range/delete-range-response';
+import {OfflineHelper} from './offline-helper';
 
 const CollectionStoragePrefix = 'sapphiredb.collection.';
 const CollectionChangeStorage = 'sapphiredb.collectionchanges';
@@ -33,7 +34,7 @@ export class OfflineManager {
       this.storage = new SapphireNoopStorage();
     }
 
-    this.changeStorage$.pipe(skip(2)).subscribe((changes) => {
+    this.changeStorage$.pipe(skip(1)).subscribe((changes) => {
       this.storage.set(CollectionChangeStorage, JSON.stringify(changes));
     });
 
@@ -88,7 +89,7 @@ export class OfflineManager {
     return this.storage.set(offlineKey, JSON.stringify(state));
   }
 
-  sendCommand(command: CreateRangeCommand|UpdateRangeCommand|DeleteRangeCommand): Observable<any> {
+  sendCommand(command: CreateRangeCommand|UpdateRangeCommand|DeleteRangeCommand, primaryKeys: string[]): Observable<any> {
     const connectionState: ConnectionState = this.connectionManager.connection.connectionInformation$.value.readyState;
 
     if (connectionState === ConnectionState.connected) {
@@ -103,7 +104,10 @@ export class OfflineManager {
 
     const collectionChanges = changeStorageValue[command.collectionName];
 
-    collectionChanges.push(command);
+    if (OfflineHelper.handleAddCommand(command, primaryKeys, collectionChanges)) {
+      collectionChanges.push(command);
+    }
+
     this.changeStorage$.next(changeStorageValue);
 
     const results = command.commandType === 'UpdateRangeCommand' ? (<UpdateRangeCommand>command).entries.map(e => e.value)
