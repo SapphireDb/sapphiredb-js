@@ -110,6 +110,10 @@
   </div>
 </app-doc>
 
+<div class="remark info">
+  The value should contain the value and/or at least the primary keys of the object. (Check out <a routerLink="../model-definition">model definition</a> to configure primary keys)
+</div>
+
 <h2>Update data</h2>
 
 <p>You can also update values very easy. Make sure to add the <code>[Updatable]</code>-annotation to the model class or to specific fields to make them updatable.</p>
@@ -161,12 +165,12 @@
 
 <div class="remark info">
   The api for updates tries to keep immutability. You have to provide a tuple.<br>
-  The first value should contain the original value or at least the primary keys of the object.<br>
+  The first value should contain the original value and/or at least the primary keys of the object. (Check out <a routerLink="../model-definition">model definition</a> to configure primary keys)<br>
   The second value should contain the changes to apply.
 </div>
 
 <div class="remark success">
-  All manage methods support inserting ranges. You can easily create, update and delete an array of objects.
+  All manage methods support inserting ranges. You can easily create, update and delete an array of objects.<br>
   You just have to pass it to the methods using the spread array syntax.
 </div>
 

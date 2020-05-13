@@ -15,6 +15,7 @@ import {ClassTransformerComponent} from './class-transformer/class-transformer.c
 import {ModelValidationComponent} from './model-validation/model-validation.component';
 import {OfflineComponent} from './offline/offline.component';
 import {ConflictHandlingComponent} from './conflict-handling/conflict-handling.component';
+import {ModelDefinitionComponent} from './model-definition/model-definition.component';
 
 
 const routes: Routes = [
@@ -33,6 +34,7 @@ const routes: Routes = [
   { path: 'model-validation', component: ModelValidationComponent },
   { path: 'offline', component: OfflineComponent },
   { path: 'conflict-handling', component: ConflictHandlingComponent },
+  { path: 'model-definition', component: ModelDefinitionComponent },
   { path: '', redirectTo: 'query', pathMatch: 'full' }
 ];
 
