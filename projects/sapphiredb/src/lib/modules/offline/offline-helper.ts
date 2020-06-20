@@ -1,10 +1,10 @@
-// @dynamic
 import {UpdateEntry, UpdateRangeCommand} from '../../command/update-range/update-range-command';
 import {CollectionCommandBase} from '../../command/collection-command-base';
 import {FilterFunctions} from '../../helper/filter-functions';
 import {CreateRangeCommand} from '../../command/create-range/create-range-command';
 import {DeleteRangeCommand} from '../../command/delete-range/delete-range-command';
 
+// @dynamic
 export class OfflineHelper {
   static getCommandIndexWithSameValue(filterFunction: (any) => boolean, commands: CollectionCommandBase[]) {
     return commands.findIndex((command: CreateRangeCommand | UpdateRangeCommand | DeleteRangeCommand) => {
