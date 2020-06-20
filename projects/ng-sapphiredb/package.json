@@ -1,6 +1,6 @@
 {
   "name": "ng-sapphiredb",
-  "version": "2.1.3",
+  "version": "2.2.0",
   "description": "Angular client implementation for SapphireDb",
   "peerDependencies": {
     "@angular/common": "~9.0.7",
