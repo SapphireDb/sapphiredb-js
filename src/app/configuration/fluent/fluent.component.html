@@ -10,8 +10,7 @@
 
 <p class="mb-2">
   To use the fluent API you first have to create a class that implements the interface <code>ISapphireModelConfiguration&lt;T&gt;</code>.<br>
-  This class contains a method where you can use the fluent API.<br>
-  The last step is to register the configuration class.
+  This class contains a method where you can use the fluent API.
 </p>
 
 <app-doc [showContent]="false">
@@ -49,11 +48,6 @@
         \t\tmodelBuilder.Property(m => m.Content).MakeNonCreatable();\n
       \t}\n
     }
-
-    \f:(csharp:Startup.cs)
-    services.AddSapphireDb(options)\n
-      \t.AddContext<AuthDemoContext>(cfg => cfg.UseInMemoryDatabase("authDemo"), "authDemo")\n
-      \t.AddModelConfiguration<MessageConfiguration>();
     ]]>
   </div>
 </app-doc>
@@ -106,11 +100,6 @@
         \t\tactionHandlerBuilder.Action("MethodWithParameters").AddActionAuth("requireAdmin");\n
       \t}\n
     }
-
-    \f:(csharp:Startup2.cs)
-    services.AddSapphireDb(options)\n
-    \t.AddContext<AuthDemoContext>(cfg => cfg.UseInMemoryDatabase("authDemo"), "authDemo")\n
-      \t.AddActionHandlerConfiguration<UserActionsConfiguration>();
         ]]>
   </div>
 </app-doc>
