@@ -3,7 +3,7 @@ export enum ConnectionState {
 }
 
 export enum AuthTokenState {
-  valid, error, invalid
+  valid, error, invalid, not_set, validating
 }
 
 export interface ConnectionInformation {

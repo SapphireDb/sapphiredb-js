@@ -12,7 +12,7 @@ import csharp from 'highlight.js/lib/languages/cs';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import { SapphireDbOptions, SapphireClassTransformer, ClassType, SapphireStorage} from 'sapphiredb';
-import { SAPPHIRE_DB_OPTIONS, SapphireDbModule } from 'ng-sapphiredb';
+import {SAPPHIRE_DB_OPTIONS, SAPPHIRE_DB_STARTUP_TOKEN, SapphireDbModule} from 'ng-sapphiredb';
 import {ReactiveFormsModule} from '@angular/forms';
 import {environment} from '../environments/environment';
 import {HighlightModule} from 'ngx-highlightjs';
@@ -82,7 +82,8 @@ export class CustomClassTransformer extends SapphireClassTransformer {
   providers: [
     { provide: SAPPHIRE_DB_OPTIONS, useFactory: createRealtimeOptions },
     { provide: SapphireClassTransformer, useClass: CustomClassTransformer },
-    { provide: SapphireStorage, useClass: SapphireLocalStorage }
+    { provide: SapphireStorage, useClass: SapphireLocalStorage },
+    // { provide: SAPPHIRE_DB_STARTUP_TOKEN, useValue: 'test123' }
   ],
   bootstrap: [AppComponent]
 })

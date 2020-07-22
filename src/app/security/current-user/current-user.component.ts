@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { SapphireDbService } from 'ng-sapphiredb';
+import {Component, OnInit} from '@angular/core';
+import {SapphireDbService} from 'ng-sapphiredb';
 import {UserStateService} from '../user-state.service';
 import {Observable} from 'rxjs';
 

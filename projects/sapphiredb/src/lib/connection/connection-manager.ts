@@ -6,27 +6,26 @@ import {UnsubscribeCommand} from '../command/unsubscribe/unsubscribe-command';
 import {UnsubscribeMessageCommand} from '../command/unsubscribe-message/unsubscribe-message-command';
 import {SubscribeCommand} from '../command/subscribe/subscribe-command';
 import {SubscribeMessageCommand} from '../command/subscribe-message/subscribe-message-command';
-import {from, Observable, of, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
 import {ResponseBase} from '../command/response-base';
-import {catchError, filter, finalize, map, share, shareReplay, take} from 'rxjs/operators';
+import {filter, finalize, share, switchMap, take} from 'rxjs/operators';
 import {MessageResponse} from '../command/message/message-response';
 import {WebsocketConnection} from './websocket-connection';
 import {SseConnection} from './sse-connection';
 import {PollConnection} from './poll-connection';
 import {AuthTokenState, ConnectionState} from '../models/types';
 import {SubscribeCommandInfo} from '../models/subscribe-command-info';
-import {AxiosResponse, default as axios} from 'axios';
+import {AuthTokenHelper} from '../helper/auth-token-helper';
 
 export class ConnectionManager {
-  private authToken?: string;
   public connection: ConnectionBase;
-
-  private storedCommandStorage: SubscribeCommandInfo[] = [];
-
-  private commandReferences: CommandReferences = {};
   public serverMessageHandler = new ReplaySubject<MessageResponse>(1);
+  public authTokenState$ = new BehaviorSubject<AuthTokenState>(AuthTokenState.not_set);
+  private authToken?: string;
+  private storedCommandStorage: SubscribeCommandInfo[] = [];
+  private commandReferences: CommandReferences = {};
 
-  constructor(private options: SapphireDbOptions, private responseActionInterceptor: (executeCode: () => void) => void) {
+  constructor(private options: SapphireDbOptions, private responseActionInterceptor: (executeCode: () => void) => void, private startupToken: string) {
     if (this.options.connectionType === 'sse' && typeof EventSource !== 'undefined') {
       this.connection = new SseConnection();
     } else if (this.options.connectionType === 'websocket' && typeof WebSocket !== 'undefined') {
@@ -60,8 +59,93 @@ export class ConnectionManager {
         });
       };
 
-      this.connection.setData(this.options);
+      if (this.startupToken) {
+        this.authTokenState$.next(AuthTokenState.validating);
+        AuthTokenHelper.validateAuthToken$(this.startupToken, this.options).pipe(take(1)).subscribe((result) => {
+          if (result === AuthTokenState.valid) {
+            this.connection.setData(this.options, this.startupToken);
+            this.authTokenState$.next(AuthTokenState.valid);
+          } else {
+            this.connection.setData(this.options);
+            this.authTokenState$.next(AuthTokenState.not_set);
+          }
+        });
+      } else {
+        this.connection.setData(this.options, this.startupToken);
+      }
     }
+  }
+
+  public sendCommand(command: CommandBase, keep?: boolean, onlySend?: boolean): Observable<ResponseBase> {
+    return this.authTokenState$.pipe(
+      filter(authTokenState => authTokenState !== AuthTokenState.validating),
+      take(1),
+      switchMap(() => {
+        const storedCommand = this.storeSubscribeCommands(command);
+
+        // Only try to send stored command if connected, because all commands are cached until they are sent
+        if (!storedCommand || this.connection.connectionInformation$.value.readyState === ConnectionState.connected) {
+          this.connection.send(command, storedCommand);
+        }
+
+        if (onlySend === true) {
+          return of(null);
+        }
+
+        const referenceSubject = new ReplaySubject<ResponseBase>(1);
+
+        this.commandReferences[command.referenceId] = {subject$: referenceSubject, keep: keep};
+        return referenceSubject.asObservable().pipe(
+          finalize(() => {
+            referenceSubject.complete();
+            referenceSubject.unsubscribe();
+            delete this.commandReferences[command.referenceId];
+          }),
+          share()
+        );
+      })
+    );
+  }
+
+  public setAuthToken(authToken?: string): Observable<AuthTokenState> {
+    if (!!authToken) {
+      this.authTokenState$.next(AuthTokenState.validating);
+
+      const authTokenResult$ = AuthTokenHelper.validateAuthToken$(authToken, this.options);
+
+      authTokenResult$.pipe(
+        take(1)
+      ).subscribe(result => {
+        if (result === AuthTokenState.valid) {
+          this.authToken = authToken;
+          this.connection.setData(this.options, this.authToken);
+          this.authTokenState$.next(AuthTokenState.valid);
+        } else {
+          if (!!this.authToken) {
+            this.connection.setData(this.options);
+            this.authTokenState$.next(AuthTokenState.not_set);
+          }
+        }
+      });
+
+      return authTokenResult$;
+    } else {
+      if (!!this.authToken) {
+        this.connection.setData(this.options);
+        this.authTokenState$.next(AuthTokenState.not_set);
+      }
+    }
+
+    return this.authTokenState$.asObservable();
+  }
+
+  public reset() {
+    this.storedCommandStorage = [];
+    this.connection.setData(this.options, null);
+  }
+
+  public getConnectionId(): string | null {
+    return this.connection.connectionInformation$.value.connectionId;
   }
 
   private storeSubscribeCommands(command: CommandBase): boolean {
@@ -81,31 +165,6 @@ export class ConnectionManager {
     }
 
     return false;
-  }
-
-  public sendCommand(command: CommandBase, keep?: boolean, onlySend?: boolean): Observable<ResponseBase> {
-    const storedCommand = this.storeSubscribeCommands(command);
-
-    // Only try to send stored command if connected, because all commands are cached until they are sent
-    if (!storedCommand || this.connection.connectionInformation$.value.readyState === ConnectionState.connected) {
-      this.connection.send(command, storedCommand);
-    }
-
-    if (onlySend === true) {
-      return of(null);
-    }
-
-    const referenceSubject = new ReplaySubject<ResponseBase>(1);
-
-    this.commandReferences[command.referenceId] = {subject$: referenceSubject, keep: keep};
-    return referenceSubject.asObservable().pipe(
-      finalize(() => {
-        referenceSubject.complete();
-        referenceSubject.unsubscribe();
-        delete this.commandReferences[command.referenceId];
-      }),
-      share()
-    );
   }
 
   private handleMessageResponse(response: MessageResponse) {
@@ -151,56 +210,5 @@ export class ConnectionManager {
         }
       }
     }
-  }
-
-  public setAuthToken(authToken?: string): Observable<AuthTokenState> {
-    if (!!authToken) {
-      const authTokenResult$ = this.validateAuthToken$(authToken);
-
-      authTokenResult$.pipe(take(1)).subscribe(result => {
-        if (result === AuthTokenState.valid) {
-          this.authToken = authToken;
-          this.connection.setData(this.options, this.authToken);
-        }
-      });
-
-      return authTokenResult$;
-    } else {
-      if (!!this.authToken) {
-        this.connection.setData(this.options);
-      }
-    }
-
-    return of(AuthTokenState.valid);
-  }
-
-  public reset() {
-    this.storedCommandStorage = [];
-    this.connection.setData(this.options, null);
-  }
-
-  private validateAuthToken$(authToken: string): Observable<AuthTokenState> {
-    const checkAuthTokenUrl = `${this.options.useSsl ? 'https' : 'http'}://${this.options.serverBaseUrl}/sapphire/authToken`;
-
-    return from(axios.post(checkAuthTokenUrl, null, {
-      headers: {
-        Authorization: `Bearer ${authToken}`
-      }
-    })).pipe(
-      map((response: AxiosResponse<boolean>) => response.data),
-      map((authTokenValid: boolean) => authTokenValid ? AuthTokenState.valid : AuthTokenState.invalid),
-      catchError(error => {
-        if (error.status === 401) {
-          return of(AuthTokenState.invalid);
-        }
-
-        return of(AuthTokenState.error);
-      }),
-      shareReplay()
-    );
-  }
-
-  public getConnectionId(): string|null {
-    return this.connection.connectionInformation$.value.connectionId;
   }
 }

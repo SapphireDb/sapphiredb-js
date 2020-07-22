@@ -26,7 +26,8 @@ export class SapphireDb {
   constructor(private options?: SapphireDbOptions,
               private storage?: SapphireStorage,
               private classTransformer?: SapphireClassTransformer,
-              private responseActionInterceptor?: (executeCode: () => void) => void) {
+              private responseActionInterceptor?: (executeCode: () => void) => void,
+              private startupToken?: string) {
     const windowDefined = typeof window !== 'undefined';
 
     if (this.options.serverBaseUrl == null && windowDefined) {
@@ -50,7 +51,7 @@ export class SapphireDb {
       this.responseActionInterceptor = (executeCode: () => void) => executeCode();
     }
 
-    this.connectionManager = new ConnectionManager(this.options, this.responseActionInterceptor);
+    this.connectionManager = new ConnectionManager(this.options, this.responseActionInterceptor, this.startupToken);
 
     if (this.options.offlineSupport) {
       this.offlineManager = new OfflineManager(storage, this.connectionManager);
@@ -101,6 +102,13 @@ export class SapphireDb {
    */
   public setAuthToken(authToken?: string): Observable<AuthTokenState> {
     return this.connectionManager.setAuthToken(authToken);
+  }
+
+  /**
+   * Returns the current auth token state
+   */
+  public getAuthTokenState$(): Observable<AuthTokenState> {
+    return this.connectionManager.authTokenState$.asObservable();
   }
 
   /**

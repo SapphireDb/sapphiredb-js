@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {AuthTokenState} from 'sapphiredb';
-import { SapphireDbService } from 'ng-sapphiredb';
+import {SapphireDbService} from 'ng-sapphiredb';
 import {BehaviorSubject} from 'rxjs';
 import {take} from 'rxjs/operators';
 
