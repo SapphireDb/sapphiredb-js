@@ -53,3 +53,38 @@
   You can authenticate the client using any method you like. <br>
   After obtaining a token you want to use for authentication pass it to sapphiredb by calling: <code>this.db.setAuthToken(AuthToken)</code>
 </p>
+
+<h3>Get auth state</h3>
+
+<p>
+  You can get the current state of authentication by calling: <code>this.db.getAuthTokenState()</code>
+</p>
+
+<h3>Define token on startup</h3>
+
+<p>If you want to use a token that is stored anywhere else and use it on startup you can pass it as a parameter during configuration of SapphireDb</p>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(typescript:JS)
+    var sapphiredb = require('sapphiredb');\n\n
+
+    var db = new sapphiredb.SapphireDb(<options>, <storage>, <class-transformer>, <reponse-action-interceptor>, <auth-token>);
+
+    \f:(typescript:Angular)
+    @NgModule({\n
+      \timports: [\n
+        \t\tSapphireDbModule\n
+      \t],\n
+      \tproviders: [\n
+        \t\t{\n
+    \t\t\tprovide: SAPPHIRE_DB_STARTUP_TOKEN,\n
+    \t\t\tuseValue: <auth-token>\n
+      \t],\n
+      })\n
+  export class AppModule {}
+      ]]>
+    </div>
+
+  </app-doc>

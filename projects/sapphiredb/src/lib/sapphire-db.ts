@@ -107,7 +107,7 @@ export class SapphireDb {
   /**
    * Returns the current auth token state
    */
-  public getAuthTokenState$(): Observable<AuthTokenState> {
+  public getAuthTokenState(): Observable<AuthTokenState> {
     return this.connectionManager.authTokenState$.asObservable();
   }
 
