@@ -85,7 +85,7 @@ export class ConnectionManager {
             this.authTokenState$.next(AuthTokenState.valid);
           } else {
             this.connection.setData(this.options);
-            this.authTokenState$.next(AuthTokenState.not_set);
+            this.authTokenState$.next(result);
           }
         });
       } else {
