@@ -18,7 +18,7 @@
 </p>
 
 <h3>Configure DbContext</h3>
-<p>You now have to change your DbContext to derive from <code>SapphireDbContext</code>. Also make sure to adjust the constructor parameters.</p>
+<p>You now have to change your DbContext to derive from <code>SapphireDbContext</code>.</p>
 
 <app-doc [showContent]="false">
   <div lang>
@@ -27,8 +27,7 @@
     // Change DbContext to SapphireDbContext\n
     public class MyDbContext : SapphireDbContext\n
     {\n
-      \t//Add SapphireDatabaseNotifier for DI\n
-      \tpublic MyDbContext(DbContextOptions<MyDbContext> options, SapphireDatabaseNotifier notifier) : base(options, notifier)\n
+      \tpublic MyDbContext(DbContextOptions<MyDbContext> options) : base(options)\n
       \t{\n\n
 
       \t}\n\n
