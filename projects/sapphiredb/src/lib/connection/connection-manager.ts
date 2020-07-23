@@ -26,6 +26,8 @@ export class ConnectionManager {
   private commandReferences: CommandReferences = {};
 
   constructor(private options: SapphireDbOptions, private responseActionInterceptor: (executeCode: () => void) => void, private startupToken: string) {
+    this.authToken = this.startupToken;
+
     if (this.options.connectionType === 'sse' && typeof EventSource !== 'undefined') {
       this.connection = new SseConnection();
     } else if (this.options.connectionType === 'websocket' && typeof WebSocket !== 'undefined') {
@@ -43,6 +45,11 @@ export class ConnectionManager {
     if (this.connection) {
       this.connection.checkAuthToken = () => {
         if (!this.authToken) {
+          if (this.authTokenState$.value === AuthTokenState.invalid) {
+            return of(AuthTokenState.invalid);
+          }
+
+          this.authTokenState$.next(AuthTokenState.not_set);
           return of(AuthTokenState.not_set);
         }
 
@@ -104,20 +111,7 @@ export class ConnectionManager {
         });
       };
 
-      if (this.startupToken) {
-        this.authTokenState$.next(AuthTokenState.validating);
-        AuthTokenHelper.validateAuthToken$(this.startupToken, this.options).pipe(take(1)).subscribe((result) => {
-          if (result === AuthTokenState.valid) {
-            this.connection.setData(this.options, this.startupToken);
-            this.authTokenState$.next(AuthTokenState.valid);
-          } else {
-            this.connection.setData(this.options);
-            this.authTokenState$.next(result);
-          }
-        });
-      } else {
-        this.connection.setData(this.options, this.startupToken);
-      }
+      this.connection.setData(this.options, this.startupToken);
     }
   }
 
