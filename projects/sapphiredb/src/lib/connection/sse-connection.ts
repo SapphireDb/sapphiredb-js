@@ -26,27 +26,29 @@ export class SseConnection extends ConnectionBase {
     if (this.connectionInformation$.value.readyState === ConnectionState.disconnected) {
       this.updateConnectionInformation(ConnectionState.connecting);
 
-      this.eventSource = new EventSource(this.sseConnectionString);
+      this.checkAuthToken().pipe(take(1)).subscribe(() => {
+        this.eventSource = new EventSource(this.sseConnectionString);
 
-      this.eventSource.onmessage = (messageEvent) => {
-        const message: ResponseBase = JSON.parse(messageEvent.data);
+        this.eventSource.onmessage = (messageEvent) => {
+          const message: ResponseBase = JSON.parse(messageEvent.data);
 
-        if (message.responseType === 'ConnectionResponse') {
-          const connectionData = <ConnectionResponse>message;
-          this.headers.connectionId = connectionData.connectionId;
-          this.updateConnectionInformation(ConnectionState.connected, connectionData.connectionId);
-        } else {
-          this.messageHandler(message);
-        }
-      };
+          if (message.responseType === 'ConnectionResponse') {
+            const connectionData = <ConnectionResponse>message;
+            this.headers.connectionId = connectionData.connectionId;
+            this.updateConnectionInformation(ConnectionState.connected, connectionData.connectionId);
+          } else {
+            this.messageHandler(message);
+          }
+        };
 
-      this.eventSource.onerror = (error) => {
-        this.updateConnectionInformation(ConnectionState.disconnected);
+        this.eventSource.onerror = (error) => {
+          this.updateConnectionInformation(ConnectionState.disconnected);
 
-        setTimeout(() => {
-          this.connect();
-        }, 1000);
-      };
+          setTimeout(() => {
+            this.connect();
+          }, 1000);
+        };
+      });
     }
   }
 

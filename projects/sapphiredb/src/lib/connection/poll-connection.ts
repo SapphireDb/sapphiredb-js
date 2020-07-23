@@ -24,20 +24,22 @@ export class PollConnection extends ConnectionBase {
     if (this.connectionInformation$.value.readyState === ConnectionState.disconnected) {
       this.updateConnectionInformation(ConnectionState.connecting);
 
-      const connectionString = `${this.pollConnectionString}/init`;
+      this.checkAuthToken().pipe(take(1)).subscribe(() => {
+        const connectionString = `${this.pollConnectionString}/init`;
 
-      axios.get(connectionString, {
-        headers: this.headers
-      }).then((axiosResponse: AxiosResponse<ConnectionResponse>) => {
-        this.headers.connectionId = axiosResponse.data.connectionId;
-        this.updateConnectionInformation(ConnectionState.connected, axiosResponse.data.connectionId);
-        this.startPolling();
-      }, (error) => {
-        this.updateConnectionInformation(ConnectionState.disconnected);
+        axios.get(connectionString, {
+          headers: this.headers
+        }).then((axiosResponse: AxiosResponse<ConnectionResponse>) => {
+          this.headers.connectionId = axiosResponse.data.connectionId;
+          this.updateConnectionInformation(ConnectionState.connected, axiosResponse.data.connectionId);
+          this.startPolling();
+        }, (error) => {
+          this.updateConnectionInformation(ConnectionState.disconnected);
 
-        setTimeout(() => {
-          this.connect();
-        }, 1000);
+          setTimeout(() => {
+            this.connect();
+          }, 1000);
+        });
       });
     }
 
