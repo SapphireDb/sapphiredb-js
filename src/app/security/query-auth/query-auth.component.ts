@@ -75,10 +75,12 @@ export class QueryAuthComponent implements OnInit {
 
   update(collection$: Observable<DefaultCollection<any>>, value: any) {
     collection$.pipe(take(1)).subscribe(collection => {
-      collection.update({
-        ...value,
-        content: 'Updated content'
-      });
+      collection.update([
+        value,
+        {
+          content: 'Updated content'
+        }
+      ]);
     });
   }
 
