@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs';
 import {SubscribeMessageCommand} from '../../command/subscribe-message/subscribe-message-command';
-import {finalize, map, publishReplay, refCount, shareReplay} from 'rxjs/operators';
+import {finalize, map, publishReplay, refCount} from 'rxjs/operators';
 import {TopicResponse} from '../../command/subscribe-message/topic-response';
 import {UnsubscribeMessageCommand} from '../../command/unsubscribe-message/unsubscribe-message-command';
 import {PublishCommand} from '../../command/publish/publish-command';

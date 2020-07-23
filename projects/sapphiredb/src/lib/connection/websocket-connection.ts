@@ -11,6 +11,8 @@ export class WebsocketConnection extends ConnectionBase {
   private socketConnectionString: string;
   private socket: WebSocket;
 
+  private closeForced = false;
+
   private connect() {
     if (this.connectionInformation$.value.readyState === ConnectionState.disconnected) {
       this.updateConnectionInformation(ConnectionState.connecting);
@@ -29,6 +31,11 @@ export class WebsocketConnection extends ConnectionBase {
         };
 
         this.socket.onclose = () => {
+          if (this.closeForced) {
+            this.closeForced = false;
+            return;
+          }
+
           this.updateConnectionInformation(ConnectionState.disconnected);
 
           setTimeout(() => {
@@ -67,6 +74,7 @@ export class WebsocketConnection extends ConnectionBase {
     this.updateConnectionInformation(ConnectionState.disconnected);
 
     if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
+      this.closeForced = true;
       this.socket.close();
     }
 
