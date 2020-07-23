@@ -41,16 +41,34 @@ export class ConnectionManager {
     }
 
     if (this.connection) {
-      this.connection.connectionInformation$.pipe(
-        filter((connectionInformation) => connectionInformation.readyState === ConnectionState.connected)
-      ).subscribe(() => {
-        this.responseActionInterceptor(() => {
-          this.storedCommandStorage.forEach(cmd => {
-            if (!cmd.sendWithAuthToken || !!this.authToken) {
-              this.connection.send(cmd.command, true);
+      this.connection.connectionInformation$.subscribe((connectionInformation) => {
+        if (connectionInformation.readyState === ConnectionState.connected) {
+          this.responseActionInterceptor(() => {
+            this.storedCommandStorage.forEach(cmd => {
+              if (!cmd.sendWithAuthToken || !!this.authToken) {
+                this.connection.send(cmd.command, true);
+              }
+            });
+          });
+        }
+
+        if (connectionInformation.readyState === ConnectionState.disconnected) {
+          Object.keys(this.commandReferences).forEach(key => {
+            if (!this.storedCommandStorage.find(command => command.command.referenceId === key)) {
+              const commandReference = this.commandReferences[key];
+
+              try {
+                commandReference.subject$.error('Connection lost during execution');
+                commandReference.subject$.complete();
+                commandReference.subject$.unsubscribe();
+              } catch (ignored) {
+                // Ignored. Throws unwanted exception when no subscriber
+              }
+
+              delete this.commandReferences[key];
             }
           });
-        });
+        }
       });
 
       this.connection.messageHandler = (message) => {
@@ -177,7 +195,7 @@ export class ConnectionManager {
 
   private handleResponse(response: ResponseBase) {
     if (response.responseType === 'WrongApiResponse') {
-      throw new Error('Wrong API key or secret');
+      throw new Error('Wrong api key or secret');
     } else if (response.responseType === 'MessageResponse') {
       this.handleMessageResponse(<MessageResponse>response);
     } else {
