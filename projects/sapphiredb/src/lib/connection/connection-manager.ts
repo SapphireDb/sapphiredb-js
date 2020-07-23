@@ -6,7 +6,7 @@ import {UnsubscribeCommand} from '../command/unsubscribe/unsubscribe-command';
 import {UnsubscribeMessageCommand} from '../command/unsubscribe-message/unsubscribe-message-command';
 import {SubscribeCommand} from '../command/subscribe/subscribe-command';
 import {SubscribeMessageCommand} from '../command/subscribe-message/subscribe-message-command';
-import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject, timer} from 'rxjs';
 import {ResponseBase} from '../command/response-base';
 import {filter, finalize, share, switchMap, take} from 'rxjs/operators';
 import {MessageResponse} from '../command/message/message-response';
@@ -41,6 +41,31 @@ export class ConnectionManager {
     }
 
     if (this.connection) {
+      this.connection.checkAuthToken = () => {
+        if (!this.authToken) {
+          return of(AuthTokenState.not_set);
+        }
+
+        this.authTokenState$.next(AuthTokenState.validating);
+
+        return AuthTokenHelper.validateAuthToken$(this.authToken, this.options).pipe(
+          switchMap(result => {
+            if (result === AuthTokenState.valid) {
+              this.authTokenState$.next(AuthTokenState.valid);
+              return of(AuthTokenState.valid);
+            } else if (result === AuthTokenState.invalid) {
+              this.authTokenState$.next(AuthTokenState.invalid);
+              this.setAuthToken();
+              return of(AuthTokenState.invalid);
+            } else if (result === AuthTokenState.error) {
+              return timer(1000).pipe(
+                switchMap(() => this.connection.checkAuthToken())
+              );
+            }
+          })
+        );
+      };
+
       this.connection.connectionInformation$.subscribe((connectionInformation) => {
         if (connectionInformation.readyState === ConnectionState.connected) {
           this.responseActionInterceptor(() => {
@@ -126,33 +151,34 @@ export class ConnectionManager {
   }
 
   public setAuthToken(authToken?: string): Observable<AuthTokenState> {
-    if (!!authToken) {
-      this.authTokenState$.next(AuthTokenState.validating);
+    // if (!!authToken) {
+    //   this.authTokenState$.next(AuthTokenState.validating);
+    //
+    //   const authTokenResult$ = AuthTokenHelper.validateAuthToken$(authToken, this.options);
+    //
+    //   authTokenResult$.pipe(
+    //     take(1)
+    //   ).subscribe(result => {
+    //     if (result === AuthTokenState.valid) {
+    //       this.authToken = authToken;
+    //       this.connection.setData(this.options, this.authToken);
+    //       this.authTokenState$.next(AuthTokenState.valid);
+    //     } else {
+    //       if (!!this.authToken) {
+    //         this.connection.setData(this.options);
+    //         this.authTokenState$.next(AuthTokenState.not_set);
+    //       }
+    //     }
+    //   });
+    // } else {
+    //   if (!!this.authToken) {
+    //     this.connection.setData(this.options);
+    //     this.authTokenState$.next(AuthTokenState.not_set);
+    //   }
+    // }
 
-      const authTokenResult$ = AuthTokenHelper.validateAuthToken$(authToken, this.options);
-
-      authTokenResult$.pipe(
-        take(1)
-      ).subscribe(result => {
-        if (result === AuthTokenState.valid) {
-          this.authToken = authToken;
-          this.connection.setData(this.options, this.authToken);
-          this.authTokenState$.next(AuthTokenState.valid);
-        } else {
-          if (!!this.authToken) {
-            this.connection.setData(this.options);
-            this.authTokenState$.next(AuthTokenState.not_set);
-          }
-        }
-      });
-
-      return authTokenResult$;
-    } else {
-      if (!!this.authToken) {
-        this.connection.setData(this.options);
-        this.authTokenState$.next(AuthTokenState.not_set);
-      }
-    }
+    this.authToken = authToken;
+    this.connection.setData(this.options, authToken);
 
     return this.authTokenState$.asObservable();
   }

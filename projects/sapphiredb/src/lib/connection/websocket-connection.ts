@@ -15,29 +15,31 @@ export class WebsocketConnection extends ConnectionBase {
     if (this.connectionInformation$.value.readyState === ConnectionState.disconnected) {
       this.updateConnectionInformation(ConnectionState.connecting);
 
-      this.socket = new WebSocket(this.socketConnectionString);
+      this.checkAuthToken().pipe(take(1)).subscribe(() => {
+        this.socket = new WebSocket(this.socketConnectionString);
 
-      this.socket.onmessage = (msg: MessageEvent) => {
-        const message: ResponseBase = JSON.parse(msg.data);
-        if (message.responseType === 'ConnectionResponse') {
-          const connectionResponse = <ConnectionResponse>message;
-          this.updateConnectionInformation(ConnectionState.connected, connectionResponse.connectionId);
-        } else {
-          this.messageHandler(message);
-        }
-      };
+        this.socket.onmessage = (msg: MessageEvent) => {
+          const message: ResponseBase = JSON.parse(msg.data);
+          if (message.responseType === 'ConnectionResponse') {
+            const connectionResponse = <ConnectionResponse>message;
+            this.updateConnectionInformation(ConnectionState.connected, connectionResponse.connectionId);
+          } else {
+            this.messageHandler(message);
+          }
+        };
 
-      this.socket.onclose = () => {
-        this.updateConnectionInformation(ConnectionState.disconnected);
+        this.socket.onclose = () => {
+          this.updateConnectionInformation(ConnectionState.disconnected);
 
-        setTimeout(() => {
-          this.connect();
-        }, 1000);
-      };
+          setTimeout(() => {
+            this.connect();
+          }, 1000);
+        };
 
-      this.socket.onerror = () => {
-        this.socket.close();
-      };
+        this.socket.onerror = () => {
+          this.socket.close();
+        };
+      });
     }
   }
 

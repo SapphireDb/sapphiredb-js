@@ -1,7 +1,7 @@
 import {from, Observable, of} from 'rxjs';
 import {AuthTokenState} from '../models/types';
 import {AxiosResponse, default as axios} from 'axios';
-import {catchError, map, shareReplay} from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 import {SapphireDbOptions} from '../models/sapphire-db-options';
 
 export class AuthTokenHelper {
@@ -21,8 +21,7 @@ export class AuthTokenHelper {
         }
 
         return of(AuthTokenState.error);
-      }),
-      shareReplay()
+      })
     );
   }
 }
