@@ -31,7 +31,10 @@
             "styles": [
               "src/styles.less"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "metro4", "axios", "marked", "highlight.js/lib/highlight.js", "class-transformer", "@angularclass/hmr"
+            ]
           },
           "configurations": {
             "production": {
