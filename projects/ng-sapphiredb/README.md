@@ -74,11 +74,15 @@ imports: [
 
 Check out the documentation for more details: [Documentation](https://sapphire-db.com/)
 
-## Implementations
+## Implementations/Packages
 
 ### Server
 
 [SapphireDb - Server for Asp.Net Core](https://github.com/morrisjdev/SapphireDb)
+
+[SapphireDb.RedisSync](https://github.com/SapphireDb/SapphireDb/tree/master/SapphireDb.RedisSync)
+
+[SapphireDb.HttpSync](https://github.com/SapphireDb/SapphireDb/tree/master/SapphireDb.HttpSync)
 
 ### Client
 
