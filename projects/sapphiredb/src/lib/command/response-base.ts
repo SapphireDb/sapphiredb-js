@@ -1,8 +1,8 @@
-import {SapphireDbError} from '../models/sapphire-db-error';
+import {SapphireDbErrorResponse} from './sapphire-db-error-response';
 
 export interface ResponseBase {
   responseType: string;
   referenceId: string;
-  error?: SapphireDbError;
+  error?: SapphireDbErrorResponse;
   timestamp: Date;
 }
