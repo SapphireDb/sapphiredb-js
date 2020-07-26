@@ -124,7 +124,7 @@
           "options": {
             "outputPath": "dist/docs-client",
             "main": "server.ts",
-            "tsConfig": "tsconfig.server.json",
+            "tsConfig": "tsconfig.server.json"
           },
           "configurations": {
             "production": {
