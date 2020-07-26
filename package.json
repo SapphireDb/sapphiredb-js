@@ -9,8 +9,9 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "browser-sync": "browser-sync start --proxy \"localhost:5000\"",
-    "build-sapphiredb": "npm run build -- sapphiredb --configuration=production",
-    "build-ng-sapphiredb": "npm run build -- ng-sapphiredb --configuration=production",
+    "build-sapphiredb": "npm run build -- sapphiredb",
+    "build-ng-sapphiredb": "npm run build -- ng-sapphiredb",
+    "build-packages-publish": "npm run build-sapphiredb -- --configuration=production && npm run build-ng-sapphiredb -- --configuration=production",
     "build-packages": "npm run build-sapphiredb && npm run build-ng-sapphiredb",
     "build-client": "ng run docs-client:server --configuration=production && npm run build -- --prod",
     "publish": "npm run build-packages && npm run build-client"
