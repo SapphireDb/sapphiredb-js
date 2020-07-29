@@ -116,7 +116,7 @@ export abstract class CollectionBase<T, Y> {
         map((response) => <QueryResponse | ChangeResponse | ChangesResponse>response),
         finalize(() => {
           this.connectionManagerService.sendCommand(
-            new UnsubscribeCommand(this.collectionName, subscribeCommand.referenceId), false, true);
+            new UnsubscribeCommand(subscribeCommand.referenceId), false, true);
         }),
         share()
       );
@@ -285,7 +285,7 @@ export abstract class CollectionBase<T, Y> {
       RxjsHelper.startWithObservable(startWithValue$),
       finalize(() => {
         this.connectionManagerService.sendCommand(
-          new UnsubscribeCommand(this.collectionName, collectionValue.referenceId), false, true);
+          new UnsubscribeCommand(collectionValue.referenceId), false, true);
         collectionValue.socketSubscription.unsubscribe();
         this.collectionObservable$ = undefined;
       }),

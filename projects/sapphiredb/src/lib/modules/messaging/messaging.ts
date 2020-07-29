@@ -35,7 +35,7 @@ export class Messaging {
       const subscribeCommand = new SubscribeMessageCommand(topic);
       this.topicSubscriptions[topic] = this.connectionManagerService.sendCommand(subscribeCommand, true).pipe(
         finalize(() => {
-          this.connectionManagerService.sendCommand(new UnsubscribeMessageCommand(topic, subscribeCommand.referenceId), false, true);
+          this.connectionManagerService.sendCommand(new UnsubscribeMessageCommand(subscribeCommand.referenceId), false, true);
           delete this.topicSubscriptions[topic];
         }),
         publishReplay(1),

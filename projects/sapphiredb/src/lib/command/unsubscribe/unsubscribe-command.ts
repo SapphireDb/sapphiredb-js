@@ -1,8 +1,8 @@
-import {CollectionCommandBase} from '../collection-command-base';
+import {CommandBase} from '../command-base';
 
-export class UnsubscribeCommand extends CollectionCommandBase {
-  constructor(collectionName: string, referenceId: string) {
-    super('UnsubscribeCommand', collectionName);
+export class UnsubscribeCommand extends CommandBase {
+  constructor(referenceId: string) {
+    super('UnsubscribeCommand');
     this.referenceId = referenceId;
   }
 }
