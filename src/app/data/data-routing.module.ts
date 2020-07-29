@@ -16,6 +16,7 @@ import {ModelValidationComponent} from './model-validation/model-validation.comp
 import {OfflineComponent} from './offline/offline.component';
 import {ConflictHandlingComponent} from './conflict-handling/conflict-handling.component';
 import {ModelDefinitionComponent} from './model-definition/model-definition.component';
+import {ServerSideQueryComponent} from './server-side-query/server-side-query.component';
 
 
 const routes: Routes = [
@@ -35,6 +36,7 @@ const routes: Routes = [
   { path: 'offline', component: OfflineComponent },
   { path: 'conflict-handling', component: ConflictHandlingComponent },
   { path: 'model-definition', component: ModelDefinitionComponent },
+  { path: 'server-side-query', component: ServerSideQueryComponent },
   { path: '', redirectTo: 'query', pathMatch: 'full' }
 ];
 

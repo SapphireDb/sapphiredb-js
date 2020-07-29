@@ -18,10 +18,11 @@ import { ModelValidationComponent } from './model-validation/model-validation.co
 import { OfflineComponent } from './offline/offline.component';
 import { ConflictHandlingComponent } from './conflict-handling/conflict-handling.component';
 import { ModelDefinitionComponent } from './model-definition/model-definition.component';
+import { ServerSideQueryComponent } from './server-side-query/server-side-query.component';
 
 
 @NgModule({
-  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent, EventsComponent, ChangesComponent, IncludeComponent, ClassTransformerComponent, ModelValidationComponent, OfflineComponent, ConflictHandlingComponent, ModelDefinitionComponent],
+  declarations: [QueryComponent, ManageComponent, PrefilterComponent, WhereComponent, OrderComponent, LimitComponent, SelectComponent, CountComponent, EventsComponent, ChangesComponent, IncludeComponent, ClassTransformerComponent, ModelValidationComponent, OfflineComponent, ConflictHandlingComponent, ModelDefinitionComponent, ServerSideQueryComponent],
   imports: [
     SharedModule,
     DataRoutingModule

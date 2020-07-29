@@ -12,6 +12,7 @@ import {SapphireStorage} from './helper/sapphire-storage';
 import {OfflineManager} from './modules/offline/offline-manager';
 import {ExecuteCommandsResponse} from './command/execute-commands/execute-commands-response';
 import {ActionSender} from './modules/action/action-sender';
+import {QueryCollection} from './collection/query-collection';
 
 export class SapphireDb {
   private collectionManager: CollectionManager;
@@ -68,6 +69,16 @@ export class SapphireDb {
    */
   public collection<T>(collectionName: string, classType: ClassType<T> = null): DefaultCollection<T> {
     return <any>this.collectionManager.getCollection(collectionName, [], null, classType);
+  }
+
+  /**
+   * Get the named query
+   * @param queryName The name of the query
+   * @param parameters Optional parameters used for the query creation on server side
+   * @param classType The class of the model (optional parameter and only used when using a class transformer)
+   */
+  public query<TModel, TReturnType = TModel[]>(queryName: string, parameters: any[] = [], classType: ClassType<TModel> = null): QueryCollection<TModel, TReturnType> {
+    return this.collectionManager.getQueryCollection(queryName, parameters, classType);
   }
 
   /**
