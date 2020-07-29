@@ -10,6 +10,7 @@ import {ConnectionManager} from '../connection/connection-manager';
 import {ClassType} from '../models/types';
 import {SapphireClassTransformer} from '../helper/sapphire-class-transformer';
 import {OfflineManager} from '../modules/offline/offline-manager';
+import {QueryCollection} from './query-collection';
 
 export class CollectionManager {
   constructor(private connectionManager: ConnectionManager,
@@ -52,5 +53,16 @@ export class CollectionManager {
     newCollection.prefilters = newPrefilters;
 
     return newCollection;
+  }
+
+  public getQueryCollection<TModel, TReturnType = TModel[]>(queryName: string, parameters: any[], classType?: ClassType<TModel>): QueryCollection<TModel, TReturnType> {
+    return new QueryCollection<TModel, TReturnType>(
+      queryName,
+      parameters,
+      this.connectionManager,
+      this,
+      classType,
+      this.classTransformer,
+      this.offlineManager);
   }
 }

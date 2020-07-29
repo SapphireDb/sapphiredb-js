@@ -23,6 +23,8 @@ import {RxjsHelper} from '../helper/rxjs-helper';
 import {CollectionCommandBase} from '../command/collection-command-base';
 import {OfflineResponse} from '../modules/offline/offline-response';
 import {DecoratorHelper} from '../helper/decorator-helper';
+import {CommandBase} from '../command/command-base';
+import {SubscribeQueryCommand} from '../command/subscribe-query/subscribe-query-command';
 
 export abstract class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
@@ -38,7 +40,8 @@ export abstract class CollectionBase<T, Y> {
               protected collectionManagerService: CollectionManager,
               protected classType: ClassType<T>,
               protected classTransformer: SapphireClassTransformer,
-              protected offlineManager: OfflineManager) {
+              protected offlineManager: OfflineManager,
+              private isQueryCollection = false) {
 
     if (!!classType) {
       const primaryKeys = DecoratorHelper.getPrimaryKeys(this.classType);
@@ -55,7 +58,14 @@ export abstract class CollectionBase<T, Y> {
    * Get a snapshot of the values of the collection
    */
   public snapshot(): Observable<Y> {
-    const queryCommand = new QueryCommand(this.collectionName, this.prefilters);
+    let queryCommand: CommandBase;
+
+    if (this.isQueryCollection) {
+      // Replace with query query command
+      queryCommand = new QueryCommand(this.collectionName, this.prefilters);
+    } else {
+      queryCommand = new QueryCommand(this.collectionName, this.prefilters);
+    }
 
     let startWithValue$: Observable<any> = EMPTY;
 
@@ -107,7 +117,14 @@ export abstract class CollectionBase<T, Y> {
    * Get all changes of a collection
    */
   public changes(): Observable<QueryResponse | ChangeResponse | ChangesResponse> {
-    const subscribeCommand = new SubscribeCommand(this.collectionName, this.prefilters);
+    let subscribeCommand: CommandBase;
+
+    if (this.isQueryCollection) {
+      subscribeCommand = new SubscribeQueryCommand(this.collectionName, []);
+    } else {
+      subscribeCommand = new SubscribeCommand(this.collectionName, this.prefilters);
+    }
+
     return this.connectionManagerService.sendCommand(subscribeCommand, true)
       .pipe(
         map((response) => <QueryResponse | ChangeResponse | ChangesResponse>response),
@@ -227,9 +244,16 @@ export abstract class CollectionBase<T, Y> {
     return subject;
   }
 
-  private createValuesSubscription(collectionName: string, prefilters: IPrefilter<any, any>[]): CollectionValue<T> {
-    const subscribeCommand = new SubscribeCommand(collectionName, prefilters);
-    const collectionValue = new CollectionValue<T>(subscribeCommand.referenceId);
+  private createValuesSubscription(collectionName: string, prefilters: IPrefilter<any, any>[]): CollectionValue<Y> {
+    let subscribeCommand: CommandBase;
+
+    if (this.isQueryCollection) {
+      subscribeCommand = new SubscribeQueryCommand(this.collectionName, []);
+    } else {
+      subscribeCommand = new SubscribeCommand(this.collectionName, this.prefilters);
+    }
+
+    const collectionValue = new CollectionValue<Y>(subscribeCommand.referenceId);
 
     const wsSubscription = this.connectionManagerService.sendCommand(subscribeCommand, true)
       .subscribe((response: (QueryResponse | ChangeResponse | ChangesResponse)) => {
@@ -240,15 +264,15 @@ export abstract class CollectionBase<T, Y> {
           });
         } else if (response.responseType === 'ChangeResponse' || response.responseType === 'ChangesResponse') {
           collectionValue.subject.pipe(
-            filter((values: CollectionValueContainer<T>) =>
+            filter((values: CollectionValueContainer<Y>) =>
               !!values && values.connectionId === this.connectionManagerService.getConnectionId()),
             take(1)
-          ).subscribe((container: CollectionValueContainer<T>) => {
+          ).subscribe((container: CollectionValueContainer<Y>) => {
             if (response.responseType === 'ChangeResponse') {
-              CollectionHelper.updateCollection<T>(this.primaryKeys, container.values, <ChangeResponse>response);
+              CollectionHelper.updateCollection<Y>(this.primaryKeys, container.values, <ChangeResponse>response);
             } else {
               (<ChangesResponse>response).changes.forEach(change => {
-                CollectionHelper.updateCollection<T>(this.primaryKeys, container.values, change);
+                CollectionHelper.updateCollection<Y>(this.primaryKeys, container.values, change);
               });
             }
 
@@ -264,7 +288,7 @@ export abstract class CollectionBase<T, Y> {
     return collectionValue;
   }
 
-  private createCollectionObservable$(collectionValue: CollectionValue<any>): Observable<Y> {
+  private createCollectionObservable$(collectionValue: CollectionValue<Y>): Observable<Y> {
     let startWithValue$: Observable<any> = EMPTY;
 
     if (!!this.offlineManager) {
