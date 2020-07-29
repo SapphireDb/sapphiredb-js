@@ -194,7 +194,7 @@ export class ConnectionManager {
   }
 
   private storeSubscribeCommands(command: CommandBase): boolean {
-    if (command instanceof UnsubscribeCommand || command instanceof UnsubscribeMessageCommand /*TODO: Unsubscribe Query*/) {
+    if (command instanceof UnsubscribeCommand || command instanceof UnsubscribeMessageCommand) {
       this.storedCommandStorage = this.storedCommandStorage.filter(cs => cs.command.referenceId !== command.referenceId);
       return true;
     }
