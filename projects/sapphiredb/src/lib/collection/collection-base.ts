@@ -24,7 +24,6 @@ import {CollectionCommandBase} from '../command/collection-command-base';
 import {OfflineResponse} from '../modules/offline/offline-response';
 import {DecoratorHelper} from '../helper/decorator-helper';
 import {CommandBase} from '../command/command-base';
-import {SubscribeQueryCommand} from '../command/subscribe-query/subscribe-query-command';
 
 export abstract class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
@@ -41,7 +40,8 @@ export abstract class CollectionBase<T, Y> {
               protected classType: ClassType<T>,
               protected classTransformer: SapphireClassTransformer,
               protected offlineManager: OfflineManager,
-              private isQueryCollection = false) {
+              private createSubscribeCommand: () => CommandBase = () => new SubscribeCommand(this.collectionName, this.prefilters),
+              private createQueryCommand: () => CommandBase = () => new QueryCommand(this.collectionName, this.prefilters)) {
 
     if (!!classType) {
       const primaryKeys = DecoratorHelper.getPrimaryKeys(this.classType);
@@ -58,15 +58,7 @@ export abstract class CollectionBase<T, Y> {
    * Get a snapshot of the values of the collection
    */
   public snapshot(): Observable<Y> {
-    let queryCommand: CommandBase;
-
-    if (this.isQueryCollection) {
-      // Replace with query query command
-      queryCommand = new QueryCommand(this.collectionName, this.prefilters);
-    } else {
-      queryCommand = new QueryCommand(this.collectionName, this.prefilters);
-    }
-
+    const queryCommand = this.createQueryCommand();
     let startWithValue$: Observable<any> = EMPTY;
 
     if (!!this.offlineManager) {
@@ -117,13 +109,7 @@ export abstract class CollectionBase<T, Y> {
    * Get all changes of a collection
    */
   public changes(): Observable<QueryResponse | ChangeResponse | ChangesResponse> {
-    let subscribeCommand: CommandBase;
-
-    if (this.isQueryCollection) {
-      subscribeCommand = new SubscribeQueryCommand(this.collectionName, []);
-    } else {
-      subscribeCommand = new SubscribeCommand(this.collectionName, this.prefilters);
-    }
+    const subscribeCommand = this.createSubscribeCommand();
 
     return this.connectionManagerService.sendCommand(subscribeCommand, true)
       .pipe(
@@ -245,14 +231,7 @@ export abstract class CollectionBase<T, Y> {
   }
 
   private createValuesSubscription(collectionName: string, prefilters: IPrefilter<any, any>[]): CollectionValue<Y> {
-    let subscribeCommand: CommandBase;
-
-    if (this.isQueryCollection) {
-      subscribeCommand = new SubscribeQueryCommand(this.collectionName, []);
-    } else {
-      subscribeCommand = new SubscribeCommand(this.collectionName, this.prefilters);
-    }
-
+    const subscribeCommand = this.createSubscribeCommand();
     const collectionValue = new CollectionValue<Y>(subscribeCommand.referenceId);
 
     const wsSubscription = this.connectionManagerService.sendCommand(subscribeCommand, true)

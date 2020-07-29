@@ -16,6 +16,7 @@ import {PollConnection} from './poll-connection';
 import {AuthTokenState, ConnectionState} from '../models/types';
 import {SubscribeCommandInfo} from '../models/subscribe-command-info';
 import {AuthTokenHelper} from '../helper/auth-token-helper';
+import {SubscribeQueryCommand} from '../command/subscribe-query/subscribe-query-command';
 
 export class ConnectionManager {
   public connection: ConnectionBase;
@@ -193,12 +194,12 @@ export class ConnectionManager {
   }
 
   private storeSubscribeCommands(command: CommandBase): boolean {
-    if (command instanceof UnsubscribeCommand || command instanceof UnsubscribeMessageCommand) {
+    if (command instanceof UnsubscribeCommand || command instanceof UnsubscribeMessageCommand /*TODO: Unsubscribe Query*/) {
       this.storedCommandStorage = this.storedCommandStorage.filter(cs => cs.command.referenceId !== command.referenceId);
       return true;
     }
 
-    if (command instanceof SubscribeCommand || command instanceof SubscribeMessageCommand) {
+    if (command instanceof SubscribeCommand || command instanceof SubscribeMessageCommand || command instanceof SubscribeQueryCommand) {
       if (this.storedCommandStorage.findIndex(c => c.command.referenceId === command.referenceId) === -1) {
         this.storedCommandStorage.push({
           command: command,

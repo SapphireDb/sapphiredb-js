@@ -55,7 +55,7 @@ export class CollectionManager {
     return newCollection;
   }
 
-  public getQueryCollection<TModel, TReturnType = TModel[]>(queryName: string, parameters: any[], classType?: ClassType<TModel>): QueryCollection<TModel, TReturnType> {
+  public getQueryCollection<TModel, TReturnType>(queryName: string, parameters: any[], classType?: ClassType<TModel>): QueryCollection<TModel, TReturnType> {
     return new QueryCollection<TModel, TReturnType>(
       queryName,
       parameters,

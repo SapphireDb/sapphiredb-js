@@ -14,6 +14,7 @@ export * from './lib/helper/decorators/primary-key';
 export * from './lib/collection/default-collection';
 export * from './lib/collection/ordered-collection';
 export * from './lib/collection/reduced-collection';
+export * from './lib/collection/query-collection';
 
 export * from './lib/modules/messaging/messaging';
 export * from './lib/modules/action/action-result';
