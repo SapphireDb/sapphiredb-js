@@ -8,7 +8,7 @@ import {SubscribeCommand} from '../command/subscribe/subscribe-command';
 import {SubscribeMessageCommand} from '../command/subscribe-message/subscribe-message-command';
 import {asapScheduler, BehaviorSubject, Observable, of, ReplaySubject, timer} from 'rxjs';
 import {ResponseBase} from '../command/response-base';
-import {filter, finalize, share, switchMap, take} from 'rxjs/operators';
+import {delay, distinctUntilChanged, filter, finalize, share, skip, switchMap, take} from 'rxjs/operators';
 import {MessageResponse} from '../command/message/message-response';
 import {WebsocketConnection} from './websocket-connection';
 import {SseConnection} from './sse-connection';
@@ -74,36 +74,39 @@ export class ConnectionManager {
         );
       };
 
-      this.connection.connectionInformation$.subscribe((connectionInformation) => {
-        if (connectionInformation.readyState === ConnectionState.connected) {
-          this.responseActionInterceptor(() => {
-            this.storedCommandStorage.forEach(cmd => {
-              if (!cmd.sendWithAuthToken || !!this.authToken) {
-                this.connection.send(cmd.command, true);
-              }
-            });
+      this.connection.connectionInformation$.pipe(
+        filter(connectionInformation => connectionInformation.readyState === ConnectionState.connected),
+      ).subscribe((connectionInformation) => {
+        this.responseActionInterceptor(() => {
+          this.storedCommandStorage.forEach(cmd => {
+            if (!cmd.sendWithAuthToken || !!this.authToken) {
+              this.connection.send(cmd.command, true);
+            }
           });
-        }
+        });
+      });
 
-        if (connectionInformation.readyState === ConnectionState.disconnected) {
-          asapScheduler.schedule(() => {
-            Object.keys(this.commandReferences).forEach(key => {
-              if (!this.storedCommandStorage.find(command => command.command.referenceId === key)) {
-                const commandReference = this.commandReferences[key];
+      this.connection.connectionInformation$.pipe(
+        distinctUntilChanged((a, b) => a.readyState === b.readyState),
+        skip(1),
+        filter(connectionInformation => connectionInformation.readyState === ConnectionState.disconnected),
+        delay(10)
+      ).subscribe(() => {
+        Object.keys(this.commandReferences).forEach(key => {
+          if (!this.storedCommandStorage.find(command => command.command.referenceId === key)) {
+            const commandReference = this.commandReferences[key];
 
-                try {
-                  commandReference.subject$.error('Connection lost during execution');
-                  commandReference.subject$.complete();
-                  commandReference.subject$.unsubscribe();
-                } catch (ignored) {
-                  // Ignored. Throws unwanted exception when no subscriber
-                }
+            try {
+              commandReference.subject$.error('Connection lost during execution');
+              commandReference.subject$.complete();
+              commandReference.subject$.unsubscribe();
+            } catch (ignored) {
+              // Ignored. Throws unwanted exception when no subscriber
+            }
 
-                delete this.commandReferences[key];
-              }
-            });
-          });
-        }
+            delete this.commandReferences[key];
+          }
+        });
       });
 
       this.connection.messageHandler = (message) => {
