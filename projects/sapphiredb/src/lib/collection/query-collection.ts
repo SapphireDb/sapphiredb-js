@@ -5,6 +5,7 @@ import {ClassType} from '../models/types';
 import {SapphireClassTransformer} from '../helper/sapphire-class-transformer';
 import {OfflineManager} from '../modules/offline/offline-manager';
 import {SubscribeQueryCommand} from '../command/subscribe-query/subscribe-query-command';
+import {QueryQueryCommand} from '../command/query-query/query-query-command';
 
 export class QueryCollection<TModel, TReturnType> extends CollectionBase<TModel, TReturnType> {
   constructor(queryName: string,
@@ -16,6 +17,6 @@ export class QueryCollection<TModel, TReturnType> extends CollectionBase<TModel,
               offlineManager: OfflineManager) {
     super(queryName, connectionManagerService, collectionManagerService, classType, classTransformer, offlineManager,
       () => new SubscribeQueryCommand(queryName, parameters),
-      () => null);
+      () => new QueryQueryCommand(queryName, parameters));
   }
 }

@@ -1,12 +1,11 @@
-import {CommandBase} from '../command-base';
+import {QueryQueryCommand} from '../query-query/query-query-command';
 
-export class SubscribeQueryCommand extends CommandBase {
+export class SubscribeQueryCommand extends QueryQueryCommand {
   queryName: string;
   parameters: any[];
 
   constructor(queryName: string, parameters: any[]) {
-    super('SubscribeQueryCommand');
-    this.queryName = queryName;
-    this.parameters = parameters;
+    super(queryName, parameters);
+    this.commandType = 'SubscribeQueryCommand';
   }
 }
