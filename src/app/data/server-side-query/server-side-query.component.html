@@ -1,3 +1,116 @@
-<h1>Test</h1>
+<h1>Server side queries</h1>
 
-{{ values$ | async | json }}
+<p>
+  For security reasons and make development across multiple implementations you may want to define queries on server side.<br>
+  Those queries almost work like normal client defined queries and give you all features you normally have, enriched with some server only features like custom select-returns and full support of all EF-Core supported where-clauses.
+</p>
+
+<h2>Define query</h2>
+
+<h3>In place</h3>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:DemoEntry.cs)
+    [Query("custom_query_name", nameof(CustomQueryBuilder))]\n
+    public class DemoEntry\n
+    {\n
+      \tprivate static SapphireQueryBuilderBase<DemoEntry> CustomQueryBuilder(SapphireQueryBuilder<DemoEntry> queryBuilder, HttpInformation httpInformation, JToken[] parameters)\n
+      \t{\n
+        \t\treturn queryBuilder\n
+          \t\t\t.Where(e => e.Content.Length > 5)\n
+          \t\t\t.OrderBy(e => e.Content)\n
+          \t\t\t.ThenOrderBy(e => e.IntegerValue)\n
+          \t\t\t.Select(m => new { m.Content });\n
+      \t}\n\n
+
+      \t[Key]\n
+      \tpublic Guid Id { get; set; }\n\n
+
+      \tpublic string Content { get; set; }\n\n
+
+      \tpublic int IntegerValue { get; set; } = RandomNumberGenerator.GetInt32(1, 100);\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<div class="remark success">
+  The parameters of the model builder are enriched with dependency injection so you are able to use any functionality you want.<br>
+  You can run auth checks etc. if you need to.
+</div>
+
+<h3>Fluent api</h3>
+
+<app-doc [showContent]="false">
+  <div lang>
+    <![CDATA[
+    \f:(csharp:MessageConfiguration.cs)
+    public class MessageConfiguration : ISapphireModelConfiguration<Message>\n
+    {\n
+      \tpublic void Configure(SapphireModelBuilder<Message> modelBuilder)\n
+      \t{\n
+        \t\tmodelBuilder.CreateQuery("query1", (builder, information, parameters) =>\n
+          \t\t\tbuilder\n
+            \t\t\t\t.OrderBy(m => m.Content)\n
+            \t\t\t\t.Where(m => m.Content == null)\n
+          \t\t\t);\n
+      \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<h2>Use query</h2>
+
+<h3>Subscribe</h3>
+
+<app-doc>
+  {{ values$ | async | json }}<br>
+  <button m4-button (click)="addValue()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:Angular)
+    export class ServerSideQueryComponent {\n
+      \tcollection: QueryCollection<any, any[]>;\n
+      \tvalues$: Observable<any>;\n\n
+
+      \tconstructor(private db: SapphireDbService) {\n
+        \t\tthis.collection = this.db.query<any>('demo.entries.custom_query_name');\n
+        \t\tthis.values$ = this.collection.values();\n
+      \t}\n\n
+
+      \taddValue() {\n
+        \t\tthis.collection.add({\n
+          \t\t\tcontent: v,\n
+        \t\t});\n
+      \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
+<div class="remark success">
+  A query works like a collection. You can use any method on that collection.
+</div>
+
+<h3>Snapshot</h3>
+
+<app-doc>
+  {{ snapshot$ | async | json }}<br>
+  <div lang>
+    <![CDATA[
+    \f:(typescript:Angular)
+    export class ServerSideQueryComponent {\n
+      \tcollection: QueryCollection<any, any[]>;\n
+      \tsnapshot$: Observable<any>;\n\n
+
+      \tconstructor(private db: SapphireDbService) {\n
+    \t\tthis.collection = this.db.query<any>('demo.entries.custom_query_name');\n
+    \t\tthis.snapshot$ = this.collection.snapshot();\n
+    \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
