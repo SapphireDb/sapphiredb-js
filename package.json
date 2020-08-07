@@ -31,7 +31,7 @@
     "@nguniversal/express-engine": "^9.0.2",
     "@nguniversal/module-map-ngfactory-loader": "latest",
     "axios": "^0.19.1",
-    "class-transformer": "^0.2.3",
+    "class-transformer": "^0.3.1",
     "core-js": "^2.5.4",
     "express": "^4.15.2",
     "faker": "^4.1.0",
