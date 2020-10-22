@@ -1,12 +1,8 @@
 (function (window) {
   const env =  window.angularEnvironment || {};
 
-  env.sapphireDb = {
-    serverBaseUrl: '${BACKEND_URL}',
-    useSsl: '${USE_SSL}',
-    apiKey: '${API_KEY}',
-    apiSecret: '${API_SECRET}'
-  };
+  env.serverBaseUrl = '${BACKEND_URL}';
+  env.useSsl = '${USE_SSL}';
 
   window.angularEnvironment = env;
 })(this);
