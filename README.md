@@ -1,4 +1,5 @@
 # sapphiredb / ng-sapphiredb [![Build Status](https://travis-ci.org/morrisjdev/ng-realtime-database.svg?branch=master)](https://travis-ci.org/morrisjdev/ng-realtime-database)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FSapphireDb%2Fsapphiredb-js.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FSapphireDb%2Fsapphiredb-js?ref=badge_shield)
 
 <p align="center">
   <a href="https://sapphire-db.com/">
@@ -83,3 +84,6 @@ Check out the documentation for more details: [Documentation](https://sapphire-d
 SapphireDb - [MIT License](https://github.com/SapphireDb/SapphireDb/blob/master/LICENSE)
 
 sapphiredb-js - [MIT License](https://github.com/SapphireDb/sapphiredb-js/blob/master/LICENSE)
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FSapphireDb%2Fsapphiredb-js.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FSapphireDb%2Fsapphiredb-js?ref=badge_large)
