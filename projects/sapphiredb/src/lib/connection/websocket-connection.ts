@@ -9,6 +9,7 @@ import {ConnectionState} from '../models/types';
 
 export class WebsocketConnection extends ConnectionBase {
   private socketConnectionString: string;
+  private socketProtocols: string[];
   private socket: WebSocket;
 
   private closeForced = false;
@@ -18,7 +19,7 @@ export class WebsocketConnection extends ConnectionBase {
       this.updateConnectionInformation(ConnectionState.connecting);
 
       this.checkAuthToken().pipe(take(1)).subscribe(() => {
-        this.socket = new WebSocket(this.socketConnectionString);
+        this.socket = new WebSocket(this.socketConnectionString, this.socketProtocols);
 
         this.socket.onmessage = (msg: MessageEvent) => {
           const message: ResponseBase = JSON.parse(msg.data);
@@ -83,16 +84,15 @@ export class WebsocketConnection extends ConnectionBase {
   }
 
   private createConnectionString(options: SapphireDbOptions, authToken?: string) {
-    let url = `${options.useSsl ? 'wss' : 'ws'}://${options.serverBaseUrl}/sapphire/socket?`;
+    this.socketConnectionString = `${options.useSsl ? 'wss' : 'ws'}://${options.serverBaseUrl}/sapphire/socket`;
+    this.socketProtocols = ['sapphire'];
 
     if (options.apiSecret && options.apiKey) {
-      url += `key=${options.apiKey}&secret=${options.apiSecret}&`;
+      this.socketProtocols.push('key', options.apiKey, 'secret', options.apiSecret);
     }
 
     if (!!authToken) {
-      url += `authorization=${authToken}`;
+      this.socketProtocols.push('authorization', authToken);
     }
-
-    this.socketConnectionString = url;
   }
 }
