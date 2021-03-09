@@ -35,8 +35,8 @@
             \t\t\t\t},\n
             \t\t\t\tOnMessageReceived = ctx =>\n
             \t\t\t\t{\n
-              \t\t\t\t\t//Read the authentication token from query because js-websocket cannot send token as header\n
-              \t\t\t\t\tstring authorizationToken = ctx.Request.Query["authorization"];\n
+              \t\t\t\t\t//Read the authentication token from websocket protocol header because js-websocket cannot send token as header directly\n
+              \t\t\t\t\tstring authorizationToken = SapphireAuthenticationHelper.GetWebsocketAuthorizationHeader(ctx.Request);\n
               \t\t\t\t\tif (!string.IsNullOrEmpty(authorizationToken))\n
               \t\t\t\t\t{\n
                 \t\t\t\t\t\tctx.Token = authorizationToken;\n
