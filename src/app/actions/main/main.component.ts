@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {ActionHelper, ActionResult, ExecuteResponseType} from 'sapphiredb';
-import { SapphireDbService } from 'ng-sapphiredb';
+import {ActionResult, ExecuteResponseType} from 'sapphiredb';
+import {SapphireDbService} from 'ng-sapphiredb';
 import {concatMap, filter, map, shareReplay, takeWhile} from 'rxjs/operators';
-import {Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {GuidHelper} from '../../../../projects/sapphiredb/src/lib/helper/guid-helper';
+import {Observable, of, ReplaySubject} from 'rxjs';
 
 @Component({
   selector: 'app-main',
