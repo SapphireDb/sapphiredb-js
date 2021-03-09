@@ -192,7 +192,7 @@ export abstract class CollectionBase<T, Y> {
    * Remove a value from the collection
    * @param values The object(s) to remove from the collection
    */
-  public remove(...values: T[]): Observable<DeleteRangeResponse|OfflineResponse> {
+  public remove(...values: Partial<T>[]): Observable<DeleteRangeResponse|OfflineResponse> {
     if (this.classType && this.classTransformer) {
       values = this.classTransformer.classToPlain(values);
     }
