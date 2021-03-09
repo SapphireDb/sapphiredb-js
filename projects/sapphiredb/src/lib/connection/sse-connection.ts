@@ -9,12 +9,9 @@ import {SapphireDbOptions} from '../models/sapphire-db-options';
 import {AxiosError, AxiosResponse, default as axios} from 'axios';
 
 export class SseConnection extends ConnectionBase {
+  private headers: { key: string, secret: string, connectionId?: string, Authorization?: string };
   private sseConnectionString: string;
   private apiConnectionString: string;
-
-  private options: SapphireDbOptions;
-
-  private headers: { key: string, secret: string, connectionId?: string, Authorization?: string };
 
   private eventSource: EventSource;
 
@@ -109,7 +106,6 @@ export class SseConnection extends ConnectionBase {
       this.headers.Authorization = `Bearer ${authToken}`;
     }
 
-    this.options = options;
     this.sseConnectionString = sseConnectionString;
     this.apiConnectionString = `${options.useSsl ? 'https' : 'http'}://${options.serverBaseUrl}/sapphire/api/`;
   }
