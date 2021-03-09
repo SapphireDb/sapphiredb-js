@@ -1,7 +1,9 @@
-Object.defineProperty(Array.prototype, '_sapphire_', {
-  value: { sorting: [] },
-  enumerable: false
-});
+if (!(Array.prototype as any)._sapphire_) {
+  Object.defineProperty(Array.prototype, '_sapphire_', {
+    value: { sorting: [] },
+    enumerable: false
+  });
+}
 
 // @dynamic
 export class ArrayHelper {
