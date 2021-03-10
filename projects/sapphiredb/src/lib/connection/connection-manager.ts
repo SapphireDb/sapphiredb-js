@@ -181,8 +181,10 @@ export class ConnectionManager {
   }
 
   public setAuthToken(authToken?: string): Observable<AuthTokenState> {
-    this.authToken = authToken;
-    this.connection.setData(this.options, authToken);
+    if (this.authToken !== authToken) {
+      this.authToken = authToken;
+      this.connection.setData(this.options, authToken);
+    }
 
     return this.authTokenState$.asObservable();
   }
