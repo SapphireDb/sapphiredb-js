@@ -1,6 +1,6 @@
 {
   "name": "sapphiredb",
-  "version": "3.1.3",
+  "version": "3.1.4",
   "description": "Javascript client implementation for SapphireDb",
   "peerDependencies": {
     "rxjs": "^6.5.4",
