@@ -16,7 +16,7 @@ export class AuthTokenHelper {
       map((response: AxiosResponse<boolean>) => response.data),
       map((authTokenValid: boolean) => authTokenValid ? AuthTokenState.valid : AuthTokenState.invalid),
       catchError(error => {
-        if (error.status === 401) {
+        if (error.response.status === 401) {
           return of(AuthTokenState.invalid);
         }
 
