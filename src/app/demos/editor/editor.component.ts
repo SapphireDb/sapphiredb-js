@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import {CreateRangeResponse, OfflineResponse, DefaultCollection, SapphireOfflineEntity} from 'sapphiredb';
+import {Component, OnInit} from '@angular/core';
+import {CreateRangeResponse, DefaultCollection, SapphireOfflineEntity} from 'sapphiredb';
 import {Observable, of, ReplaySubject} from 'rxjs';
-import {debounceTime, filter, map, skip, switchMap} from 'rxjs/operators';
-import { SapphireDbService } from 'ng-sapphiredb';
+import {debounceTime, filter, map, switchMap} from 'rxjs/operators';
+import {SapphireDbService} from 'ng-sapphiredb';
 
 interface Document {
   id?: string;

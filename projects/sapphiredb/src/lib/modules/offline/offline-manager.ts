@@ -13,9 +13,7 @@ import {OfflineResponse} from './offline-response';
 import {CreateRangeCommand} from '../../command/create-range/create-range-command';
 import {UpdateRangeCommand} from '../../command/update-range/update-range-command';
 import {UpdateResponse} from '../../command/update-range/update-range-response';
-import {CreateResponse} from '../../command/create-range/create-range-response';
 import {DeleteRangeCommand} from '../../command/delete-range/delete-range-command';
-import {DeleteResponse} from '../../command/delete-range/delete-range-response';
 import {OfflineHelper} from './offline-helper';
 
 const CollectionStoragePrefix = 'sapphiredb.collection.';
@@ -111,13 +109,13 @@ export class OfflineManager {
     this.changeStorage$.next(changeStorageValue);
 
     const results = command.commandType === 'UpdateRangeCommand' ? (<UpdateRangeCommand>command).entries.map(e => e.value)
-      : (<CreateRangeCommand>command).values;
+      : (<CreateRangeCommand|DeleteRangeCommand>command).values;
 
     return of(<OfflineResponse> {
       referenceId: command.referenceId,
       responseType: 'OfflineResponse',
       results: results
-        .map((value) => (<CreateResponse|UpdateResponse|DeleteResponse>{ value: value })),
+        .map((value) => (<ValidatedResponseBase>{ value: value })),
     });
   }
 
