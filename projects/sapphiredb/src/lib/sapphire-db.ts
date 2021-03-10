@@ -58,7 +58,8 @@ export class SapphireDb {
       this.offlineManager = new OfflineManager(storage, this.connectionManager);
     }
 
-    this.collectionManager = new CollectionManager(this.connectionManager, this.classTransformer, this.offlineManager);
+    this.collectionManager = new CollectionManager(this.connectionManager, this.classTransformer, this.offlineManager,
+      this.options.enableLocalChangePreview);
     this.messaging = new Messaging(this.connectionManager);
   }
 

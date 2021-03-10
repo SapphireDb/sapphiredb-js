@@ -15,7 +15,8 @@ import {QueryCollection} from './query-collection';
 export class CollectionManager {
   constructor(private connectionManager: ConnectionManager,
               private classTransformer: SapphireClassTransformer,
-              private offlineManager: OfflineManager) {}
+              private offlineManager: OfflineManager,
+              private enableLocalChangePreview: boolean) {}
 
   public getCollection<T>(collectionName: string, prefilters: IPrefilter<any, any>[],
                           newPrefilter?: IPrefilter<any, any>, classType?: ClassType<T>): CollectionBase<T, any> {
@@ -31,7 +32,8 @@ export class CollectionManager {
         collectionName,
         this.connectionManager,
         this,
-        this.offlineManager);
+        this.offlineManager,
+        this.enableLocalChangePreview);
     } else if (newPrefilter instanceof OrderByPrefilter || newPrefilter instanceof ThenOrderByPrefilter) {
       newCollection = new OrderedCollection<any>(
         collectionName,
@@ -39,7 +41,8 @@ export class CollectionManager {
         this,
         classType,
         this.classTransformer,
-        this.offlineManager);
+        this.offlineManager,
+        this.enableLocalChangePreview);
     } else {
       newCollection = new DefaultCollection<any>(
         collectionName,
@@ -47,7 +50,8 @@ export class CollectionManager {
         this,
         classType,
         this.classTransformer,
-        this.offlineManager);
+        this.offlineManager,
+        this.enableLocalChangePreview);
     }
 
     newCollection.prefilters = newPrefilters;
@@ -63,6 +67,7 @@ export class CollectionManager {
       this,
       classType,
       this.classTransformer,
-      this.offlineManager);
+      this.offlineManager,
+      this.enableLocalChangePreview);
   }
 }

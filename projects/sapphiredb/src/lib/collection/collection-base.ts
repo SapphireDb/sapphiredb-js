@@ -40,6 +40,7 @@ export abstract class CollectionBase<T, Y> {
               protected classType: ClassType<T>,
               protected classTransformer: SapphireClassTransformer,
               protected offlineManager: OfflineManager,
+              private enableLocalChangePreview: boolean,
               private createSubscribeCommand: () => CommandBase = () => new SubscribeCommand(this.collectionName, this.prefilters),
               private createQueryCommand: () => CommandBase = () => new QueryCommand(this.collectionName, this.prefilters)) {
 
@@ -133,7 +134,10 @@ export abstract class CollectionBase<T, Y> {
 
     const command = new CreateRangeCommand(this.collectionName, values);
 
-    this.addToTempChangesStorage(command);
+    if (this.enableLocalChangePreview) {
+      this.addToTempChangesStorage(command);
+    }
+
     const subject = new ReplaySubject<CreateRangeResponse|OfflineResponse>();
     const result = this.offlineManager ? this.offlineManager.sendCommand(command, this.primaryKeys) :
       <any>this.connectionManagerService.sendCommand(command);
@@ -141,11 +145,17 @@ export abstract class CollectionBase<T, Y> {
     result.subscribe((response) => {
       subject.next(response);
       subject.complete();
-      this.removeFromTempChangesStorage(command.referenceId);
+
+      if (this.enableLocalChangePreview) {
+        this.removeFromTempChangesStorage(command.referenceId);
+      }
     }, (error) => {
       subject.error(error);
       subject.complete();
-      this.removeFromTempChangesStorage(command.referenceId);
+
+      if (this.enableLocalChangePreview) {
+        this.removeFromTempChangesStorage(command.referenceId);
+      }
     });
 
     return subject.pipe(take(1));
@@ -167,7 +177,9 @@ export abstract class CollectionBase<T, Y> {
     const command: UpdateRangeCommand = new UpdateRangeCommand(this.collectionName,
       values.map(([value, newValueProperties]) => new UpdateEntry(value, newValueProperties)));
 
-    this.addToTempChangesStorage(command);
+    if (this.enableLocalChangePreview) {
+      this.addToTempChangesStorage(command);
+    }
 
     const result: Observable<UpdateRangeResponse|OfflineResponse> = this.offlineManager ?
       this.offlineManager.sendCommand(command, this.primaryKeys) :
@@ -178,11 +190,17 @@ export abstract class CollectionBase<T, Y> {
     result.subscribe((response) => {
       subject.next(response);
       subject.complete();
-      this.removeFromTempChangesStorage(command.referenceId);
+
+      if (this.enableLocalChangePreview) {
+        this.removeFromTempChangesStorage(command.referenceId);
+      }
     }, (error) => {
       subject.error(error);
       subject.complete();
-      this.removeFromTempChangesStorage(command.referenceId);
+
+      if (this.enableLocalChangePreview) {
+        this.removeFromTempChangesStorage(command.referenceId);
+      }
     });
 
     return subject.pipe(take(1));
@@ -210,7 +228,9 @@ export abstract class CollectionBase<T, Y> {
 
     const command: DeleteRangeCommand = new DeleteRangeCommand(this.collectionName, primaryKeyList);
 
-    this.addToTempChangesStorage(command);
+    if (this.enableLocalChangePreview) {
+      this.addToTempChangesStorage(command);
+    }
 
     const result$ = this.offlineManager ? this.offlineManager.sendCommand(command, this.primaryKeys) :
       <any>this.connectionManagerService.sendCommand(command);
@@ -220,11 +240,17 @@ export abstract class CollectionBase<T, Y> {
     ).subscribe((response: DeleteRangeResponse|OfflineResponse) => {
       subject.next(response);
       subject.complete();
-      this.removeFromTempChangesStorage(command.referenceId);
+
+      if (this.enableLocalChangePreview) {
+        this.removeFromTempChangesStorage(command.referenceId);
+      }
     }, (error) => {
       subject.error(error);
       subject.complete();
-      this.removeFromTempChangesStorage(command.referenceId);
+
+      if (this.enableLocalChangePreview) {
+        this.removeFromTempChangesStorage(command.referenceId);
+      }
     });
 
     return subject;
@@ -284,8 +310,7 @@ export abstract class CollectionBase<T, Y> {
       }),
       RxjsHelper.startWithObservable(startWithValue$),
       finalize(() => {
-        this.connectionManagerService.sendCommand(
-          new UnsubscribeCommand(collectionValue.referenceId), false, true);
+        this.connectionManagerService.sendCommand(new UnsubscribeCommand(collectionValue.referenceId), false, true);
         collectionValue.socketSubscription.unsubscribe();
         this.collectionObservable$ = undefined;
       }),

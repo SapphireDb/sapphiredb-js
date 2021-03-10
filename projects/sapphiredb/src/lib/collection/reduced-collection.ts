@@ -7,7 +7,9 @@ export class ReducedCollection<T, Y> extends CollectionBase<T, Y> {
   constructor(collectionName: string,
               connectionManagerService: ConnectionManager,
               collectionManagerService: CollectionManager,
-              offlineManager: OfflineManager) {
-    super(collectionName, connectionManagerService, collectionManagerService, null, null, offlineManager);
+              offlineManager: OfflineManager,
+              enableLocalChangePreview: boolean) {
+    super(collectionName, connectionManagerService, collectionManagerService, null, null, offlineManager,
+      enableLocalChangePreview);
   }
 }

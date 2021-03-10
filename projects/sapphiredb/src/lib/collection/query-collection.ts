@@ -14,8 +14,10 @@ export class QueryCollection<TModel, TReturnType> extends CollectionBase<TModel,
               collectionManagerService: CollectionManager,
               classType: ClassType<TModel>,
               classTransformer: SapphireClassTransformer,
-              offlineManager: OfflineManager) {
+              offlineManager: OfflineManager,
+              enableLocalChangePreview: boolean) {
     super(queryName, connectionManagerService, collectionManagerService, classType, classTransformer, offlineManager,
+      enableLocalChangePreview,
       () => new SubscribeQueryCommand(queryName, parameters),
       () => new QueryQueryCommand(queryName, parameters));
   }

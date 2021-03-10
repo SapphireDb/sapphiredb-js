@@ -23,8 +23,10 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
               collectionManagerService: CollectionManager,
               classType: ClassType<T>,
               classTransformer: SapphireClassTransformer,
-              offlineManager: OfflineManager) {
-    super(collectionName, connectionManagerService, collectionManagerService, classType, classTransformer, offlineManager);
+              offlineManager: OfflineManager,
+              enableLocalChangePreview: boolean) {
+    super(collectionName, connectionManagerService, collectionManagerService, classType, classTransformer, offlineManager,
+      enableLocalChangePreview);
   }
 
   /**
