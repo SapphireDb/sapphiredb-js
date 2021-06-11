@@ -114,3 +114,54 @@
     ]]>
   </div>
 </app-doc>
+
+<h2>Default query</h2>
+
+<p>
+  If you want to define a default query that always gets executed before custom queries you can define that too. This comes handy when
+  implementing Soft-Delete functionality for example.
+</p>
+
+<app-doc>
+  <div class="row">
+    <div class="cell-4" *ngFor="let v of defaultQueryValues$ | async" (click)="deleteDefaultQueryValue(v)"><span class="mif-cross"></span> {{ v | json}}</div>
+  </div>
+  <button m4-button (click)="addValueDefaultQuery()">Add value</button>
+  <div lang>
+    <![CDATA[
+    \f:(csharp:DefaultQuery.cs)
+    [DefaultQuery(nameof(DefaultQuery))]\n
+    [DeleteEvent(insteadOf: nameof(InsteadOfDelete))]\n
+    public class ServerSideQueryWithDefaultBase : SapphireOfflineEntity\n
+    {\n
+      \tpublic bool Deleted { get; set; }\n\n
+
+      \tprivate static SapphireQueryBuilder<T> DefaultQuery<T>(SapphireQueryBuilder<T> builder)\n
+          \t\twhere T : ServerSideQueryWithDefaultBase\n
+      \t{\n
+        \t\treturn builder\n
+          \t\t\t.Where(entry => !entry.Deleted);\n
+      \t}\n\n
+
+      \tprivate void InsteadOfDelete()\n
+      \t{\n
+        \t\tDeleted = true;\n
+      \t}\n
+    }\n\n
+
+    [Query("by_content", nameof(ByContentQuery))]\n
+    public class ServerSideQueryWithDefault : ServerSideQueryWithDefaultBase\n
+    {\n
+      \tpublic string Content { get; set; }\n\n
+
+      \tprivate static SapphireQueryBuilder<ServerSideQueryWithDefault> ByContentQuery(\n
+          \t\tSapphireQueryBuilder<ServerSideQueryWithDefault> builder)\n
+      \t{\n
+        \t\treturn builder\n
+          \t\t\t.Where(entry => entry.Content.Length > 5);\n
+      \t}\n
+    }
+    ]]>
+  </div>
+</app-doc>
+
