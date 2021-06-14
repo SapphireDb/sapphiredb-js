@@ -98,7 +98,7 @@ export abstract class CollectionBase<T, Y> {
    */
   public values(): Observable<Y> {
     if (!this.collectionObservable$) {
-      const collectionValue = this.createValuesSubscription(this.collectionName, this.prefilters);
+      const collectionValue = this.createValuesSubscription();
 
       this.collectionObservable$ = this.createCollectionObservable$(collectionValue);
     }
@@ -256,7 +256,7 @@ export abstract class CollectionBase<T, Y> {
     return subject;
   }
 
-  private createValuesSubscription(collectionName: string, prefilters: IPrefilter<any, any>[]): CollectionValue<Y> {
+  private createValuesSubscription(): CollectionValue<Y> {
     const subscribeCommand = this.createSubscribeCommand();
     const collectionValue = new CollectionValue<Y>(subscribeCommand.referenceId);
 
