@@ -1,10 +1,10 @@
 import {IPrefilter} from './iprefilter';
 
-export class FirstPrefilter<T> implements IPrefilter<T, T> {
+export class FirstPrefilter<T> implements IPrefilter<T, T[]> {
   prefilterType = 'FirstPrefilter';
 
   execute(values: T[]) {
-    return values[0];
+    return values.slice(0, 1);
   }
 
   public hash() {

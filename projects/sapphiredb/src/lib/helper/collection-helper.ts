@@ -3,8 +3,6 @@ import {FilterFunctions} from './filter-functions';
 import {SelectPrefilter} from '../collection/prefilter/select-prefilter';
 import {CountPrefilter} from '../collection/prefilter/count-prefilter';
 import {IPrefilter} from '../collection/prefilter/iprefilter';
-import {FirstPrefilter} from '../collection/prefilter/first-prefilter';
-import {LastPrefilter} from '../collection/prefilter/last-prefilter';
 import {CreateRangeCommand} from '../command/create-range/create-range-command';
 import {CollectionCommandBase} from '../command/collection-command-base';
 import {UpdateRangeCommand} from '../command/update-range/update-range-command';
@@ -12,7 +10,7 @@ import {DeleteRangeCommand} from '../command/delete-range/delete-range-command';
 
 // @dynamic
 export class CollectionHelper {
-  static afterQueryPrefilters = [SelectPrefilter, CountPrefilter, FirstPrefilter, LastPrefilter];
+  static afterQueryPrefilters = [SelectPrefilter, CountPrefilter];
 
   static getPrefiltersWithoutAfterQueryPrefilters(prefilters: IPrefilter<any, any>[]) {
     return prefilters.filter(

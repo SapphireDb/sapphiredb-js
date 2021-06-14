@@ -10,7 +10,6 @@ import {CountPrefilter} from './prefilter/count-prefilter';
 import {OrderedCollection} from './ordered-collection';
 import {ConnectionManager} from '../connection/connection-manager';
 import {FirstPrefilter} from './prefilter/first-prefilter';
-import {LastPrefilter} from './prefilter/last-prefilter';
 import {ConditionType} from '../helper/condition-types';
 import {IncludePrefilter} from './prefilter/include-prefilter';
 import {ClassType, SortDirection} from '../models/types';
@@ -86,16 +85,9 @@ export class DefaultCollection<T> extends CollectionBase<T, T[]> {
   }
 
   /**
-   * Get the first element of the collection. Returns null if nothing was found.
+   * Get the first element of the collection
    */
-  public first(): ReducedCollection<T, T> {
+  public first(): ReducedCollection<T, T[]> {
     return this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new FirstPrefilter());
-  }
-
-  /**
-   * Get the last element of the collection. Returns null if nothing was found.
-   */
-  public last(): ReducedCollection<T, T> {
-    return this.collectionManagerService.getCollection(this.collectionName, this.prefilters, new LastPrefilter());
   }
 }

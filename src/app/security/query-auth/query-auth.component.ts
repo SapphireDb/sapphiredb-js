@@ -99,7 +99,7 @@ export class QueryAuthComponent implements OnInit {
   private getCollection$(name: string): Observable<DefaultCollection<any>> {
     return this.userState.currentUser$.pipe(
       map(() => {
-        return this.db.collection(`AuthDemo.${name}`);
+        return this.db.collection(`AuthDemo.${name}`)/*.first()*/ as any;
       }),
       shareReplay()
     );

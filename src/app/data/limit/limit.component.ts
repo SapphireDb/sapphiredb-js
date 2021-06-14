@@ -13,7 +13,6 @@ export class LimitComponent implements OnInit {
   values$: Observable<any>;
   values2$: Observable<any>;
   valueFirst$: Observable<any>;
-  valueLast$: Observable<any>;
 
   constructor(private db: SapphireDbService, private dialogService: DialogService) { }
 
@@ -28,10 +27,6 @@ export class LimitComponent implements OnInit {
 
     this.valueFirst$ = this.db.collection<any>('demo.entries')
       .first()
-      .values();
-
-    this.valueLast$ = this.db.collection<any>('demo.entries')
-      .last()
       .values();
   }
 
