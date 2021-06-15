@@ -26,7 +26,6 @@ export * from './lib/modules/offline/sapphire-offline-entity';
 export * from './lib/command/connection/connection-response';
 
 export * from './lib/command/execute/execute-response';
-export * from './lib/command/execute/execute-response';
 export * from './lib/command/query-connections/query-connections-response';
 export * from './lib/command/create-range/create-range-response';
 export * from './lib/command/update-range/update-range-response';

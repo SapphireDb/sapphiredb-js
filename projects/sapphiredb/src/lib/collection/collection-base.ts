@@ -24,6 +24,8 @@ import {CollectionCommandBase} from '../command/collection-command-base';
 import {OfflineResponse} from '../modules/offline/offline-response';
 import {DecoratorHelper} from '../helper/decorator-helper';
 import {CommandBase} from '../command/command-base';
+import {InvokeCommand} from '../command/invoke/invoke-command';
+import {InvokeResponse} from '../command/invoke/invoke-response';
 
 export abstract class CollectionBase<T, Y> {
   public prefilters: IPrefilter<any, any>[] = [];
@@ -251,6 +253,36 @@ export abstract class CollectionBase<T, Y> {
       if (this.enableLocalChangePreview) {
         this.removeFromTempChangesStorage(command.referenceId);
       }
+    });
+
+    return subject;
+  }
+
+  public invoke<TResult>(value: Partial<T>, action: string, ...parameters: any[]): Observable<TResult> {
+    if (this.classType && this.classTransformer) {
+      value = this.classTransformer.classToPlain(value);
+    }
+
+    const subject = new Subject<TResult>();
+
+    const primaryKeys = {};
+    this.primaryKeys.forEach(pk => {
+      primaryKeys[pk] = value[pk];
+    });
+    primaryKeys['modifiedOn'] = value['modifiedOn'];
+
+    const command: InvokeCommand = new InvokeCommand(this.collectionName, action, primaryKeys, parameters);
+
+    const result$ = <any>this.connectionManagerService.sendCommand(command, true);
+
+    result$.pipe(
+      take(1)
+    ).subscribe((response: InvokeResponse) => {
+      subject.next(response.result);
+      subject.complete();
+    }, (error) => {
+      subject.error(error);
+      subject.complete();
     });
 
     return subject;
