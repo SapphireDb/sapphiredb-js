@@ -7,7 +7,7 @@
 <app-doc>
   <ng-container *m4Let="values$ | async; let values">
     <div class="row">
-      <div class="cell-4" *ngFor="let v of values">{{ v | json}}</div>
+      <div class="cell-4" *ngFor="let v of values" (click)="invoke(v)">{{ v | json}}</div>
     </div>
     <button m4-button (click)="addValue()">Add value</button>
     <button m4-button (click)="addValues()">Add values</button>

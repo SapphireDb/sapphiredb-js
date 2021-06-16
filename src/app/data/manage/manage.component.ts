@@ -48,6 +48,10 @@ export class ManageComponent implements OnInit {
     this.collection.remove(value);
   }
 
+  invoke(value: any) {
+    this.collection.invoke(value, 'test', 'test 123', 'test 234', 'test 345');
+  }
+
   deleteValues(values: any[]) {
     this.collection.remove(...values);
   }
