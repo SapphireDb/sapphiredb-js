@@ -7,7 +7,7 @@
     "@angular/core": "~9.0.7",
     "rxjs": "^6.5.4",
     "axios": "^0.19.1",
-    "sapphiredb": "^3.0.0"
+    "sapphiredb": "^3.1.8"
   },
   "keywords": [
     "realtime",
