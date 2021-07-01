@@ -225,6 +225,7 @@
           },
           "configurations": {
             "production": {
+              "project": "projects/sapphiredb/ng-package.prod.json",
               "tsConfig": "projects/sapphiredb/tsconfig.lib.prod.json"
             }
           }
