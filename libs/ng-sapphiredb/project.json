@@ -1,0 +1,42 @@
+{
+  "projectType": "library",
+  "root": "libs/sapphiredb/ng-sapphiredb",
+  "sourceRoot": "libs/sapphiredb/ng-sapphiredb/src",
+  "prefix": "svbst",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:package",
+      "outputs": ["dist/libs/sapphiredb/ng-sapphiredb"],
+      "options": {
+        "project": "libs/sapphiredb/ng-sapphiredb/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/sapphiredb/ng-sapphiredb/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/sapphiredb/ng-sapphiredb/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/sapphiredb/ng-sapphiredb"],
+      "options": {
+        "jestConfig": "libs/sapphiredb/ng-sapphiredb/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/sapphiredb/ng-sapphiredb/src/**/*.ts",
+          "libs/sapphiredb/ng-sapphiredb/src/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}

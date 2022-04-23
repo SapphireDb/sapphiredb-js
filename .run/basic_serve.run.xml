@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="basic:serve" type="js.build_tools.nx">
+    <node-interpreter value="project" />
+    <nxfile value="$PROJECT_DIR$/nx.json" />
+    <tasks>
+      <task value="basic:serve" />
+    </tasks>
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>

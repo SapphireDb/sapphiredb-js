@@ -2,6 +2,8 @@
   "version": 2,
   "projects": {
     "basic": "apps/basic",
-    "basic-e2e": "apps/basic-e2e"
+    "basic-e2e": "apps/basic-e2e",
+    "ng-sapphiredb": "libs/ng-sapphiredb",
+    "sapphiredb": "libs/sapphiredb"
   }
 }

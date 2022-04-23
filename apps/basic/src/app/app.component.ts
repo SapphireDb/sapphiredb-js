@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {SapphireDbService} from 'ng-sapphiredb';
 
 @Component({
   selector: 'sapphiredb-js-root',
@@ -6,5 +7,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'basic';
+  constructor(private db: SapphireDbService) {
+    
+  }
 }
