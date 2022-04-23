@@ -1,9 +1,0 @@
-<h1>Todo</h1>
-
-<ul data-role="listview" data-selectable="true" *ngIf="milestones$ | async as milestones">
-  <li [attr.data-caption]="milestone.title" *ngFor="let milestone of milestones">
-    <ul>
-      <li *ngFor="let todo of milestone.todos"><a [href]="todo.html_url" target="_blank">{{ todo.title }}</a></li>
-    </ul>
-  </li>
-</ul>
