@@ -1,1 +1,9 @@
-<h1>Hello world</h1>
+<h1>Basic application</h1>
+
+<div *ngFor="let value of values$ | async">
+  {{ value | json }}
+  <button (click)="edit(value)">Edit value</button>
+  <button (click)="delete(value)">Delete value</button>
+</div>
+
+<button (click)="add()">Add value</button>

@@ -1,5 +1,5 @@
 module.exports = {
-  displayName: 'sapphiredb-sapphiredb',
+  displayName: 'sapphiredb',
   preset: '../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   globals: {
@@ -8,7 +8,7 @@ module.exports = {
       stringifyContentPathRegex: '\\.(html|svg)$',
     },
   },
-  coverageDirectory: '../../../coverage/libs/sapphiredb/sapphiredb',
+  coverageDirectory: '../../../coverage/libs/sapphiredb',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': 'jest-preset-angular',
   },

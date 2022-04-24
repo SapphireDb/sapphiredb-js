@@ -2,7 +2,7 @@
   "projectType": "application",
   "root": "apps/basic",
   "sourceRoot": "apps/basic/src",
-  "prefix": "sapphiredb-js",
+  "prefix": "app",
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
