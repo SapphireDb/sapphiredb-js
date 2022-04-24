@@ -2,7 +2,7 @@
   "projectType": "library",
   "root": "libs/ng-sapphiredb",
   "sourceRoot": "libs/ng-sapphiredb/src",
-  "prefix": "svbst",
+  "prefix": "app",
   "targets": {
     "build": {
       "executor": "@nrwl/angular:package",
