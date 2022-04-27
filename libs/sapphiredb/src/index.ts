@@ -33,3 +33,5 @@ export * from './lib/command/delete-range/delete-range-response';
 export * from './lib/command/subscribe/change-response';
 
 export * from './lib/command/query/query-response';
+
+export * from './lib/models/sapphire-db-file';
