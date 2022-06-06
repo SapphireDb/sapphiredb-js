@@ -1,6 +1,5 @@
 {
   "projectType": "library",
-  "root": "libs/sapphiredb",
   "sourceRoot": "libs/sapphiredb/src",
   "prefix": "app",
   "targets": {
@@ -24,7 +23,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/sapphiredb"],
       "options": {
-        "jestConfig": "libs/sapphiredb/jest.config.js",
+        "jestConfig": "libs/sapphiredb/jest.config.ts",
         "passWithNoTests": true
       }
     },
