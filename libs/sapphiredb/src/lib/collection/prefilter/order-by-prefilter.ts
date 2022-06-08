@@ -17,6 +17,6 @@ export class OrderByPrefilter<T> implements IPrefilter<T, T[]> {
   }
 
   public hash() {
-    return `${this.prefilterType},${this.property},${this.descending}}`;
+    return `${this.prefilterType},${String(this.property)},${this.descending}}`;
   }
 }
