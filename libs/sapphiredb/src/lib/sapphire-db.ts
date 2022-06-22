@@ -119,7 +119,14 @@ export class SapphireDb {
   }
 
   /**
-   * Clear up session
+   * Event that fires when auth token is expired. Useful to refresh token when needed
+   */
+  public authTokenExpired(): Observable<string> {
+    return this.connectionManager.authTokenExpired$.asObservable();
+  }
+
+  /**
+   * Clean up session
    */
   public dispose(): void {
     this.connectionManager.dispose();

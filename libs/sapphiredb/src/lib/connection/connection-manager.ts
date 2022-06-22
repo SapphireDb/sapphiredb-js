@@ -34,6 +34,7 @@ export class ConnectionManager {
   private authToken$ = new BehaviorSubject<string | undefined>(undefined);
   private signalRConnection$: Observable<HubConnection>;
   public online$: Observable<boolean>;
+  public authTokenExpired$ = new Subject<string>();
 
   private commandReferences: CommandReferences = {};
   private storedCommandStorage: SubscribeCommandInfo[] = [];
@@ -51,15 +52,13 @@ export class ConnectionManager {
       this.responseActionInterceptor(() => {
         this.handleResponse(response);
       })
-    });
+    }, this.authTokenExpired$);
 
     this.online$ = this.signalRConnection$.pipe(
       map(connection => connection.state === HubConnectionState.Connected)
     );
 
     this.connectionSubscription = this.signalRConnection$.subscribe();
-
-    // TODO: check if auth token check is useful
 
     this.storedCommandsConnectionSubscription = this.signalRConnection$.pipe(
       filter(connection => connection.state === HubConnectionState.Connected),

@@ -1,4 +1,5 @@
 import {
+  BehaviorSubject,
   bufferCount,
   distinctUntilChanged,
   finalize,
@@ -11,15 +12,18 @@ import {
   ReplaySubject,
   retry,
   startWith,
+  Subject,
   switchMap,
   timer
 } from 'rxjs';
 import {HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel, RetryContext} from '@microsoft/signalr';
 import {ResponseBase} from '../command/response-base';
 import {SapphireDbOptions} from '../models/sapphire-db-options';
+import {AuthTokenHelper} from '../helper/auth-token-helper';
 
-export function createSignalRConnection$(authToken$: Observable<string | undefined>, options: SapphireDbOptions,
-                                         handleResponse: (response: ResponseBase) => void): Observable<HubConnection> {
+export function createSignalRConnection$(authToken$: BehaviorSubject<string | undefined>, options: SapphireDbOptions,
+                                         handleResponse: (response: ResponseBase) => void,
+                                         authTokenExpired$: Subject<string>): Observable<HubConnection> {
   const connectionEventSubject$ = new ReplaySubject<HubConnection>(1);
   let storedConnection: HubConnection | undefined;
 
@@ -42,7 +46,18 @@ export function createSignalRConnection$(authToken$: Observable<string | undefin
       const newConnection = new HubConnectionBuilder()
         .withUrl(`${options.useSsl ? 'https' : 'http'}://${options.serverBaseUrl}/sapphire/hub${queryParametersString}`, {
           accessTokenFactory: () => {
-            return authToken as string;
+            if (!authToken) {
+              return undefined as unknown as string;
+            }
+
+            const authTokenValid = AuthTokenHelper.tokenValid(authToken);
+
+            if (!authTokenValid) {
+              authToken$.next(undefined);
+              authTokenExpired$.next(authToken);
+            }
+
+            return authTokenValid ? authToken : undefined as unknown as string;
           }
         })
         .configureLogging(LogLevel.Warning)
