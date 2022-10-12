@@ -23,6 +23,7 @@ export class OfflineManager {
   private changeStorage$: BehaviorSubject<{ [collectionKey: string]: CollectionCommandBase[] }> =
     new BehaviorSubject<{ [p: string]: CollectionCommandBase[] }>({});
 
+  // TODO: check if bufferSize should be 1
   public offlineTransferResults$ = new ReplaySubject<ExecuteCommandsResponse|undefined>();
 
   constructor(private storage: SapphireStorage, private connectionManager: ConnectionManager) {
