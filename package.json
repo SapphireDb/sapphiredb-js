@@ -33,7 +33,7 @@
     "axios": "^0.19.1",
     "class-transformer": "^0.2.3",
     "core-js": "^2.5.4",
-    "express": "^4.15.2",
+    "express": "^4.17.3",
     "faker": "^4.1.0",
     "highlight.js": "^9.16.2",
     "linq4js": "^2.2.3",
