@@ -7,6 +7,7 @@ export * from './lib/helper/action-helper';
 export * from './lib/helper/condition-types';
 export * from './lib/helper/sapphire-class-transformer';
 export * from './lib/helper/sapphire-storage';
+export * from './lib/helper/filter-functions';
 export * from './lib/helper/decorators/primary-key';
 
 export * from './lib/connection/signal-r-connection';
